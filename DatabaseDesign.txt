@@ -1,0 +1,70 @@
+┌─────────────────────────┐
+│     ApplicationUser     │
+├─────────────────────────┤
+│ Id PK                   │
+│ DisplayName             │
+│ PreferredWeightUnit     │
+│ PreferredDistanceUnit   │
+│ CreatedAtUtc            │
+└────────────┬────────────┘
+             │
+             │ 1
+             │
+             │ *
+┌────────────▼────────────┐
+│        Workout          │
+├─────────────────────────┤
+│ Id PK                   │
+│ UserId FK               │
+│ Name                    │
+│ WorkoutType             │
+│ StartedAtUtc            │
+│ EndedAtUtc              │
+│ Notes                   │
+│ CreatedAtUtc            │
+│ UpdatedAtUtc            │
+└────────────┬────────────┘
+             │
+             │ 1
+             │
+             │ *
+┌────────────▼────────────┐       ┌───────────────────────┐
+│    WorkoutExercise     │ *   1 │       Exercise        │
+├────────────────────────┤───────►├───────────────────────┤
+│ Id PK                  │       │ Id PK                 │
+│ WorkoutId FK           │       │ Name                  │
+│ ExerciseId FK          │       │ ExerciseType          │
+│ OrderIndex             │       │ TrackingType          │
+│ Notes                  │       │ PrimaryMuscleGroup    │
+└────────────┬───────────┘       │ Equipment             │
+             │                   │ IsCustom              │
+             │ 1                 │ CreatedByUserId FK?   │
+             │                   │ IsArchived            │
+             │ *                 │ CreatedAtUtc          │
+┌────────────▼───────────┐       └───────────────────────┘
+│       WorkoutSet       │
+├────────────────────────┤
+│ Id PK                  │
+│ WorkoutExerciseId FK   │
+│ SetNumber              │
+│ SetType                │
+│ Reps                   │
+│ WeightKg               │
+│ DurationSeconds        │
+│ DistanceMeters         │
+│ Rpe                    │
+│ IsCompleted            │
+│ Notes                  │
+└────────────────────────┘
+
+
+┌─────────────────────────┐
+│    BodyMeasurement      │
+├─────────────────────────┤
+│ Id PK                   │
+│ UserId FK               │
+│ RecordedAtUtc           │
+│ WeightKg                │
+│ BodyFatPercentage       │
+│ Notes                   │
+└─────────────────────────┘
