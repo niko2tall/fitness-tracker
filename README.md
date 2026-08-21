@@ -60,34 +60,49 @@ The project is also intended to demonstrate practical software-development conce
 
 ---
 
-# Current Status
+## Currently In Development
 
-The application is currently under active development.
+The next stage of development is focused on exercise management:
+
+* Seeding built-in exercises
+* Creating exercise DTOs
+* Creating the exercise service layer
+* Building exercise CRUD API endpoints
+* Testing exercise management through Scalar
 
 ## Completed
 
-The following foundation has been implemented:
+The following project foundation and database infrastructure have been implemented:
 
 * GitHub repository created and connected to the local project
 * Visual Studio solution created
-* ASP.NET Core Web API created
-* .NET 10 configured
-* React frontend created with Vite
-* TypeScript configured
+* ASP.NET Core Web API created with .NET 10
+* React frontend created with Vite and TypeScript
 * Frontend and backend projects separated
 * HTTPS development certificate configured
-* Predictable development ports configured
+* Predictable local development ports configured
 * CORS configured between React and ASP.NET Core
 * React-to-API communication verified
 * API health endpoint created
 * OpenAPI document generation configured
 * Scalar interactive API documentation configured
-* Entity Framework Core packages installed
-* SQLite provider installed
-* EF Core command-line tooling installed
-* Initial domain model designed
-* Core model classes created
-* Git repository workflow established
+* Entity Framework Core configured
+* SQLite database provider configured
+* EF Core command-line tooling configured
+* Initial fitness domain model designed
+* Core domain model classes created
+* Application enums created
+* `FitnessTrackerDbContext` created
+* Entity relationships and foreign keys configured
+* Database delete behaviours configured
+* Database indexes and uniqueness constraints configured
+* Enum-to-string database conversions configured
+* SQLite connection string configured
+* Initial Entity Framework Core migration created
+* Local SQLite database created
+* Database schema verified
+* EF Core migration history verified
+* Git-based milestone workflow established
 
 ## Currently In Development
 
@@ -1196,18 +1211,18 @@ Development is being completed incrementally so each architectural layer can be 
 
 ## Phase 2 — Domain and Database
 
-* [x] Design initial domain model
-* [x] Create domain entities
-* [x] Create application enums
-* [ ] Create `FitnessTrackerDbContext`
-* [ ] Configure entity relationships
-* [ ] Configure database indexes
-* [ ] Configure delete behaviour
-* [ ] Configure enum conversions
-* [ ] Configure SQLite
-* [ ] Create initial migration
-* [ ] Create local database
-* [ ] Verify database schema
+- [x] Design initial domain model
+- [x] Create domain entities
+- [x] Create application enums
+- [x] Create `FitnessTrackerDbContext`
+- [x] Configure entity relationships
+- [x] Configure database indexes
+- [x] Configure delete behaviour
+- [x] Configure enum conversions
+- [x] Configure SQLite
+- [x] Create initial migration
+- [x] Create local database
+- [x] Verify database schema
 
 ---
 
