@@ -50,4 +50,123 @@ public class ExercisesController : ControllerBase
 
         return Ok(exercise);
     }
+
+    [HttpPost]
+    [ProducesResponseType(
+        typeof(ExerciseResponseDto),
+        StatusCodes.Status201Created)]
+    [ProducesResponseType(
+        typeof(ProblemDetails),
+        StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(
+        typeof(ProblemDetails),
+        StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<ExerciseResponseDto>> Create(
+        CreateExerciseDto dto,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var exercise = await _exerciseService.CreateAsync(
+                dto,
+                cancellationToken);
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = exercise.Id },
+                exercise);
+        }
+        catch (ArgumentException exception)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Invalid exercise",
+                detail: exception.Message);
+        }
+        catch (InvalidOperationException exception)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status409Conflict,
+                title: "Exercise conflict",
+                detail: exception.Message);
+        }
+    }
+
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType(
+        typeof(ExerciseResponseDto),
+        StatusCodes.Status200OK)]
+    [ProducesResponseType(
+        typeof(ProblemDetails),
+        StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(
+        typeof(ProblemDetails),
+        StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<ExerciseResponseDto>> Update(
+        Guid id,
+        UpdateExerciseDto dto,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var exercise = await _exerciseService.UpdateAsync(
+                id,
+                dto,
+                cancellationToken);
+
+            if (exercise is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(exercise);
+        }
+        catch (ArgumentException exception)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Invalid exercise",
+                detail: exception.Message);
+        }
+        catch (InvalidOperationException exception)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status409Conflict,
+                title: "Exercise conflict",
+                detail: exception.Message);
+        }
+    }
+
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(
+        typeof(ProblemDetails),
+        StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Archive(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var archived = await _exerciseService.ArchiveAsync(
+                id,
+                cancellationToken);
+
+            if (!archived)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+        catch (InvalidOperationException exception)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status409Conflict,
+                title: "Exercise conflict",
+                detail: exception.Message);
+        }
+    }
 }
