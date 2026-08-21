@@ -103,18 +103,30 @@ The following project foundation and database infrastructure have been implement
 * Database schema verified
 * EF Core migration history verified
 * Git-based milestone workflow established
+* Built-in exercise library seeded through Entity Framework Core migrations
+* Exercise request and response DTOs implemented
+* Exercise service layer implemented
+* Exercise business rules and validation implemented
+* Exercise REST API implemented
+* Exercise retrieval by list and ID implemented
+* Custom exercise creation implemented
+* Custom exercise editing implemented
+* Custom exercise archiving implemented
+* Built-in exercise modification protection implemented
+* Exercise API validation and error handling implemented
+* Exercise API tested through Scalar
 
 ## Currently In Development
 
-The next stage of development is:
+The current development phase is focused on connecting exercise management to the React frontend:
 
-* Creating the Entity Framework Core `DbContext`
-* Configuring relationships between entities
-* Configuring database constraints
-* Configuring enum persistence
-* Creating the initial database migration
-* Creating the SQLite database
-* Implementing exercise CRUD operations
+* Creating the frontend exercise API client
+* Loading exercises from the ASP.NET Core API
+* Building the exercise library interface
+* Adding exercise search and filtering
+* Creating the custom exercise form
+* Adding exercise editing and archiving controls
+* Continuing responsive mobile interface development
 
 ## Not Yet Implemented
 
@@ -1228,16 +1240,16 @@ Development is being completed incrementally so each architectural layer can be 
 
 ## Phase 3 — Exercise Management
 
-* [x] Seed built-in exercises
-* [ ] Create exercise DTOs
-* [ ] Create exercise service
-* [ ] Create Exercise API controller
-* [ ] Implement GET exercises
-* [ ] Implement GET exercise by ID
-* [ ] Implement POST exercise
-* [ ] Implement PUT exercise
-* [ ] Implement exercise archiving
-* [ ] Test Exercise API using Scalar
+- [x] Seed built-in exercises
+- [x] Create exercise DTOs
+- [x] Create exercise service
+- [x] Create Exercise API controller
+- [x] Implement GET exercises
+- [x] Implement GET exercise by ID
+- [x] Implement POST exercise
+- [x] Implement PUT exercise
+- [x] Implement exercise archiving
+- [x] Test Exercise API using Scalar
 
 ---
 
