@@ -2,6 +2,7 @@ using FitnessTracker.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using System.Text.Json.Serialization;
+using FitnessTracker.Api.Services.Exercises;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,8 @@ builder.Services.AddDbContext<FitnessTrackerDbContext>(options =>
 {
     options.UseSqlite(connectionString);
 });
+
+builder.Services.AddScoped<IExerciseService, ExerciseService>();
 
 // Allow the React development server to call this API.
 builder.Services.AddCors(options =>
