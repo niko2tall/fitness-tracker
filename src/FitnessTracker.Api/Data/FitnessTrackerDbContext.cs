@@ -1,5 +1,6 @@
 ﻿using FitnessTracker.Api.Models;
 using Microsoft.EntityFrameworkCore;
+using FitnessTracker.Api.Data.Seed;
 
 namespace FitnessTracker.Api.Data;
 
@@ -104,6 +105,7 @@ public class FitnessTrackerDbContext : DbContext
             exercise.Name,
             exercise.IsArchived
         });
+        entity.HasData(ExerciseSeedData.Exercises);
     }
 
     private static void ConfigureWorkout(ModelBuilder modelBuilder)

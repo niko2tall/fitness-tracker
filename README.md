@@ -62,13 +62,13 @@ The project is also intended to demonstrate practical software-development conce
 
 ## Currently In Development
 
-The next stage of development is focused on exercise management:
+The current development phase is focused on exercise management:
 
-* Seeding built-in exercises
-* Creating exercise DTOs
-* Creating the exercise service layer
-* Building exercise CRUD API endpoints
-* Testing exercise management through Scalar
+- Creating exercise DTOs
+- Creating the exercise service layer
+- Building exercise CRUD API endpoints
+- Testing exercise operations through Scalar
+- Connecting exercise data to the React frontend
 
 ## Completed
 
@@ -1228,7 +1228,7 @@ Development is being completed incrementally so each architectural layer can be 
 
 ## Phase 3 — Exercise Management
 
-* [ ] Seed built-in exercises
+* [x] Seed built-in exercises
 * [ ] Create exercise DTOs
 * [ ] Create exercise service
 * [ ] Create Exercise API controller
