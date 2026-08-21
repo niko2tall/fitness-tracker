@@ -12,6 +12,11 @@ dist/
 .env.local
 .env.*.local
 
+# SQLite local databases
+*.db
+*.db-shm
+*.db-wal
+
 # Logs
 *.log
 

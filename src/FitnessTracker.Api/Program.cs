@@ -1,3 +1,5 @@
+using FitnessTracker.Api.Data;
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +11,18 @@ builder.Services.AddControllers();
 
 // Add OpenAPI document generation.
 builder.Services.AddOpenApi();
+
+// Get the SQLite connection string.
+var connectionString = builder.Configuration
+    .GetConnectionString("FitnessTrackerDatabase")
+    ?? throw new InvalidOperationException(
+        "Connection string 'FitnessTrackerDatabase' was not found.");
+
+// Register the EF Core database context.
+builder.Services.AddDbContext<FitnessTrackerDbContext>(options =>
+{
+    options.UseSqlite(connectionString);
+});
 
 // Allow the React development server to call this API.
 builder.Services.AddCors(options =>
