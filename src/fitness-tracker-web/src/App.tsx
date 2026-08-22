@@ -6,8 +6,14 @@ import {
 
 import './App.css';
 
+import ArchiveExerciseDialog
+    from './components/exercises/ArchiveExerciseDialog';
+
 import CreateExerciseDialog
     from './components/exercises/CreateExerciseDialog';
+
+import EditExerciseDialog
+    from './components/exercises/EditExerciseDialog';
 
 import ExerciseDetailsDialog
     from './components/exercises/ExerciseDetailsDialog';
@@ -19,15 +25,18 @@ import ExerciseList
     from './components/exercises/ExerciseList';
 
 import {
+    archiveExercise,
     createExercise,
     getExerciseById,
     getExercises,
+    updateExercise,
 } from './services/api';
 
 import type {
     CreateExerciseRequest,
     Exercise,
     ExerciseType,
+    UpdateExerciseRequest,
 } from './types/exercise';
 
 function App() {
@@ -80,6 +89,16 @@ function App() {
         isCreateDialogOpen,
         setIsCreateDialogOpen,
     ] = useState(false);
+
+    const [
+        editingExercise,
+        setEditingExercise,
+    ] = useState<Exercise | null>(null);
+
+    const [
+        archivingExercise,
+        setArchivingExercise,
+    ] = useState<Exercise | null>(null);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -204,6 +223,34 @@ function App() {
         );
     }, [exercises]);
 
+    useEffect(() => {
+        if (
+            selectedMuscleGroup !== 'All' &&
+            !muscleGroups.includes(
+                selectedMuscleGroup
+            )
+        ) {
+            setSelectedMuscleGroup('All');
+        }
+    }, [
+        muscleGroups,
+        selectedMuscleGroup,
+    ]);
+
+    useEffect(() => {
+        if (
+            selectedEquipment !== 'All' &&
+            !equipmentOptions.includes(
+                selectedEquipment
+            )
+        ) {
+            setSelectedEquipment('All');
+        }
+    }, [
+        equipmentOptions,
+        selectedEquipment,
+    ]);
+
     const filteredExercises = useMemo(() => {
         const normalizedSearchTerm =
             searchTerm.trim().toLowerCase();
@@ -217,7 +264,8 @@ function App() {
 
             const matchesType =
                 selectedType === 'All' ||
-                exercise.exerciseType === selectedType;
+                exercise.exerciseType ===
+                selectedType;
 
             const matchesMuscleGroup =
                 selectedMuscleGroup === 'All' ||
@@ -272,6 +320,28 @@ function App() {
         setIsCreateDialogOpen(false);
     }
 
+    function openEditExercise(
+        exercise: Exercise
+    ) {
+        closeExerciseDetails();
+        setEditingExercise(exercise);
+    }
+
+    function closeEditExercise() {
+        setEditingExercise(null);
+    }
+
+    function openArchiveExercise(
+        exercise: Exercise
+    ) {
+        closeExerciseDetails();
+        setArchivingExercise(exercise);
+    }
+
+    function closeArchiveExercise() {
+        setArchivingExercise(null);
+    }
+
     async function handleCreateExercise(
         request: CreateExerciseRequest
     ) {
@@ -284,6 +354,39 @@ function App() {
                 createdExercise,
             ].sort((a, b) =>
                 a.name.localeCompare(b.name)
+            )
+        );
+    }
+
+    async function handleUpdateExercise(
+        id: string,
+        request: UpdateExerciseRequest
+    ) {
+        const updatedExercise =
+            await updateExercise(id, request);
+
+        setExercises((currentExercises) =>
+            currentExercises
+                .map((exercise) =>
+                    exercise.id === updatedExercise.id
+                        ? updatedExercise
+                        : exercise
+                )
+                .sort((a, b) =>
+                    a.name.localeCompare(b.name)
+                )
+        );
+    }
+
+    async function handleArchiveExercise(
+        id: string
+    ) {
+        await archiveExercise(id);
+
+        setExercises((currentExercises) =>
+            currentExercises.filter(
+                (exercise) =>
+                    exercise.id !== id
             )
         );
     }
@@ -307,7 +410,10 @@ function App() {
                 {!isLoading && !error && (
                     <div className="page-header__actions">
                         <div className="exercise-count">
-                            <strong>{exercises.length}</strong>
+                            <strong>
+                                {exercises.length}
+                            </strong>
+
                             <span>Exercises</span>
                         </div>
 
@@ -341,7 +447,10 @@ function App() {
                     className="status-panel status-panel--error"
                     role="alert"
                 >
-                    <h2>Unable to load exercises</h2>
+                    <h2>
+                        Unable to load exercises
+                    </h2>
+
                     <p>{error}</p>
                 </div>
             )}
@@ -381,7 +490,9 @@ function App() {
                     />
 
                     <ExerciseList
-                        exercises={filteredExercises}
+                        exercises={
+                            filteredExercises
+                        }
                         onViewDetails={
                             openExerciseDetails
                         }
@@ -394,7 +505,13 @@ function App() {
                     exercise={selectedExercise}
                     isLoading={isDetailsLoading}
                     error={detailsError}
-                    onClose={closeExerciseDetails}
+                    onEdit={openEditExercise}
+                    onArchive={
+                        openArchiveExercise
+                    }
+                    onClose={
+                        closeExerciseDetails
+                    }
                 />
             )}
 
@@ -409,6 +526,34 @@ function App() {
                     }
                     onClose={
                         closeCreateExercise
+                    }
+                />
+            )}
+
+            {editingExercise && (
+                <EditExerciseDialog
+                    exercise={editingExercise}
+                    muscleGroups={muscleGroups}
+                    equipmentOptions={
+                        equipmentOptions
+                    }
+                    onSubmit={
+                        handleUpdateExercise
+                    }
+                    onClose={
+                        closeEditExercise
+                    }
+                />
+            )}
+
+            {archivingExercise && (
+                <ArchiveExerciseDialog
+                    exercise={archivingExercise}
+                    onConfirm={
+                        handleArchiveExercise
+                    }
+                    onClose={
+                        closeArchiveExercise
                     }
                 />
             )}

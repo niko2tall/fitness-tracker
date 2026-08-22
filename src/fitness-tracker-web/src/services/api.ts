@@ -1,6 +1,7 @@
 import type {
     CreateExerciseRequest,
     Exercise,
+    UpdateExerciseRequest,
 } from '../types/exercise';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -147,4 +148,63 @@ export async function createExercise(
     }
 
     return response.json();
+}
+
+export async function updateExercise(
+    id: string,
+    request: UpdateExerciseRequest,
+    signal?: AbortSignal
+): Promise<Exercise> {
+    const response = await fetch(
+        `${API_BASE_URL}/api/exercises/${id}`,
+        {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(request),
+            signal,
+        }
+    );
+
+    if (!response.ok) {
+        if (response.status === 404) {
+            throw new Error('Exercise not found.');
+        }
+
+        const message = await getApiErrorMessage(
+            response,
+            `Exercise update failed with status ${response.status}.`
+        );
+
+        throw new Error(message);
+    }
+
+    return response.json();
+}
+
+export async function archiveExercise(
+    id: string,
+    signal?: AbortSignal
+): Promise<void> {
+    const response = await fetch(
+        `${API_BASE_URL}/api/exercises/${id}`,
+        {
+            method: 'DELETE',
+            signal,
+        }
+    );
+
+    if (!response.ok) {
+        if (response.status === 404) {
+            throw new Error('Exercise not found.');
+        }
+
+        const message = await getApiErrorMessage(
+            response,
+            `Exercise archiving failed with status ${response.status}.`
+        );
+
+        throw new Error(message);
+    }
 }

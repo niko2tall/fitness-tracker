@@ -502,6 +502,65 @@
         outline-offset: 2px;
     }
 
+.exercise-dialog__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.exercise-dialog__action-button {
+    min-height: 42px;
+    padding: 0.65rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+    .exercise-dialog__action-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+    }
+
+.exercise-dialog__action-button--secondary {
+    border: 1px solid rgba(127, 127, 127, 0.4);
+    color: inherit;
+    background: transparent;
+}
+
+    .exercise-dialog__action-button--secondary:hover:not(:disabled) {
+        background: rgba(127, 127, 127, 0.1);
+    }
+
+.exercise-dialog__action-button--danger {
+    border: 1px solid #b91c1c;
+    color: #b91c1c;
+    background: transparent;
+}
+
+    .exercise-dialog__action-button--danger:hover:not(:disabled) {
+        background: rgba(185, 28, 28, 0.1);
+    }
+
+.exercise-dialog__action-button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+.archive-exercise-message {
+    margin-top: 1.5rem;
+    line-height: 1.6;
+}
+
+    .archive-exercise-message p {
+        margin: 0;
+    }
+
+        .archive-exercise-message p + p {
+            margin-top: 0.75rem;
+            opacity: 0.7;
+        }
+
 @media (max-width: 900px) {
     .exercise-filters__grid {
         grid-template-columns: repeat(2, 1fr);
@@ -571,4 +630,14 @@
     .exercise-form__button {
         width: 100%;
     }
+
+    .exercise-dialog__actions {
+        flex-direction: column;
+    }
+
+    .exercise-dialog__action-button {
+        width: 100%;
+    }
+
+
 }

@@ -5,6 +5,8 @@ interface ExerciseDetailsDialogProps {
     exercise: Exercise | null;
     isLoading: boolean;
     error: string | null;
+    onEdit: (exercise: Exercise) => void;
+    onArchive: (exercise: Exercise) => void;
     onClose: () => void;
 }
 
@@ -12,6 +14,8 @@ function ExerciseDetailsDialog({
     exercise,
     isLoading,
     error,
+    onEdit,
+    onArchive,
     onClose,
 }: ExerciseDetailsDialogProps) {
     const dialogRef = useRef<HTMLDialogElement>(null);
@@ -149,6 +153,27 @@ function ExerciseDetailsDialog({
                                 </dd>
                             </div>
                         </dl>
+
+                        {exercise.isCustom &&
+                            !exercise.isArchived && (
+                                <div className="exercise-dialog__actions">
+                                    <button
+                                        type="button"
+                                        className="exercise-dialog__action-button exercise-dialog__action-button--secondary"
+                                        onClick={() => onEdit(exercise)}
+                                    >
+                                        Edit
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className="exercise-dialog__action-button exercise-dialog__action-button--danger"
+                                        onClick={() => onArchive(exercise)}
+                                    >
+                                        Archive
+                                    </button>
+                                </div>
+                            )}
                     </>
                 )}
             </div>

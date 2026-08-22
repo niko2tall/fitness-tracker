@@ -62,11 +62,13 @@ The project is also intended to demonstrate practical software-development conce
 
 ## Currently In Development
 
-The current development phase is focused on completing the React exercise-management interface:
+The next development phase is focused on workout logging and workout data management:
 
-- Adding custom exercise editing and archiving controls
-- Completing responsive mobile verification
-- Finalizing the end-to-end Exercise feature
+- Creating workout API contracts and service logic
+- Building workout creation and retrieval endpoints
+- Adding exercises and sets to workout sessions
+- Tracking strength and cardio performance data
+- Building the React workout logging interface
 
 ## Completed
 
@@ -113,6 +115,15 @@ The following project foundation and database infrastructure have been implement
 * Built-in exercise modification protection implemented
 * Exercise API validation and error handling implemented
 * Exercise API tested through Scalar
+* React exercise library connected to the ASP.NET Core API
+* Client-side exercise search and filtering implemented
+* Responsive exercise detail interface implemented
+* Custom exercise creation implemented in React
+* Custom exercise editing implemented in React
+* Custom exercise soft-archiving implemented in React
+* API validation and conflict errors surfaced in the frontend
+* Exercise management interface verified on desktop and mobile
+* Complete Exercise CRUD workflow verified end-to-end
 
 ## Currently In Development
 
@@ -1258,8 +1269,8 @@ Development is being completed incrementally so each architectural layer can be 
 - [x] Create exercise search
 - [x] Create exercise details
 - [x] Create custom exercise form
-- [ ] Create exercise editing
-- [ ] Implement responsive mobile layout
+- [x] Create exercise editing
+- [x] Implement responsive mobile layout
 
 ---
 
