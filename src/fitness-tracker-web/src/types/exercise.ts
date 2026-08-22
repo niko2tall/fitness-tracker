@@ -19,3 +19,10 @@ export interface Exercise {
     isArchived: boolean;
     createdAtUtc: string;
 }
+export interface CreateExerciseRequest {
+    name: string;
+    exerciseType: ExerciseType;
+    trackingType: ExerciseTrackingType;
+    primaryMuscleGroup: string | null;
+    equipment: string | null;
+}

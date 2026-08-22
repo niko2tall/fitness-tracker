@@ -1,32 +1,61 @@
-import { useEffect, useMemo, useState } from 'react';
+import {
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
+
 import './App.css';
 
-import ExerciseFilters from './components/exercises/ExerciseFilters';
-import ExerciseList from './components/exercises/ExerciseList';
+import CreateExerciseDialog
+    from './components/exercises/CreateExerciseDialog';
+
 import ExerciseDetailsDialog
     from './components/exercises/ExerciseDetailsDialog';
+
+import ExerciseFilters
+    from './components/exercises/ExerciseFilters';
+
+import ExerciseList
+    from './components/exercises/ExerciseList';
+
 import {
+    createExercise,
     getExerciseById,
     getExercises,
 } from './services/api';
+
 import type {
+    CreateExerciseRequest,
     Exercise,
     ExerciseType,
 } from './types/exercise';
 
-
 function App() {
-    const [exercises, setExercises] = useState<Exercise[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [exercises, setExercises] =
+        useState<Exercise[]>([]);
 
-    const [searchTerm, setSearchTerm] = useState('');
+    const [isLoading, setIsLoading] =
+        useState(true);
+
+    const [error, setError] =
+        useState<string | null>(null);
+
+    const [searchTerm, setSearchTerm] =
+        useState('');
+
     const [selectedType, setSelectedType] =
         useState<ExerciseType | 'All'>('All');
-    const [selectedMuscleGroup, setSelectedMuscleGroup] =
-        useState('All');
-    const [selectedEquipment, setSelectedEquipment] =
-        useState('All');
+
+    const [
+        selectedMuscleGroup,
+        setSelectedMuscleGroup,
+    ] = useState('All');
+
+    const [
+        selectedEquipment,
+        setSelectedEquipment,
+    ] = useState('All');
+
     const [
         selectedExerciseId,
         setSelectedExerciseId,
@@ -46,6 +75,11 @@ function App() {
         detailsError,
         setDetailsError,
     ] = useState<string | null>(null);
+
+    const [
+        isCreateDialogOpen,
+        setIsCreateDialogOpen,
+    ] = useState(false);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -136,27 +170,37 @@ function App() {
 
     const muscleGroups = useMemo(() => {
         const values = exercises
-            .map((exercise) => exercise.primaryMuscleGroup)
+            .map(
+                (exercise) =>
+                    exercise.primaryMuscleGroup
+            )
             .filter(
-                (muscleGroup): muscleGroup is string =>
+                (
+                    muscleGroup
+                ): muscleGroup is string =>
                     muscleGroup !== null
             );
 
-        return [...new Set(values)].sort((a, b) =>
-            a.localeCompare(b)
+        return [...new Set(values)].sort(
+            (a, b) => a.localeCompare(b)
         );
     }, [exercises]);
 
     const equipmentOptions = useMemo(() => {
         const values = exercises
-            .map((exercise) => exercise.equipment)
+            .map(
+                (exercise) =>
+                    exercise.equipment
+            )
             .filter(
-                (equipment): equipment is string =>
+                (
+                    equipment
+                ): equipment is string =>
                     equipment !== null
             );
 
-        return [...new Set(values)].sort((a, b) =>
-            a.localeCompare(b)
+        return [...new Set(values)].sort(
+            (a, b) => a.localeCompare(b)
         );
     }, [exercises]);
 
@@ -182,7 +226,8 @@ function App() {
 
             const matchesEquipment =
                 selectedEquipment === 'All' ||
-                exercise.equipment === selectedEquipment;
+                exercise.equipment ===
+                selectedEquipment;
 
             return (
                 matchesSearch &&
@@ -206,7 +251,9 @@ function App() {
         setSelectedEquipment('All');
     }
 
-    function openExerciseDetails(exerciseId: string) {
+    function openExerciseDetails(
+        exerciseId: string
+    ) {
         setSelectedExerciseId(exerciseId);
     }
 
@@ -215,6 +262,30 @@ function App() {
         setSelectedExercise(null);
         setDetailsError(null);
         setIsDetailsLoading(false);
+    }
+
+    function openCreateExercise() {
+        setIsCreateDialogOpen(true);
+    }
+
+    function closeCreateExercise() {
+        setIsCreateDialogOpen(false);
+    }
+
+    async function handleCreateExercise(
+        request: CreateExerciseRequest
+    ) {
+        const createdExercise =
+            await createExercise(request);
+
+        setExercises((currentExercises) =>
+            [
+                ...currentExercises,
+                createdExercise,
+            ].sort((a, b) =>
+                a.name.localeCompare(b.name)
+            )
+        );
     }
 
     return (
@@ -228,14 +299,25 @@ function App() {
                     <h1>Exercise Library</h1>
 
                     <p className="page-header__description">
-                        Browse the exercises available for your workouts.
+                        Browse the exercises available for
+                        your workouts.
                     </p>
                 </div>
 
                 {!isLoading && !error && (
-                    <div className="exercise-count">
-                        <strong>{exercises.length}</strong>
-                        <span>Exercises</span>
+                    <div className="page-header__actions">
+                        <div className="exercise-count">
+                            <strong>{exercises.length}</strong>
+                            <span>Exercises</span>
+                        </div>
+
+                        <button
+                            type="button"
+                            className="add-exercise-button"
+                            onClick={openCreateExercise}
+                        >
+                            Create Exercise
+                        </button>
                     </div>
                 )}
             </header>
@@ -246,8 +328,10 @@ function App() {
                     role="status"
                 >
                     <h2>Loading exercises...</h2>
+
                     <p>
-                        Retrieving the exercise library from the API.
+                        Retrieving the exercise library
+                        from the API.
                     </p>
                 </div>
             )}
@@ -267,31 +351,65 @@ function App() {
                     <ExerciseFilters
                         searchTerm={searchTerm}
                         selectedType={selectedType}
-                        selectedMuscleGroup={selectedMuscleGroup}
-                        selectedEquipment={selectedEquipment}
+                        selectedMuscleGroup={
+                            selectedMuscleGroup
+                        }
+                        selectedEquipment={
+                            selectedEquipment
+                        }
                         muscleGroups={muscleGroups}
-                        equipmentOptions={equipmentOptions}
-                        resultCount={filteredExercises.length}
+                        equipmentOptions={
+                            equipmentOptions
+                        }
+                        resultCount={
+                            filteredExercises.length
+                        }
                         totalCount={exercises.length}
-                        onSearchTermChange={setSearchTerm}
-                        onTypeChange={setSelectedType}
-                        onMuscleGroupChange={setSelectedMuscleGroup}
-                        onEquipmentChange={setSelectedEquipment}
+                        onSearchTermChange={
+                            setSearchTerm
+                        }
+                        onTypeChange={
+                            setSelectedType
+                        }
+                        onMuscleGroupChange={
+                            setSelectedMuscleGroup
+                        }
+                        onEquipmentChange={
+                            setSelectedEquipment
+                        }
                         onClearFilters={clearFilters}
                     />
 
                     <ExerciseList
                         exercises={filteredExercises}
-                        onViewDetails={openExerciseDetails}
+                        onViewDetails={
+                            openExerciseDetails
+                        }
                     />
                 </>
             )}
+
             {selectedExerciseId && (
                 <ExerciseDetailsDialog
                     exercise={selectedExercise}
                     isLoading={isDetailsLoading}
                     error={detailsError}
                     onClose={closeExerciseDetails}
+                />
+            )}
+
+            {isCreateDialogOpen && (
+                <CreateExerciseDialog
+                    muscleGroups={muscleGroups}
+                    equipmentOptions={
+                        equipmentOptions
+                    }
+                    onSubmit={
+                        handleCreateExercise
+                    }
+                    onClose={
+                        closeCreateExercise
+                    }
                 />
             )}
         </main>
