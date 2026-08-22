@@ -64,7 +64,6 @@ The project is also intended to demonstrate practical software-development conce
 
 The current development phase is focused on the React exercise-management interface:
 
-- Creating exercise detail views
 - Building the custom exercise form
 - Adding custom exercise editing and archiving controls
 - Expanding the responsive mobile interface
@@ -1257,7 +1256,7 @@ Development is being completed incrementally so each architectural layer can be 
 - [x] Create exercise API client
 - [x] Create exercise list
 - [x] Create exercise search
-- [ ] Create exercise details
+- [x] Create exercise details
 - [ ] Create custom exercise form
 - [ ] Create exercise editing
 - [ ] Implement responsive mobile layout

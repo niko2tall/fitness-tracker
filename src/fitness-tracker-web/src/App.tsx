@@ -3,11 +3,17 @@ import './App.css';
 
 import ExerciseFilters from './components/exercises/ExerciseFilters';
 import ExerciseList from './components/exercises/ExerciseList';
-import { getExercises } from './services/api';
+import ExerciseDetailsDialog
+    from './components/exercises/ExerciseDetailsDialog';
+import {
+    getExerciseById,
+    getExercises,
+} from './services/api';
 import type {
     Exercise,
     ExerciseType,
 } from './types/exercise';
+
 
 function App() {
     const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -21,6 +27,25 @@ function App() {
         useState('All');
     const [selectedEquipment, setSelectedEquipment] =
         useState('All');
+    const [
+        selectedExerciseId,
+        setSelectedExerciseId,
+    ] = useState<string | null>(null);
+
+    const [
+        selectedExercise,
+        setSelectedExercise,
+    ] = useState<Exercise | null>(null);
+
+    const [
+        isDetailsLoading,
+        setIsDetailsLoading,
+    ] = useState(false);
+
+    const [
+        detailsError,
+        setDetailsError,
+    ] = useState<string | null>(null);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -62,6 +87,52 @@ function App() {
             controller.abort();
         };
     }, []);
+
+    useEffect(() => {
+        if (!selectedExerciseId) {
+            return;
+        }
+
+        const controller = new AbortController();
+
+        async function loadExerciseDetails() {
+            try {
+                setIsDetailsLoading(true);
+                setDetailsError(null);
+                setSelectedExercise(null);
+
+                const exercise = await getExerciseById(
+                    selectedExerciseId!,
+                    controller.signal
+                );
+
+                setSelectedExercise(exercise);
+            } catch (error) {
+                if (
+                    error instanceof DOMException &&
+                    error.name === 'AbortError'
+                ) {
+                    return;
+                }
+
+                setDetailsError(
+                    error instanceof Error
+                        ? error.message
+                        : 'An unexpected error occurred.'
+                );
+            } finally {
+                if (!controller.signal.aborted) {
+                    setIsDetailsLoading(false);
+                }
+            }
+        }
+
+        loadExerciseDetails();
+
+        return () => {
+            controller.abort();
+        };
+    }, [selectedExerciseId]);
 
     const muscleGroups = useMemo(() => {
         const values = exercises
@@ -135,6 +206,17 @@ function App() {
         setSelectedEquipment('All');
     }
 
+    function openExerciseDetails(exerciseId: string) {
+        setSelectedExerciseId(exerciseId);
+    }
+
+    function closeExerciseDetails() {
+        setSelectedExerciseId(null);
+        setSelectedExercise(null);
+        setDetailsError(null);
+        setIsDetailsLoading(false);
+    }
+
     return (
         <main className="app-shell">
             <header className="page-header">
@@ -198,8 +280,19 @@ function App() {
                         onClearFilters={clearFilters}
                     />
 
-                    <ExerciseList exercises={filteredExercises} />
+                    <ExerciseList
+                        exercises={filteredExercises}
+                        onViewDetails={openExerciseDetails}
+                    />
                 </>
+            )}
+            {selectedExerciseId && (
+                <ExerciseDetailsDialog
+                    exercise={selectedExercise}
+                    isLoading={isDetailsLoading}
+                    error={detailsError}
+                    onClose={closeExerciseDetails}
+                />
             )}
         </main>
     );

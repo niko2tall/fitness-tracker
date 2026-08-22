@@ -2,9 +2,10 @@ import type { Exercise } from '../../types/exercise';
 
 interface ExerciseCardProps {
     exercise: Exercise;
+    onViewDetails: (exerciseId: string) => void;
 }
 
-function ExerciseCard({ exercise }: ExerciseCardProps) {
+function ExerciseCard({ exercise, onViewDetails }: ExerciseCardProps) {
     return (
         <article className="exercise-card">
             <div className="exercise-card__header">
@@ -39,6 +40,13 @@ function ExerciseCard({ exercise }: ExerciseCardProps) {
                     <dd>{exercise.equipment ?? 'Not specified'}</dd>
                 </div>
             </dl>
+            <button
+                type="button"
+                className="exercise-card__details-button"
+                onClick={() => onViewDetails(exercise.id)}
+            >
+                View Details
+            </button>
         </article>
     );
 }

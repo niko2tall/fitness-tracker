@@ -52,3 +52,27 @@ export async function getExercises(
 
     return response.json();
 }
+
+export async function getExerciseById(
+    id: string,
+    signal?: AbortSignal
+): Promise<Exercise> {
+    const response = await fetch(
+        `${API_BASE_URL}/api/exercises/${id}`,
+        {
+            signal,
+        }
+    );
+
+    if (!response.ok) {
+        if (response.status === 404) {
+            throw new Error('Exercise not found.');
+        }
+
+        throw new Error(
+            `Exercise request failed with status ${response.status}.`
+        );
+    }
+
+    return response.json();
+}

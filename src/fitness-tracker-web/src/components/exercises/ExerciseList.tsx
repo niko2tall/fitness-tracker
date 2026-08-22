@@ -3,9 +3,10 @@ import ExerciseCard from './ExerciseCard';
 
 interface ExerciseListProps {
     exercises: Exercise[];
+    onViewDetails: (exerciseId: string) => void;
 }
 
-function ExerciseList({ exercises }: ExerciseListProps) {
+function ExerciseList({ exercises, onViewDetails }: ExerciseListProps) {
     if (exercises.length === 0) {
         return (
             <div className="empty-state">
@@ -26,6 +27,7 @@ function ExerciseList({ exercises }: ExerciseListProps) {
                 <ExerciseCard
                     key={exercise.id}
                     exercise={exercise}
+                    onViewDetails={onViewDetails}
                 />
             ))}
         </section>

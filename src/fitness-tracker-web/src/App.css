@@ -96,6 +96,29 @@
     letter-spacing: 0.04em;
 }
 
+.exercise-dialog {
+    width: calc(100% - 1rem);
+    max-height: calc(100vh - 1rem);
+    border-radius: 0.75rem;
+}
+
+.exercise-dialog__content {
+    padding: 1.25rem;
+}
+
+.exercise-dialog__header h2 {
+    font-size: 1.5rem;
+}
+
+.exercise-details div {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+}
+
+.exercise-details dd {
+    text-align: left;
+}
+
 .exercise-card__details {
     display: grid;
     gap: 0.8rem;
@@ -118,6 +141,146 @@
         margin: 0;
         font-size: 0.875rem;
         text-align: right;
+    }
+
+.exercise-card__details-button {
+    width: 100%;
+    margin-top: 1.25rem;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid rgba(127, 127, 127, 0.35);
+    border-radius: 0.5rem;
+    color: inherit;
+    background: transparent;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+    .exercise-card__details-button:hover {
+        background: rgba(127, 127, 127, 0.1);
+    }
+
+    .exercise-card__details-button:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
+.exercise-dialog {
+    width: min(560px, calc(100% - 2rem));
+    max-height: calc(100vh - 2rem);
+    padding: 0;
+    border: 1px solid rgba(127, 127, 127, 0.35);
+    border-radius: 1rem;
+    color: inherit;
+    background: #f8fafc;
+    overflow: auto;
+}
+
+    .exercise-dialog::backdrop {
+        background: rgba(0, 0, 0, 0.55);
+    }
+
+.exercise-dialog__content {
+    padding: 1.5rem;
+}
+
+.exercise-dialog__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+    .exercise-dialog__header h2 {
+        margin: 0;
+        font-size: 1.75rem;
+    }
+
+.exercise-dialog__eyebrow {
+    margin: 0 0 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.6;
+}
+
+.exercise-dialog__close {
+    flex-shrink: 0;
+    display: grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border: 1px solid rgba(127, 127, 127, 0.35);
+    border-radius: 999px;
+    place-items: center;
+    color: inherit;
+    background: transparent;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+    .exercise-dialog__close:hover {
+        background: rgba(127, 127, 127, 0.1);
+    }
+
+    .exercise-dialog__close:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
+.exercise-dialog__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.exercise-badge {
+    padding: 0.35rem 0.65rem;
+    border: 1px solid rgba(127, 127, 127, 0.35);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.exercise-details {
+    display: grid;
+    gap: 0;
+    margin: 1.5rem 0 0;
+}
+
+    .exercise-details div {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(127, 127, 127, 0.2);
+    }
+
+        .exercise-details div:first-child {
+            border-top: 1px solid rgba(127, 127, 127, 0.2);
+        }
+
+    .exercise-details dt {
+        font-size: 0.875rem;
+        font-weight: 700;
+        opacity: 0.65;
+    }
+
+    .exercise-details dd {
+        margin: 0;
+        text-align: right;
+    }
+
+.exercise-dialog__status {
+    padding: 2rem 0;
+    text-align: center;
+}
+
+    .exercise-dialog__status p {
+        margin: 0;
+        opacity: 0.7;
     }
 
 .status-panel,
@@ -221,6 +384,12 @@
 @media (max-width: 900px) {
     .exercise-filters__grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .exercise-dialog {
+        background: #111827;
     }
 }
 
