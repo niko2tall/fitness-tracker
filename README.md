@@ -62,13 +62,13 @@ The project is also intended to demonstrate practical software-development conce
 
 ## Currently In Development
 
-The current development phase is focused on exercise management:
+The current development phase is focused on the React exercise-management interface:
 
-- Creating exercise DTOs
-- Creating the exercise service layer
-- Building exercise CRUD API endpoints
-- Testing exercise operations through Scalar
-- Connecting exercise data to the React frontend
+- Adding exercise search and filtering
+- Creating exercise detail views
+- Building the custom exercise form
+- Adding custom exercise editing and archiving controls
+- Expanding the responsive mobile interface
 
 ## Completed
 
@@ -1255,13 +1255,13 @@ Development is being completed incrementally so each architectural layer can be 
 
 ## Phase 4 — Exercise Frontend
 
-* [ ] Create exercise API client
-* [ ] Create exercise list
-* [ ] Create exercise search
-* [ ] Create exercise details
-* [ ] Create custom exercise form
-* [ ] Create exercise editing
-* [ ] Implement responsive mobile layout
+- [x] Create exercise API client
+- [x] Create exercise list
+- [ ] Create exercise search
+- [ ] Create exercise details
+- [ ] Create custom exercise form
+- [ ] Create exercise editing
+- [ ] Implement responsive mobile layout
 
 ---
 
