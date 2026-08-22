@@ -11,7 +11,7 @@ function ExerciseList({ exercises }: ExerciseListProps) {
             <div className="empty-state">
                 <h2>No exercises found</h2>
                 <p>
-                    Exercises will appear here once they are available.
+                    Try adjusting your search or filters.
                 </p>
             </div>
         );

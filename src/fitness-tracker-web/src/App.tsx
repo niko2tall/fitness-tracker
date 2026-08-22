@@ -1,14 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import './App.css';
 
+import ExerciseFilters from './components/exercises/ExerciseFilters';
 import ExerciseList from './components/exercises/ExerciseList';
 import { getExercises } from './services/api';
-import type { Exercise } from './types/exercise';
+import type {
+    Exercise,
+    ExerciseType,
+} from './types/exercise';
 
 function App() {
     const [exercises, setExercises] = useState<Exercise[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedType, setSelectedType] =
+        useState<ExerciseType | 'All'>('All');
+    const [selectedMuscleGroup, setSelectedMuscleGroup] =
+        useState('All');
+    const [selectedEquipment, setSelectedEquipment] =
+        useState('All');
 
     useEffect(() => {
         const controller = new AbortController();
@@ -50,6 +62,78 @@ function App() {
             controller.abort();
         };
     }, []);
+
+    const muscleGroups = useMemo(() => {
+        const values = exercises
+            .map((exercise) => exercise.primaryMuscleGroup)
+            .filter(
+                (muscleGroup): muscleGroup is string =>
+                    muscleGroup !== null
+            );
+
+        return [...new Set(values)].sort((a, b) =>
+            a.localeCompare(b)
+        );
+    }, [exercises]);
+
+    const equipmentOptions = useMemo(() => {
+        const values = exercises
+            .map((exercise) => exercise.equipment)
+            .filter(
+                (equipment): equipment is string =>
+                    equipment !== null
+            );
+
+        return [...new Set(values)].sort((a, b) =>
+            a.localeCompare(b)
+        );
+    }, [exercises]);
+
+    const filteredExercises = useMemo(() => {
+        const normalizedSearchTerm =
+            searchTerm.trim().toLowerCase();
+
+        return exercises.filter((exercise) => {
+            const matchesSearch =
+                normalizedSearchTerm.length === 0 ||
+                exercise.name
+                    .toLowerCase()
+                    .includes(normalizedSearchTerm);
+
+            const matchesType =
+                selectedType === 'All' ||
+                exercise.exerciseType === selectedType;
+
+            const matchesMuscleGroup =
+                selectedMuscleGroup === 'All' ||
+                exercise.primaryMuscleGroup ===
+                selectedMuscleGroup;
+
+            const matchesEquipment =
+                selectedEquipment === 'All' ||
+                exercise.equipment === selectedEquipment;
+
+            return (
+                matchesSearch &&
+                matchesType &&
+                matchesMuscleGroup &&
+                matchesEquipment
+            );
+        });
+    }, [
+        exercises,
+        searchTerm,
+        selectedType,
+        selectedMuscleGroup,
+        selectedEquipment,
+    ]);
+
+    function clearFilters() {
+        setSearchTerm('');
+        setSelectedType('All');
+        setSelectedMuscleGroup('All');
+        setSelectedEquipment('All');
+    }
 
     return (
         <main className="app-shell">
@@ -97,7 +181,25 @@ function App() {
             )}
 
             {!isLoading && !error && (
-                <ExerciseList exercises={exercises} />
+                <>
+                    <ExerciseFilters
+                        searchTerm={searchTerm}
+                        selectedType={selectedType}
+                        selectedMuscleGroup={selectedMuscleGroup}
+                        selectedEquipment={selectedEquipment}
+                        muscleGroups={muscleGroups}
+                        equipmentOptions={equipmentOptions}
+                        resultCount={filteredExercises.length}
+                        totalCount={exercises.length}
+                        onSearchTermChange={setSearchTerm}
+                        onTypeChange={setSelectedType}
+                        onMuscleGroupChange={setSelectedMuscleGroup}
+                        onEquipmentChange={setSelectedEquipment}
+                        onClearFilters={clearFilters}
+                    />
+
+                    <ExerciseList exercises={filteredExercises} />
+                </>
             )}
         </main>
     );

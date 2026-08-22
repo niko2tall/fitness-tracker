@@ -143,6 +143,87 @@
     border-style: dashed;
 }
 
+.exercise-filters {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border: 1px solid rgba(127, 127, 127, 0.25);
+    border-radius: 0.75rem;
+    background: rgba(127, 127, 127, 0.05);
+}
+
+.exercise-filters__grid {
+    display: grid;
+    grid-template-columns: minmax(220px, 2fr) repeat(3, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+    .filter-field label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        opacity: 0.7;
+    }
+
+    .filter-field input,
+    .filter-field select {
+        width: 100%;
+        min-height: 42px;
+        padding: 0.65rem 0.75rem;
+        border: 1px solid rgba(127, 127, 127, 0.35);
+        border-radius: 0.5rem;
+        color: inherit;
+        background: transparent;
+    }
+
+        .filter-field input:focus,
+        .filter-field select:focus {
+            outline: 2px solid currentColor;
+            outline-offset: 2px;
+        }
+
+.exercise-filters__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.exercise-results-count {
+    margin: 0;
+    font-size: 0.875rem;
+    opacity: 0.7;
+}
+
+.clear-filters-button {
+    padding: 0.55rem 0.85rem;
+    border: 1px solid rgba(127, 127, 127, 0.4);
+    border-radius: 0.5rem;
+    color: inherit;
+    background: transparent;
+    cursor: pointer;
+}
+
+    .clear-filters-button:hover {
+        background: rgba(127, 127, 127, 0.1);
+    }
+
+    .clear-filters-button:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
+@media (max-width: 900px) {
+    .exercise-filters__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (max-width: 640px) {
     .app-shell {
         width: min(100% - 1.25rem, 1200px);
@@ -165,5 +246,17 @@
 
     .exercise-card {
         padding: 1rem;
+    }
+    .exercise-filters__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .exercise-filters__footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .clear-filters-button {
+        width: 100%;
     }
 }
