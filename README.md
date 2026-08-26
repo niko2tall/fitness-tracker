@@ -75,10 +75,9 @@ The project is also intended to demonstrate practical software-development conce
 
 The current development phase is focused on **workout logging and workout data management**:
 
-* Creating workout API endpoints
-* Adding exercises to workout sessions
+* Adding exercises to active workout sessions
 * Adding sets and performance data to workout exercises
-* Supporting strength and cardio workout data
+* Supporting strength and cardio set validation
 * Implementing workout completion
 * Building the React workout logging workflow
 
@@ -145,6 +144,7 @@ The following foundation, database, Exercise Management, frontend, and applicati
 * Workouts route created for the next development phase
 * Not-found route implemented
 * Git-based milestone workflow established
+* * Initial Workout REST API implemented with server-controlled workout ownership
 
 ---
 
@@ -1200,6 +1200,13 @@ Validation and business-rule errors use ASP.NET Core problem responses and are s
 
 ---
 
+## Workout API
+
+The initial Workout API currently supports:
+
+```http
+GET /api/workouts
+
 ## OpenAPI
 
 The OpenAPI specification is available during development at:
@@ -1698,7 +1705,7 @@ Development is being completed incrementally so each architectural layer can be 
 * [x] Create workout DTOs
 * [x] Add development current-user abstraction
 * [x] Create workout service
-* [ ] Create workout API
+* [x] Create workout API
 * [ ] Create workout creation workflow
 * [ ] Add exercises to workouts
 * [ ] Add sets to exercises

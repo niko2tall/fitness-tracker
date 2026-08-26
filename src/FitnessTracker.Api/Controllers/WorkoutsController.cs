@@ -1,0 +1,104 @@
+using FitnessTracker.Api.DTOs.Workouts;
+using FitnessTracker.Api.Services.Workouts;
+using Microsoft.AspNetCore.Mvc;
+
+namespace FitnessTracker.Api.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class WorkoutsController : ControllerBase
+{
+    private readonly IWorkoutService _workoutService;
+
+    public WorkoutsController(
+        IWorkoutService workoutService)
+    {
+        _workoutService = workoutService;
+    }
+
+    [HttpGet]
+    [ProducesResponseType(
+        typeof(IReadOnlyList<WorkoutSummaryDto>),
+        StatusCodes.Status200OK)]
+    public async Task<
+        ActionResult<IReadOnlyList<WorkoutSummaryDto>>>
+        GetAll(
+            CancellationToken cancellationToken = default)
+    {
+        var workouts =
+            await _workoutService.GetAllAsync(
+                cancellationToken);
+
+        return Ok(workouts);
+    }
+
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType(
+        typeof(WorkoutResponseDto),
+        StatusCodes.Status200OK)]
+    [ProducesResponseType(
+        StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<WorkoutResponseDto>>
+        GetById(
+            Guid id,
+            CancellationToken cancellationToken = default)
+    {
+        var workout =
+            await _workoutService.GetByIdAsync(
+                id,
+                cancellationToken);
+
+        if (workout is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(workout);
+    }
+
+    [HttpPost]
+    [ProducesResponseType(
+        typeof(WorkoutResponseDto),
+        StatusCodes.Status201Created)]
+    [ProducesResponseType(
+        typeof(ProblemDetails),
+        StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(
+        typeof(ProblemDetails),
+        StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<WorkoutResponseDto>>
+        Create(
+            CreateWorkoutDto dto,
+            CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var workout =
+                await _workoutService.CreateAsync(
+                    dto,
+                    cancellationToken);
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = workout.Id },
+                workout);
+        }
+        catch (ArgumentException exception)
+        {
+            return Problem(
+                statusCode:
+                    StatusCodes.Status400BadRequest,
+                title: "Invalid workout",
+                detail: exception.Message);
+        }
+        catch (InvalidOperationException exception)
+        {
+            return Problem(
+                statusCode:
+                    StatusCodes
+                        .Status500InternalServerError,
+                title: "Workout creation failed",
+                detail: exception.Message);
+        }
+    }
+}
