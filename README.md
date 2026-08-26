@@ -75,7 +75,6 @@ The project is also intended to demonstrate practical software-development conce
 
 The current development phase is focused on **workout logging and workout data management**:
 
-* Creating workout API contracts
 * Building the workout service layer
 * Creating workout API endpoints
 * Adding exercises and sets to workout sessions
@@ -1694,7 +1693,7 @@ Development is being completed incrementally so each architectural layer can be 
 
 ## Phase 6 — Workout Logging
 
-* [ ] Create workout DTOs
+* [x] Create workout DTOs
 * [ ] Create workout service
 * [ ] Create workout API
 * [ ] Create workout creation workflow
