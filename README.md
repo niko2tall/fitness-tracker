@@ -75,10 +75,11 @@ The project is also intended to demonstrate practical software-development conce
 
 The current development phase is focused on **workout logging and workout data management**:
 
-* Building the workout service layer
 * Creating workout API endpoints
-* Adding exercises and sets to workout sessions
+* Adding exercises to workout sessions
+* Adding sets and performance data to workout exercises
 * Supporting strength and cardio workout data
+* Implementing workout completion
 * Building the React workout logging workflow
 
 ---
@@ -129,6 +130,7 @@ The following foundation, database, Exercise Management, frontend, and applicati
 * Exercise API tested through Scalar
 * React exercise library connected to the ASP.NET Core API
 * Client-side exercise search and filtering implemented
+* Server-controlled development user abstraction implemented for pre-authentication workout ownership
 * Responsive exercise detail interface implemented
 * Custom exercise creation implemented in React
 * Custom exercise editing implemented in React
@@ -1694,7 +1696,8 @@ Development is being completed incrementally so each architectural layer can be 
 ## Phase 6 — Workout Logging
 
 * [x] Create workout DTOs
-* [ ] Create workout service
+* [x] Add development current-user abstraction
+* [x] Create workout service
 * [ ] Create workout API
 * [ ] Create workout creation workflow
 * [ ] Add exercises to workouts

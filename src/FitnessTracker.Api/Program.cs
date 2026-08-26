@@ -1,56 +1,83 @@
+using System.Text.Json.Serialization;
 using FitnessTracker.Api.Data;
+using FitnessTracker.Api.Services.Exercises;
+using FitnessTracker.Api.Services.Users;
+using FitnessTracker.Api.Services.Workouts;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
-using System.Text.Json.Serialization;
-using FitnessTracker.Api.Services.Exercises;
 
 var builder = WebApplication.CreateBuilder(args);
 
-const string FrontendCorsPolicy = "FrontendCorsPolicy";
+const string FrontendCorsPolicy =
+    "FrontendCorsPolicy";
 
-// Add controller support.
 builder.Services
     .AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.Converters.Add(
-            new JsonStringEnumConverter(allowIntegerValues: false));
+        options.JsonSerializerOptions
+            .Converters
+            .Add(
+                new JsonStringEnumConverter(
+                    allowIntegerValues: false));
     });
 
-// Add OpenAPI document generation.
 builder.Services.AddOpenApi();
 
-// Get the SQLite connection string.
 var connectionString = builder.Configuration
-    .GetConnectionString("FitnessTrackerDatabase")
+    .GetConnectionString(
+        "FitnessTrackerDatabase")
     ?? throw new InvalidOperationException(
         "Connection string 'FitnessTrackerDatabase' was not found.");
 
-// Register the EF Core database context.
-builder.Services.AddDbContext<FitnessTrackerDbContext>(options =>
-{
-    options.UseSqlite(connectionString);
-});
+builder.Services.AddDbContext<
+    FitnessTrackerDbContext>(options =>
+    {
+        options.UseSqlite(connectionString);
+    });
 
-builder.Services.AddScoped<IExerciseService, ExerciseService>();
+builder.Services.AddScoped<
+    IExerciseService,
+    ExerciseService>();
 
-// Allow the React development server to call this API.
+builder.Services.AddScoped<
+    ICurrentUserService,
+    DevelopmentCurrentUserService>();
+
+builder.Services.AddScoped<
+    IWorkoutService,
+    WorkoutService>();
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(FrontendCorsPolicy, policy =>
-    {
-        policy
-            .WithOrigins("http://localhost:5173")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
+    options.AddPolicy(
+        FrontendCorsPolicy,
+        policy =>
+        {
+            policy
+                .WithOrigins(
+                    "http://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
 });
 
 var app = builder.Build();
 
-// Development-only API documentation.
 if (app.Environment.IsDevelopment())
 {
+    await using var scope =
+        app.Services.CreateAsyncScope();
+
+    var dbContext =
+        scope.ServiceProvider
+            .GetRequiredService<
+                FitnessTrackerDbContext>();
+
+    await DevelopmentDataInitializer
+        .EnsureDevelopmentUserAsync(
+            dbContext);
+
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
