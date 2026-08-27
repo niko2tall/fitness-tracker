@@ -75,9 +75,9 @@ The project is also intended to demonstrate practical software-development conce
 
 The current development phase is focused on **workout logging and workout data management**:
 
-* Adding exercises to active workout sessions
 * Adding sets and performance data to workout exercises
-* Supporting strength and cardio set validation
+* Validating set data against exercise tracking methods
+* Supporting strength and cardio performance logging
 * Implementing workout completion
 * Building the React workout logging workflow
 
@@ -144,7 +144,7 @@ The following foundation, database, Exercise Management, frontend, and applicati
 * Workouts route created for the next development phase
 * Not-found route implemented
 * Git-based milestone workflow established
-* * Initial Workout REST API implemented with server-controlled workout ownership
+* Initial Workout REST API implemented with server-controlled workout ownership
 
 ---
 
@@ -1181,6 +1181,18 @@ IsArchived = true
 
 Built-in exercises cannot be archived.
 
+### Add Exercise to Workout
+
+```http
+POST /api/workouts/{workoutId}/exercises
+```
+
+Example:
+{
+  "exerciseId": "10000000-0000-0000-0000-000000000001",
+  "notes": "Pause each rep on chest"
+}
+
 ---
 
 ## Exercise API Response Codes
@@ -1707,7 +1719,7 @@ Development is being completed incrementally so each architectural layer can be 
 * [x] Create workout service
 * [x] Create workout API
 * [ ] Create workout creation workflow
-* [ ] Add exercises to workouts
+* [x] Add exercises to workouts
 * [ ] Add sets to exercises
 * [ ] Record weight and repetitions
 * [ ] Record duration

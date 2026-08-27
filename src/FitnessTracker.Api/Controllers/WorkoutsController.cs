@@ -101,4 +101,68 @@ public class WorkoutsController : ControllerBase
                 detail: exception.Message);
         }
     }
+
+    [HttpPost("{workoutId:guid}/exercises")]
+    [ProducesResponseType(
+        typeof(WorkoutExerciseResponseDto),
+        StatusCodes.Status201Created)]
+    [ProducesResponseType(
+        typeof(ProblemDetails),
+        StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(
+        typeof(ProblemDetails),
+        StatusCodes.Status404NotFound)]
+    [ProducesResponseType(
+        typeof(ProblemDetails),
+        StatusCodes.Status409Conflict)]
+    public async Task<
+        ActionResult<WorkoutExerciseResponseDto>>
+        AddExercise(
+            Guid workoutId,
+            AddWorkoutExerciseDto dto,
+            CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var workoutExercise =
+                await _workoutService
+                    .AddExerciseAsync(
+                        workoutId,
+                        dto,
+                        cancellationToken);
+
+            if (workoutExercise is null)
+            {
+                return NotFound();
+            }
+
+            return StatusCode(
+                StatusCodes.Status201Created,
+                workoutExercise);
+        }
+        catch (ArgumentException exception)
+        {
+            return Problem(
+                statusCode:
+                    StatusCodes.Status400BadRequest,
+                title: "Invalid workout exercise",
+                detail: exception.Message);
+        }
+        catch (KeyNotFoundException exception)
+        {
+            return Problem(
+                statusCode:
+                    StatusCodes.Status404NotFound,
+                title: "Exercise not found",
+                detail: exception.Message);
+        }
+        catch (InvalidOperationException exception)
+        {
+            return Problem(
+                statusCode:
+                    StatusCodes.Status409Conflict,
+                title: "Workout exercise conflict",
+                detail: exception.Message);
+        }
+    }
 }
