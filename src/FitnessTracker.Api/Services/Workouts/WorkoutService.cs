@@ -244,6 +244,97 @@ public class WorkoutService : IWorkoutService
         };
     }
 
+    public async Task<WorkoutSetResponseDto?>
+        AddSetAsync(
+            Guid workoutId,
+            Guid workoutExerciseId,
+            CreateWorkoutSetDto dto,
+            CancellationToken cancellationToken = default)
+    {
+        var currentUserId =
+            _currentUserService.CurrentUserId;
+
+        var workoutExercise =
+            await _dbContext.WorkoutExercises
+                .Include(workoutExercise =>
+                    workoutExercise.Workout)
+                .Include(workoutExercise =>
+                    workoutExercise.Exercise)
+                .SingleOrDefaultAsync(
+                    workoutExercise =>
+                        workoutExercise.Id ==
+                            workoutExerciseId &&
+                        workoutExercise.WorkoutId ==
+                            workoutId &&
+                        workoutExercise.Workout.UserId ==
+                            currentUserId,
+                    cancellationToken);
+
+        if (workoutExercise is null)
+        {
+            return null;
+        }
+
+        if (workoutExercise.Workout.EndedAtUtc.HasValue)
+        {
+            throw new InvalidOperationException(
+                "Sets cannot be added to a completed workout.");
+        }
+
+        ValidateWorkoutSetData(
+            workoutExercise.Exercise.ExerciseType,
+            workoutExercise.Exercise.TrackingType,
+            dto);
+
+        var highestSetNumber =
+            await _dbContext.WorkoutSets
+                .Where(workoutSet =>
+                    workoutSet.WorkoutExerciseId ==
+                        workoutExercise.Id)
+                .Select(workoutSet =>
+                    (int?)workoutSet.SetNumber)
+                .MaxAsync(cancellationToken)
+            ?? 0;
+
+        var workoutSet =
+            new WorkoutSet
+            {
+                Id = Guid.NewGuid(),
+                WorkoutExerciseId =
+                    workoutExercise.Id,
+                SetNumber =
+                    highestSetNumber + 1,
+                SetType =
+                    dto.SetType,
+                Reps =
+                    dto.Reps,
+                WeightKg =
+                    dto.WeightKg,
+                DurationSeconds =
+                    dto.DurationSeconds,
+                DistanceMeters =
+                    dto.DistanceMeters,
+                Rpe =
+                    dto.Rpe,
+                IsCompleted =
+                    true,
+                Notes =
+                    NormalizeOptionalText(dto.Notes)
+            };
+
+        _dbContext.WorkoutSets.Add(
+            workoutSet);
+
+        workoutExercise.Workout.UpdatedAtUtc =
+            DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
+
+        return MapToWorkoutSetResponseDto(
+            workoutSet);
+    }
+
     private static void ValidateCreateWorkout(
         CreateWorkoutDto dto)
     {
@@ -291,12 +382,202 @@ public class WorkoutService : IWorkoutService
         }
     }
 
+    private static void ValidateWorkoutSetData(
+        ExerciseType exerciseType,
+        ExerciseTrackingType trackingType,
+        CreateWorkoutSetDto dto)
+    {
+        if (dto.Reps is <= 0)
+        {
+            throw new ArgumentException(
+                "Repetitions must be greater than zero.",
+                nameof(dto.Reps));
+        }
+
+        if (dto.WeightKg is < 0)
+        {
+            throw new ArgumentException(
+                "Weight cannot be negative.",
+                nameof(dto.WeightKg));
+        }
+
+        if (dto.DurationSeconds is <= 0)
+        {
+            throw new ArgumentException(
+                "Duration must be greater than zero.",
+                nameof(dto.DurationSeconds));
+        }
+
+        if (dto.DistanceMeters is < 0)
+        {
+            throw new ArgumentException(
+                "Distance cannot be negative.",
+                nameof(dto.DistanceMeters));
+        }
+
+        if (dto.Rpe is < 1 or > 10)
+        {
+            throw new ArgumentException(
+                "RPE must be between 1 and 10.",
+                nameof(dto.Rpe));
+        }
+
+        if (
+            exerciseType == ExerciseType.Cardio &&
+            dto.SetType != SetType.Working)
+        {
+            throw new ArgumentException(
+                "Cardio performance entries must use the Working set type.",
+                nameof(dto.SetType));
+        }
+
+        switch (trackingType)
+        {
+            case ExerciseTrackingType.WeightAndReps:
+                ValidateWeightAndRepsSet(dto);
+                break;
+
+            case ExerciseTrackingType.RepsOnly:
+                ValidateRepsOnlySet(dto);
+                break;
+
+            case ExerciseTrackingType.Duration:
+                ValidateDurationSet(dto);
+                break;
+
+            case ExerciseTrackingType.DistanceAndDuration:
+                ValidateDistanceAndDurationSet(dto);
+                break;
+
+            default:
+                throw new ArgumentException(
+                    $"Unsupported exercise tracking type '{trackingType}'.");
+        }
+    }
+
+    private static void ValidateWeightAndRepsSet(
+        CreateWorkoutSetDto dto)
+    {
+        if (!dto.Reps.HasValue)
+        {
+            throw new ArgumentException(
+                "Weight-and-reps exercises require repetitions.",
+                nameof(dto.Reps));
+        }
+
+        if (!dto.WeightKg.HasValue)
+        {
+            throw new ArgumentException(
+                "Weight-and-reps exercises require weight.",
+                nameof(dto.WeightKg));
+        }
+
+        if (
+            dto.DurationSeconds.HasValue ||
+            dto.DistanceMeters.HasValue)
+        {
+            throw new ArgumentException(
+                "Weight-and-reps exercises cannot record duration or distance.");
+        }
+    }
+
+    private static void ValidateRepsOnlySet(
+        CreateWorkoutSetDto dto)
+    {
+        if (!dto.Reps.HasValue)
+        {
+            throw new ArgumentException(
+                "Reps-only exercises require repetitions.",
+                nameof(dto.Reps));
+        }
+
+        if (
+            dto.WeightKg.HasValue ||
+            dto.DurationSeconds.HasValue ||
+            dto.DistanceMeters.HasValue)
+        {
+            throw new ArgumentException(
+                "Reps-only exercises cannot record weight, duration, or distance.");
+        }
+    }
+
+    private static void ValidateDurationSet(
+        CreateWorkoutSetDto dto)
+    {
+        if (!dto.DurationSeconds.HasValue)
+        {
+            throw new ArgumentException(
+                "Duration-based exercises require duration.",
+                nameof(dto.DurationSeconds));
+        }
+
+        if (
+            dto.Reps.HasValue ||
+            dto.WeightKg.HasValue ||
+            dto.DistanceMeters.HasValue)
+        {
+            throw new ArgumentException(
+                "Duration-based exercises cannot record repetitions, weight, or distance.");
+        }
+    }
+
+    private static void
+        ValidateDistanceAndDurationSet(
+            CreateWorkoutSetDto dto)
+    {
+        if (
+            !dto.DistanceMeters.HasValue ||
+            dto.DistanceMeters.Value <= 0)
+        {
+            throw new ArgumentException(
+                "Distance-and-duration exercises require a distance greater than zero.",
+                nameof(dto.DistanceMeters));
+        }
+
+        if (!dto.DurationSeconds.HasValue)
+        {
+            throw new ArgumentException(
+                "Distance-and-duration exercises require duration.",
+                nameof(dto.DurationSeconds));
+        }
+
+        if (
+            dto.Reps.HasValue ||
+            dto.WeightKg.HasValue)
+        {
+            throw new ArgumentException(
+                "Distance-and-duration exercises cannot record repetitions or weight.");
+        }
+    }
+
     private static string? NormalizeOptionalText(
         string? value)
     {
         return string.IsNullOrWhiteSpace(value)
             ? null
             : value.Trim();
+    }
+
+    private static WorkoutSetResponseDto
+        MapToWorkoutSetResponseDto(
+            WorkoutSet workoutSet)
+    {
+        return new WorkoutSetResponseDto
+        {
+            Id = workoutSet.Id,
+            SetNumber = workoutSet.SetNumber,
+            SetType = workoutSet.SetType,
+            Reps = workoutSet.Reps,
+            WeightKg = workoutSet.WeightKg,
+            DurationSeconds =
+                workoutSet.DurationSeconds,
+            DistanceMeters =
+                workoutSet.DistanceMeters,
+            Rpe = workoutSet.Rpe,
+            IsCompleted =
+                workoutSet.IsCompleted,
+            Notes = workoutSet.Notes
+        };
     }
 
     private static WorkoutResponseDto
@@ -320,7 +601,8 @@ public class WorkoutService : IWorkoutService
                 .Select(workoutExercise =>
                     new WorkoutExerciseResponseDto
                     {
-                        Id = workoutExercise.Id,
+                        Id =
+                            workoutExercise.Id,
 
                         ExerciseId =
                             workoutExercise.ExerciseId,

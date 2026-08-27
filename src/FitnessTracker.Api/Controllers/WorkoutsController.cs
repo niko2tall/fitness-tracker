@@ -165,4 +165,60 @@ public class WorkoutsController : ControllerBase
                 detail: exception.Message);
         }
     }
+
+    [HttpPost(
+        "{workoutId:guid}/exercises/{workoutExerciseId:guid}/sets")]
+    [ProducesResponseType(
+        typeof(WorkoutSetResponseDto),
+        StatusCodes.Status201Created)]
+    [ProducesResponseType(
+        typeof(ProblemDetails),
+        StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(
+        StatusCodes.Status404NotFound)]
+    [ProducesResponseType(
+        typeof(ProblemDetails),
+        StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<WorkoutSetResponseDto>>
+        AddSet(
+            Guid workoutId,
+            Guid workoutExerciseId,
+            CreateWorkoutSetDto dto,
+            CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var workoutSet =
+                await _workoutService.AddSetAsync(
+                    workoutId,
+                    workoutExerciseId,
+                    dto,
+                    cancellationToken);
+
+            if (workoutSet is null)
+            {
+                return NotFound();
+            }
+
+            return StatusCode(
+                StatusCodes.Status201Created,
+                workoutSet);
+        }
+        catch (ArgumentException exception)
+        {
+            return Problem(
+                statusCode:
+                    StatusCodes.Status400BadRequest,
+                title: "Invalid workout set",
+                detail: exception.Message);
+        }
+        catch (InvalidOperationException exception)
+        {
+            return Problem(
+                statusCode:
+                    StatusCodes.Status409Conflict,
+                title: "Workout set conflict",
+                detail: exception.Message);
+        }
+    }
 }

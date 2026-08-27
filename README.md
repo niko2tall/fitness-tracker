@@ -73,13 +73,13 @@ The project is also intended to demonstrate practical software-development conce
 
 ## Currently In Development
 
-The current development phase is focused on **workout logging and workout data management**:
+The current development phase is focused on **completing the workout logging backend**:
 
-* Adding sets and performance data to workout exercises
-* Validating set data against exercise tracking methods
-* Supporting strength and cardio performance logging
 * Implementing workout completion
-* Building the React workout logging workflow
+* Finalizing active-workout lifecycle rules
+* Completing workout notes and update behavior
+* Verifying full strength and cardio workout persistence
+* Preparing the Workout API for React integration
 
 ---
 
@@ -190,6 +190,7 @@ Current functionality includes:
 * Exercise-type and tracking-method validation
 * Responsive desktop and mobile layouts
 * Protection of built-in exercises from user modification
+* Active workouts support ordered exercise assignment with type, ownership, archive, and duplicate validation
 
 Built-in exercises are seeded through Entity Framework Core migrations, while user-created exercises are stored as custom records.
 
@@ -1720,11 +1721,11 @@ Development is being completed incrementally so each architectural layer can be 
 * [x] Create workout API
 * [ ] Create workout creation workflow
 * [x] Add exercises to workouts
-* [ ] Add sets to exercises
-* [ ] Record weight and repetitions
-* [ ] Record duration
-* [ ] Record distance
-* [ ] Record RPE
+* [x] Add sets to exercises
+* [x] Record weight and repetitions
+* [x] Record duration
+* [x] Record distance
+* [x] Record RPE
 * [ ] Add workout notes
 * [ ] Complete workouts
 * [ ] Build React workout logging interface
