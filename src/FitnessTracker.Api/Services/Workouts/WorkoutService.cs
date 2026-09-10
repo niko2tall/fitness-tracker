@@ -335,6 +335,65 @@ public class WorkoutService : IWorkoutService
             workoutSet);
     }
 
+    public async Task<WorkoutResponseDto?>
+        CompleteAsync(
+            Guid workoutId,
+            CancellationToken cancellationToken = default)
+    {
+        var currentUserId =
+            _currentUserService.CurrentUserId;
+
+        var workout = await _dbContext.Workouts
+            .AsSplitQuery()
+            .Include(workout =>
+                workout.WorkoutExercises)
+                .ThenInclude(workoutExercise =>
+                    workoutExercise.Exercise)
+            .Include(workout =>
+                workout.WorkoutExercises)
+                .ThenInclude(workoutExercise =>
+                    workoutExercise.WorkoutSets)
+            .SingleOrDefaultAsync(
+                workout =>
+                    workout.Id == workoutId &&
+                    workout.UserId == currentUserId,
+                cancellationToken);
+
+        if (workout is null)
+        {
+            return null;
+        }
+
+        if (workout.EndedAtUtc.HasValue)
+        {
+            throw new InvalidOperationException(
+                "The workout has already been completed.");
+        }
+
+        var hasCompletedSet =
+            workout.WorkoutExercises
+                .SelectMany(workoutExercise =>
+                    workoutExercise.WorkoutSets)
+                .Any(workoutSet =>
+                    workoutSet.IsCompleted);
+
+        if (!hasCompletedSet)
+        {
+            throw new InvalidOperationException(
+                "A workout must contain at least one completed set before it can be completed.");
+        }
+
+        var now = DateTime.UtcNow;
+
+        workout.EndedAtUtc = now;
+        workout.UpdatedAtUtc = now;
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
+
+        return MapToResponseDto(workout);
+    }
+
     private static void ValidateCreateWorkout(
         CreateWorkoutDto dto)
     {

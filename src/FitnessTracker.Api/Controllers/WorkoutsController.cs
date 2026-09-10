@@ -221,4 +221,42 @@ public class WorkoutsController : ControllerBase
                 detail: exception.Message);
         }
     }
+
+    [HttpPost("{workoutId:guid}/complete")]
+    [ProducesResponseType(
+        typeof(WorkoutResponseDto),
+        StatusCodes.Status200OK)]
+    [ProducesResponseType(
+        StatusCodes.Status404NotFound)]
+    [ProducesResponseType(
+        typeof(ProblemDetails),
+        StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<WorkoutResponseDto>>
+        Complete(
+            Guid workoutId,
+            CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var workout =
+                await _workoutService.CompleteAsync(
+                    workoutId,
+                    cancellationToken);
+
+            if (workout is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(workout);
+        }
+        catch (InvalidOperationException exception)
+        {
+            return Problem(
+                statusCode:
+                    StatusCodes.Status409Conflict,
+                title: "Workout completion conflict",
+                detail: exception.Message);
+        }
+    }
 }

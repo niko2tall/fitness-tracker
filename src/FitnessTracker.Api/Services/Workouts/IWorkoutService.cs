@@ -25,4 +25,8 @@ public interface IWorkoutService
         Guid workoutExerciseId,
         CreateWorkoutSetDto dto,
         CancellationToken cancellationToken = default);
+
+    Task<WorkoutResponseDto?> CompleteAsync(
+        Guid workoutId,
+        CancellationToken cancellationToken = default);
 }
