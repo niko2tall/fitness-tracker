@@ -102,6 +102,57 @@ public class WorkoutsController : ControllerBase
         }
     }
 
+    [HttpPut("{workoutId:guid}")]
+    [ProducesResponseType(
+        typeof(WorkoutResponseDto),
+        StatusCodes.Status200OK)]
+    [ProducesResponseType(
+        typeof(ProblemDetails),
+        StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(
+        StatusCodes.Status404NotFound)]
+    [ProducesResponseType(
+        typeof(ProblemDetails),
+        StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<WorkoutResponseDto>>
+        Update(
+            Guid workoutId,
+            UpdateWorkoutDto dto,
+            CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var workout =
+                await _workoutService.UpdateAsync(
+                    workoutId,
+                    dto,
+                    cancellationToken);
+
+            if (workout is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(workout);
+        }
+        catch (ArgumentException exception)
+        {
+            return Problem(
+                statusCode:
+                    StatusCodes.Status400BadRequest,
+                title: "Invalid workout",
+                detail: exception.Message);
+        }
+        catch (InvalidOperationException exception)
+        {
+            return Problem(
+                statusCode:
+                    StatusCodes.Status409Conflict,
+                title: "Workout update conflict",
+                detail: exception.Message);
+        }
+    }
+
     [HttpPost("{workoutId:guid}/exercises")]
     [ProducesResponseType(
         typeof(WorkoutExerciseResponseDto),
@@ -166,6 +217,47 @@ public class WorkoutsController : ControllerBase
         }
     }
 
+    [HttpDelete(
+        "{workoutId:guid}/exercises/{workoutExerciseId:guid}")]
+    [ProducesResponseType(
+        StatusCodes.Status204NoContent)]
+    [ProducesResponseType(
+        StatusCodes.Status404NotFound)]
+    [ProducesResponseType(
+        typeof(ProblemDetails),
+        StatusCodes.Status409Conflict)]
+    public async Task<IActionResult>
+        RemoveExercise(
+            Guid workoutId,
+            Guid workoutExerciseId,
+            CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var removed =
+                await _workoutService
+                    .RemoveExerciseAsync(
+                        workoutId,
+                        workoutExerciseId,
+                        cancellationToken);
+
+            if (!removed)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+        catch (InvalidOperationException exception)
+        {
+            return Problem(
+                statusCode:
+                    StatusCodes.Status409Conflict,
+                title: "Workout exercise conflict",
+                detail: exception.Message);
+        }
+    }
+
     [HttpPost(
         "{workoutId:guid}/exercises/{workoutExerciseId:guid}/sets")]
     [ProducesResponseType(
@@ -211,6 +303,104 @@ public class WorkoutsController : ControllerBase
                     StatusCodes.Status400BadRequest,
                 title: "Invalid workout set",
                 detail: exception.Message);
+        }
+        catch (InvalidOperationException exception)
+        {
+            return Problem(
+                statusCode:
+                    StatusCodes.Status409Conflict,
+                title: "Workout set conflict",
+                detail: exception.Message);
+        }
+    }
+
+    [HttpPut(
+        "{workoutId:guid}/exercises/{workoutExerciseId:guid}/sets/{setId:guid}")]
+    [ProducesResponseType(
+        typeof(WorkoutSetResponseDto),
+        StatusCodes.Status200OK)]
+    [ProducesResponseType(
+        typeof(ProblemDetails),
+        StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(
+        StatusCodes.Status404NotFound)]
+    [ProducesResponseType(
+        typeof(ProblemDetails),
+        StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<WorkoutSetResponseDto>>
+        UpdateSet(
+            Guid workoutId,
+            Guid workoutExerciseId,
+            Guid setId,
+            UpdateWorkoutSetDto dto,
+            CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var workoutSet =
+                await _workoutService.UpdateSetAsync(
+                    workoutId,
+                    workoutExerciseId,
+                    setId,
+                    dto,
+                    cancellationToken);
+
+            if (workoutSet is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(workoutSet);
+        }
+        catch (ArgumentException exception)
+        {
+            return Problem(
+                statusCode:
+                    StatusCodes.Status400BadRequest,
+                title: "Invalid workout set",
+                detail: exception.Message);
+        }
+        catch (InvalidOperationException exception)
+        {
+            return Problem(
+                statusCode:
+                    StatusCodes.Status409Conflict,
+                title: "Workout set conflict",
+                detail: exception.Message);
+        }
+    }
+
+    [HttpDelete(
+        "{workoutId:guid}/exercises/{workoutExerciseId:guid}/sets/{setId:guid}")]
+    [ProducesResponseType(
+        StatusCodes.Status204NoContent)]
+    [ProducesResponseType(
+        StatusCodes.Status404NotFound)]
+    [ProducesResponseType(
+        typeof(ProblemDetails),
+        StatusCodes.Status409Conflict)]
+    public async Task<IActionResult>
+        RemoveSet(
+            Guid workoutId,
+            Guid workoutExerciseId,
+            Guid setId,
+            CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var removed =
+                await _workoutService.RemoveSetAsync(
+                    workoutId,
+                    workoutExerciseId,
+                    setId,
+                    cancellationToken);
+
+            if (!removed)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
         catch (InvalidOperationException exception)
         {

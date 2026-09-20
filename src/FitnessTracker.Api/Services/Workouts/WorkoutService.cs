@@ -81,7 +81,9 @@ public class WorkoutService : IWorkoutService
         CreateWorkoutDto dto,
         CancellationToken cancellationToken = default)
     {
-        ValidateCreateWorkout(dto);
+        ValidateWorkoutDetails(
+            dto.Name,
+            dto.WorkoutType);
 
         var currentUserId =
             _currentUserService.CurrentUserId;
@@ -116,6 +118,70 @@ public class WorkoutService : IWorkoutService
         };
 
         _dbContext.Workouts.Add(workout);
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
+
+        return MapToResponseDto(workout);
+    }
+
+    public async Task<WorkoutResponseDto?> UpdateAsync(
+        Guid workoutId,
+        UpdateWorkoutDto dto,
+        CancellationToken cancellationToken = default)
+    {
+        ValidateWorkoutDetails(
+            dto.Name,
+            dto.WorkoutType);
+
+        var currentUserId =
+            _currentUserService.CurrentUserId;
+
+        var workout = await _dbContext.Workouts
+            .AsSplitQuery()
+            .Include(workout =>
+                workout.WorkoutExercises)
+                .ThenInclude(workoutExercise =>
+                    workoutExercise.Exercise)
+            .Include(workout =>
+                workout.WorkoutExercises)
+                .ThenInclude(workoutExercise =>
+                    workoutExercise.WorkoutSets)
+            .SingleOrDefaultAsync(
+                workout =>
+                    workout.Id == workoutId &&
+                    workout.UserId == currentUserId,
+                cancellationToken);
+
+        if (workout is null)
+        {
+            return null;
+        }
+
+        if (workout.EndedAtUtc.HasValue)
+        {
+            throw new InvalidOperationException(
+                "Completed workouts cannot be modified.");
+        }
+
+        var newWorkoutType =
+            dto.WorkoutType!.Value;
+
+        ValidateExistingExercisesForWorkoutType(
+            newWorkoutType,
+            workout.WorkoutExercises);
+
+        workout.Name =
+            dto.Name.Trim();
+
+        workout.WorkoutType =
+            newWorkoutType;
+
+        workout.Notes =
+            NormalizeOptionalText(dto.Notes);
+
+        workout.UpdatedAtUtc =
+            DateTime.UtcNow;
 
         await _dbContext.SaveChangesAsync(
             cancellationToken);
@@ -244,6 +310,66 @@ public class WorkoutService : IWorkoutService
         };
     }
 
+    public async Task<bool> RemoveExerciseAsync(
+        Guid workoutId,
+        Guid workoutExerciseId,
+        CancellationToken cancellationToken = default)
+    {
+        var currentUserId =
+            _currentUserService.CurrentUserId;
+
+        var workoutExercise =
+            await _dbContext.WorkoutExercises
+                .Include(workoutExercise =>
+                    workoutExercise.Workout)
+                .SingleOrDefaultAsync(
+                    workoutExercise =>
+                        workoutExercise.Id ==
+                            workoutExerciseId &&
+                        workoutExercise.WorkoutId ==
+                            workoutId &&
+                        workoutExercise.Workout.UserId ==
+                            currentUserId,
+                    cancellationToken);
+
+        if (workoutExercise is null)
+        {
+            return false;
+        }
+
+        if (workoutExercise.Workout.EndedAtUtc.HasValue)
+        {
+            throw new InvalidOperationException(
+                "Exercises cannot be removed from a completed workout.");
+        }
+
+        await using var transaction =
+            await _dbContext.Database
+                .BeginTransactionAsync(
+                    cancellationToken);
+
+        _dbContext.WorkoutExercises.Remove(
+            workoutExercise);
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
+
+        await RenumberWorkoutExercisesAsync(
+            workoutId,
+            cancellationToken);
+
+        workoutExercise.Workout.UpdatedAtUtc =
+            DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
+
+        await transaction.CommitAsync(
+            cancellationToken);
+
+        return true;
+    }
+
     public async Task<WorkoutSetResponseDto?>
         AddSetAsync(
             Guid workoutId,
@@ -284,7 +410,12 @@ public class WorkoutService : IWorkoutService
         ValidateWorkoutSetData(
             workoutExercise.Exercise.ExerciseType,
             workoutExercise.Exercise.TrackingType,
-            dto);
+            dto.SetType,
+            dto.Reps,
+            dto.WeightKg,
+            dto.DurationSeconds,
+            dto.DistanceMeters,
+            dto.Rpe);
 
         var highestSetNumber =
             await _dbContext.WorkoutSets
@@ -335,6 +466,167 @@ public class WorkoutService : IWorkoutService
             workoutSet);
     }
 
+    public async Task<WorkoutSetResponseDto?>
+        UpdateSetAsync(
+            Guid workoutId,
+            Guid workoutExerciseId,
+            Guid setId,
+            UpdateWorkoutSetDto dto,
+            CancellationToken cancellationToken = default)
+    {
+        var currentUserId =
+            _currentUserService.CurrentUserId;
+
+        var workoutSet =
+            await _dbContext.WorkoutSets
+                .Include(workoutSet =>
+                    workoutSet.WorkoutExercise)
+                    .ThenInclude(workoutExercise =>
+                        workoutExercise.Workout)
+                .Include(workoutSet =>
+                    workoutSet.WorkoutExercise)
+                    .ThenInclude(workoutExercise =>
+                        workoutExercise.Exercise)
+                .SingleOrDefaultAsync(
+                    workoutSet =>
+                        workoutSet.Id == setId &&
+                        workoutSet.WorkoutExerciseId ==
+                            workoutExerciseId &&
+                        workoutSet.WorkoutExercise
+                            .WorkoutId ==
+                            workoutId &&
+                        workoutSet.WorkoutExercise
+                            .Workout.UserId ==
+                            currentUserId,
+                    cancellationToken);
+
+        if (workoutSet is null)
+        {
+            return null;
+        }
+
+        var workout =
+            workoutSet.WorkoutExercise.Workout;
+
+        if (workout.EndedAtUtc.HasValue)
+        {
+            throw new InvalidOperationException(
+                "Sets cannot be modified in a completed workout.");
+        }
+
+        var exercise =
+            workoutSet.WorkoutExercise.Exercise;
+
+        ValidateWorkoutSetData(
+            exercise.ExerciseType,
+            exercise.TrackingType,
+            dto.SetType,
+            dto.Reps,
+            dto.WeightKg,
+            dto.DurationSeconds,
+            dto.DistanceMeters,
+            dto.Rpe);
+
+        workoutSet.SetType =
+            dto.SetType;
+
+        workoutSet.Reps =
+            dto.Reps;
+
+        workoutSet.WeightKg =
+            dto.WeightKg;
+
+        workoutSet.DurationSeconds =
+            dto.DurationSeconds;
+
+        workoutSet.DistanceMeters =
+            dto.DistanceMeters;
+
+        workoutSet.Rpe =
+            dto.Rpe;
+
+        workoutSet.Notes =
+            NormalizeOptionalText(dto.Notes);
+
+        workout.UpdatedAtUtc =
+            DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
+
+        return MapToWorkoutSetResponseDto(
+            workoutSet);
+    }
+
+    public async Task<bool> RemoveSetAsync(
+        Guid workoutId,
+        Guid workoutExerciseId,
+        Guid setId,
+        CancellationToken cancellationToken = default)
+    {
+        var currentUserId =
+            _currentUserService.CurrentUserId;
+
+        var workoutSet =
+            await _dbContext.WorkoutSets
+                .Include(workoutSet =>
+                    workoutSet.WorkoutExercise)
+                    .ThenInclude(workoutExercise =>
+                        workoutExercise.Workout)
+                .SingleOrDefaultAsync(
+                    workoutSet =>
+                        workoutSet.Id == setId &&
+                        workoutSet.WorkoutExerciseId ==
+                            workoutExerciseId &&
+                        workoutSet.WorkoutExercise
+                            .WorkoutId ==
+                            workoutId &&
+                        workoutSet.WorkoutExercise
+                            .Workout.UserId ==
+                            currentUserId,
+                    cancellationToken);
+
+        if (workoutSet is null)
+        {
+            return false;
+        }
+
+        var workout =
+            workoutSet.WorkoutExercise.Workout;
+
+        if (workout.EndedAtUtc.HasValue)
+        {
+            throw new InvalidOperationException(
+                "Sets cannot be removed from a completed workout.");
+        }
+
+        await using var transaction =
+            await _dbContext.Database
+                .BeginTransactionAsync(
+                    cancellationToken);
+
+        _dbContext.WorkoutSets.Remove(
+            workoutSet);
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
+
+        await RenumberWorkoutSetsAsync(
+            workoutExerciseId,
+            cancellationToken);
+
+        workout.UpdatedAtUtc =
+            DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
+
+        await transaction.CommitAsync(
+            cancellationToken);
+
+        return true;
+    }
+
     public async Task<WorkoutResponseDto?>
         CompleteAsync(
             Guid workoutId,
@@ -383,10 +675,14 @@ public class WorkoutService : IWorkoutService
                 "A workout must contain at least one completed set before it can be completed.");
         }
 
-        var now = DateTime.UtcNow;
+        var now =
+            DateTime.UtcNow;
 
-        workout.EndedAtUtc = now;
-        workout.UpdatedAtUtc = now;
+        workout.EndedAtUtc =
+            now;
+
+        workout.UpdatedAtUtc =
+            now;
 
         await _dbContext.SaveChangesAsync(
             cancellationToken);
@@ -394,22 +690,45 @@ public class WorkoutService : IWorkoutService
         return MapToResponseDto(workout);
     }
 
-    private static void ValidateCreateWorkout(
-        CreateWorkoutDto dto)
+    private static void ValidateWorkoutDetails(
+        string name,
+        WorkoutType? workoutType)
     {
-        if (string.IsNullOrWhiteSpace(dto.Name))
+        if (string.IsNullOrWhiteSpace(name))
         {
             throw new ArgumentException(
                 "Workout name is required.",
-                nameof(dto.Name));
+                nameof(name));
         }
 
-        if (!dto.WorkoutType.HasValue)
+        if (!workoutType.HasValue)
         {
             throw new ArgumentException(
                 "Workout type is required.",
-                nameof(dto.WorkoutType));
+                nameof(workoutType));
         }
+    }
+
+    private static bool IsWorkoutExerciseCompatible(
+        WorkoutType workoutType,
+        ExerciseType exerciseType)
+    {
+        return workoutType switch
+        {
+            WorkoutType.Strength =>
+                exerciseType ==
+                    ExerciseType.Strength,
+
+            WorkoutType.Cardio =>
+                exerciseType ==
+                    ExerciseType.Cardio,
+
+            WorkoutType.Mixed =>
+                true,
+
+            _ =>
+                false
+        };
     }
 
     private static void
@@ -417,95 +736,119 @@ public class WorkoutService : IWorkoutService
             WorkoutType workoutType,
             ExerciseType exerciseType)
     {
-        var isCompatible =
-            workoutType switch
-            {
-                WorkoutType.Strength =>
-                    exerciseType ==
-                        ExerciseType.Strength,
-
-                WorkoutType.Cardio =>
-                    exerciseType ==
-                        ExerciseType.Cardio,
-
-                WorkoutType.Mixed =>
-                    true,
-
-                _ => false
-            };
-
-        if (!isCompatible)
+        if (!IsWorkoutExerciseCompatible(
+                workoutType,
+                exerciseType))
         {
             throw new InvalidOperationException(
                 $"A {exerciseType} exercise cannot be added to a {workoutType} workout.");
         }
     }
 
+    private static void
+        ValidateExistingExercisesForWorkoutType(
+            WorkoutType workoutType,
+            IEnumerable<WorkoutExercise>
+                workoutExercises)
+    {
+        var incompatibleExercise =
+            workoutExercises
+                .FirstOrDefault(
+                    workoutExercise =>
+                        !IsWorkoutExerciseCompatible(
+                            workoutType,
+                            workoutExercise.Exercise
+                                .ExerciseType));
+
+        if (incompatibleExercise is null)
+        {
+            return;
+        }
+
+        throw new InvalidOperationException(
+            $"Workout type cannot be changed to '{workoutType}' because '{incompatibleExercise.Exercise.Name}' is a {incompatibleExercise.Exercise.ExerciseType} exercise.");
+    }
+
     private static void ValidateWorkoutSetData(
         ExerciseType exerciseType,
         ExerciseTrackingType trackingType,
-        CreateWorkoutSetDto dto)
+        SetType setType,
+        int? reps,
+        double? weightKg,
+        int? durationSeconds,
+        double? distanceMeters,
+        double? rpe)
     {
-        if (dto.Reps is <= 0)
+        if (reps is <= 0)
         {
             throw new ArgumentException(
-                "Repetitions must be greater than zero.",
-                nameof(dto.Reps));
+                "Repetitions must be greater than zero.");
         }
 
-        if (dto.WeightKg is < 0)
+        if (weightKg is < 0)
         {
             throw new ArgumentException(
-                "Weight cannot be negative.",
-                nameof(dto.WeightKg));
+                "Weight cannot be negative.");
         }
 
-        if (dto.DurationSeconds is <= 0)
+        if (durationSeconds is <= 0)
         {
             throw new ArgumentException(
-                "Duration must be greater than zero.",
-                nameof(dto.DurationSeconds));
+                "Duration must be greater than zero.");
         }
 
-        if (dto.DistanceMeters is < 0)
+        if (distanceMeters is < 0)
         {
             throw new ArgumentException(
-                "Distance cannot be negative.",
-                nameof(dto.DistanceMeters));
+                "Distance cannot be negative.");
         }
 
-        if (dto.Rpe is < 1 or > 10)
+        if (rpe is < 1 or > 10)
         {
             throw new ArgumentException(
-                "RPE must be between 1 and 10.",
-                nameof(dto.Rpe));
+                "RPE must be between 1 and 10.");
         }
 
         if (
             exerciseType == ExerciseType.Cardio &&
-            dto.SetType != SetType.Working)
+            setType != SetType.Working)
         {
             throw new ArgumentException(
-                "Cardio performance entries must use the Working set type.",
-                nameof(dto.SetType));
+                "Cardio performance entries must use the Working set type.");
         }
 
         switch (trackingType)
         {
             case ExerciseTrackingType.WeightAndReps:
-                ValidateWeightAndRepsSet(dto);
+                ValidateWeightAndRepsSet(
+                    reps,
+                    weightKg,
+                    durationSeconds,
+                    distanceMeters);
                 break;
 
             case ExerciseTrackingType.RepsOnly:
-                ValidateRepsOnlySet(dto);
+                ValidateRepsOnlySet(
+                    reps,
+                    weightKg,
+                    durationSeconds,
+                    distanceMeters);
                 break;
 
             case ExerciseTrackingType.Duration:
-                ValidateDurationSet(dto);
+                ValidateDurationSet(
+                    reps,
+                    weightKg,
+                    durationSeconds,
+                    distanceMeters);
                 break;
 
             case ExerciseTrackingType.DistanceAndDuration:
-                ValidateDistanceAndDurationSet(dto);
+                ValidateDistanceAndDurationSet(
+                    reps,
+                    weightKg,
+                    durationSeconds,
+                    distanceMeters);
                 break;
 
             default:
@@ -515,25 +858,26 @@ public class WorkoutService : IWorkoutService
     }
 
     private static void ValidateWeightAndRepsSet(
-        CreateWorkoutSetDto dto)
+        int? reps,
+        double? weightKg,
+        int? durationSeconds,
+        double? distanceMeters)
     {
-        if (!dto.Reps.HasValue)
+        if (!reps.HasValue)
         {
             throw new ArgumentException(
-                "Weight-and-reps exercises require repetitions.",
-                nameof(dto.Reps));
+                "Weight-and-reps exercises require repetitions.");
         }
 
-        if (!dto.WeightKg.HasValue)
+        if (!weightKg.HasValue)
         {
             throw new ArgumentException(
-                "Weight-and-reps exercises require weight.",
-                nameof(dto.WeightKg));
+                "Weight-and-reps exercises require weight.");
         }
 
         if (
-            dto.DurationSeconds.HasValue ||
-            dto.DistanceMeters.HasValue)
+            durationSeconds.HasValue ||
+            distanceMeters.HasValue)
         {
             throw new ArgumentException(
                 "Weight-and-reps exercises cannot record duration or distance.");
@@ -541,19 +885,21 @@ public class WorkoutService : IWorkoutService
     }
 
     private static void ValidateRepsOnlySet(
-        CreateWorkoutSetDto dto)
+        int? reps,
+        double? weightKg,
+        int? durationSeconds,
+        double? distanceMeters)
     {
-        if (!dto.Reps.HasValue)
+        if (!reps.HasValue)
         {
             throw new ArgumentException(
-                "Reps-only exercises require repetitions.",
-                nameof(dto.Reps));
+                "Reps-only exercises require repetitions.");
         }
 
         if (
-            dto.WeightKg.HasValue ||
-            dto.DurationSeconds.HasValue ||
-            dto.DistanceMeters.HasValue)
+            weightKg.HasValue ||
+            durationSeconds.HasValue ||
+            distanceMeters.HasValue)
         {
             throw new ArgumentException(
                 "Reps-only exercises cannot record weight, duration, or distance.");
@@ -561,19 +907,21 @@ public class WorkoutService : IWorkoutService
     }
 
     private static void ValidateDurationSet(
-        CreateWorkoutSetDto dto)
+        int? reps,
+        double? weightKg,
+        int? durationSeconds,
+        double? distanceMeters)
     {
-        if (!dto.DurationSeconds.HasValue)
+        if (!durationSeconds.HasValue)
         {
             throw new ArgumentException(
-                "Duration-based exercises require duration.",
-                nameof(dto.DurationSeconds));
+                "Duration-based exercises require duration.");
         }
 
         if (
-            dto.Reps.HasValue ||
-            dto.WeightKg.HasValue ||
-            dto.DistanceMeters.HasValue)
+            reps.HasValue ||
+            weightKg.HasValue ||
+            distanceMeters.HasValue)
         {
             throw new ArgumentException(
                 "Duration-based exercises cannot record repetitions, weight, or distance.");
@@ -582,31 +930,115 @@ public class WorkoutService : IWorkoutService
 
     private static void
         ValidateDistanceAndDurationSet(
-            CreateWorkoutSetDto dto)
+            int? reps,
+            double? weightKg,
+            int? durationSeconds,
+            double? distanceMeters)
     {
         if (
-            !dto.DistanceMeters.HasValue ||
-            dto.DistanceMeters.Value <= 0)
+            !distanceMeters.HasValue ||
+            distanceMeters.Value <= 0)
         {
             throw new ArgumentException(
-                "Distance-and-duration exercises require a distance greater than zero.",
-                nameof(dto.DistanceMeters));
+                "Distance-and-duration exercises require a distance greater than zero.");
         }
 
-        if (!dto.DurationSeconds.HasValue)
+        if (!durationSeconds.HasValue)
         {
             throw new ArgumentException(
-                "Distance-and-duration exercises require duration.",
-                nameof(dto.DurationSeconds));
+                "Distance-and-duration exercises require duration.");
         }
 
         if (
-            dto.Reps.HasValue ||
-            dto.WeightKg.HasValue)
+            reps.HasValue ||
+            weightKg.HasValue)
         {
             throw new ArgumentException(
                 "Distance-and-duration exercises cannot record repetitions or weight.");
         }
+    }
+
+    private async Task
+        RenumberWorkoutExercisesAsync(
+            Guid workoutId,
+            CancellationToken cancellationToken)
+    {
+        var workoutExercises =
+            await _dbContext.WorkoutExercises
+                .Where(workoutExercise =>
+                    workoutExercise.WorkoutId ==
+                        workoutId)
+                .OrderBy(workoutExercise =>
+                    workoutExercise.OrderIndex)
+                .ToListAsync(cancellationToken);
+
+        if (workoutExercises.Count == 0)
+        {
+            return;
+        }
+
+        for (var index = 0;
+             index < workoutExercises.Count;
+             index++)
+        {
+            workoutExercises[index].OrderIndex =
+                -(index + 1);
+        }
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
+
+        for (var index = 0;
+             index < workoutExercises.Count;
+             index++)
+        {
+            workoutExercises[index].OrderIndex =
+                index + 1;
+        }
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
+    }
+
+    private async Task RenumberWorkoutSetsAsync(
+        Guid workoutExerciseId,
+        CancellationToken cancellationToken)
+    {
+        var workoutSets =
+            await _dbContext.WorkoutSets
+                .Where(workoutSet =>
+                    workoutSet.WorkoutExerciseId ==
+                        workoutExerciseId)
+                .OrderBy(workoutSet =>
+                    workoutSet.SetNumber)
+                .ToListAsync(cancellationToken);
+
+        if (workoutSets.Count == 0)
+        {
+            return;
+        }
+
+        for (var index = 0;
+             index < workoutSets.Count;
+             index++)
+        {
+            workoutSets[index].SetNumber =
+                -(index + 1);
+        }
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
+
+        for (var index = 0;
+             index < workoutSets.Count;
+             index++)
+        {
+            workoutSets[index].SetNumber =
+                index + 1;
+        }
+
+        await _dbContext.SaveChangesAsync(
+            cancellationToken);
     }
 
     private static string? NormalizeOptionalText(
