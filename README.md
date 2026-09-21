@@ -75,9 +75,8 @@ The project is also intended to demonstrate practical software-development conce
 
 The current development phase is focused on **building the React workout logging workflow**:
 
-* Creating frontend Workout API contracts
-* Building the workout creation interface
-* Building the active workout logging screen
+* Building the workout list and creation interface
+* Creating the active workout logging screen
 * Adding exercise selection to active workouts
 * Adding tracking-specific set entry forms
 * Supporting workout corrections and completion from React
@@ -149,6 +148,7 @@ The following foundation, database, Exercise Management, frontend, and applicati
 * Not-found route implemented
 * Git-based milestone workflow established
 * Initial Workout REST API implemented with server-controlled workout ownership
+* Frontend API layer refactored into shared and feature-specific clients with full Workout API coverage
 
 ---
 
@@ -542,11 +542,16 @@ fitness-tracker
         │   │   ├── NotFoundPage.tsx
         │   │   └── WorkoutsPage.tsx
         │   │
-        │   ├── services
-        │   │   └── api.ts
-        │   │
-        │   ├── types
-        │   │   └── exercise.ts
+        ├── services
+        │   ├── api.ts
+        │   ├── apiClient.ts
+        │   ├── exercisesApi.ts
+        │   ├── healthApi.ts
+        │   └── workoutsApi.ts
+        │
+        ├── types
+        │   ├── exercise.ts
+        │   └── workout.ts
         │   │
         │   ├── App.css
         │   ├── App.tsx
@@ -1723,6 +1728,7 @@ Development is being completed incrementally so each architectural layer can be 
 * [x] Add development current-user abstraction
 * [x] Create workout service
 * [x] Create workout API
+* [x] Create frontend workout API contracts and client
 * [ ] Create workout creation workflow
 * [x] Add exercises to workouts
 * [x] Add sets to exercises
