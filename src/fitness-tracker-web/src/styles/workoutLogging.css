@@ -173,6 +173,135 @@
     background: rgba(220, 38, 38, 0.08);
 }
 
+.workout-exercise-set-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(127, 127, 127, 0.2);
+}
+
+    .workout-exercise-set-header > div {
+        display: flex;
+        align-items: baseline;
+        gap: 0.6rem;
+    }
+
+    .workout-exercise-set-header h4 {
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .workout-exercise-set-header span {
+        font-size: 0.75rem;
+        opacity: 0.6;
+    }
+
+.workout-add-set-button {
+    min-height: 2.25rem;
+    padding: 0.45rem 0.7rem;
+    font-size: 0.8rem;
+}
+
+.workout-session-set {
+    display: grid;
+    grid-template-columns: minmax(110px, auto) minmax(120px, 1fr) auto;
+    align-items: center;
+    gap: 0.8rem 1rem;
+}
+
+.workout-session-set__heading {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.workout-set-type-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.4rem;
+    border-radius: 999px;
+    background: rgba(127, 127, 127, 0.13);
+    font-size: 0.67rem;
+    font-weight: 700;
+}
+
+.workout-session-set__performance {
+    font-weight: 700;
+}
+
+.workout-session-set__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+.workout-session-set__notes {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding-top: 0.65rem;
+    border-top: 1px solid rgba(127, 127, 127, 0.16);
+    line-height: 1.5;
+    font-size: 0.85rem;
+    opacity: 0.75;
+}
+
+.workout-set-dialog {
+    width: min(580px, calc(100% - 2rem));
+}
+
+.workout-set-dialog__exercise-name {
+    margin: 0.3rem 0 0;
+    font-weight: 700;
+    opacity: 0.75;
+}
+
+.workout-set-dialog__description {
+    margin: 1rem 0 1.25rem;
+    line-height: 1.6;
+    opacity: 0.7;
+}
+
+.workout-set-dialog__field-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+}
+
+.workout-set-dialog__fixed-value {
+    padding: 0.7rem 0.8rem;
+    border: 1px solid rgba(127, 127, 127, 0.25);
+    border-radius: 0.55rem;
+    background: rgba(127, 127, 127, 0.06);
+    font-weight: 700;
+}
+
+.workout-duration-fields {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+    .workout-duration-fields legend {
+        margin-bottom: 0.4rem;
+        padding: 0;
+        font-weight: 700;
+    }
+
+.workout-form__help {
+    line-height: 1.4;
+    font-weight: 400;
+    opacity: 0.6;
+}
+
 @media (max-width: 640px) {
     .workout-section__actions {
         align-items: stretch;
@@ -204,5 +333,35 @@
 
     .workout-remove-dialog {
         width: calc(100% - 1rem);
+    }
+
+    .workout-exercise-set-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .workout-add-set-button {
+        width: 100%;
+    }
+
+    .workout-session-set {
+        grid-template-columns: 1fr;
+        gap: 0.45rem;
+    }
+
+    .workout-session-set__meta {
+        justify-content: flex-start;
+    }
+
+    .workout-session-set__notes {
+        grid-column: auto;
+    }
+
+    .workout-set-dialog {
+        width: calc(100% - 1rem);
+    }
+
+    .workout-set-dialog__field-grid {
+        grid-template-columns: 1fr;
     }
 }

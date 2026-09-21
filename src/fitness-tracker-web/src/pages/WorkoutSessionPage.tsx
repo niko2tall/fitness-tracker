@@ -12,17 +12,25 @@ import {
 import AddWorkoutExerciseDialog
     from '../components/workouts/AddWorkoutExerciseDialog';
 
+import AddWorkoutSetDialog
+    from '../components/workouts/AddWorkoutSetDialog';
+
 import RemoveWorkoutExerciseDialog
     from '../components/workouts/RemoveWorkoutExerciseDialog';
 
+import WorkoutExerciseCard
+    from '../components/workouts/WorkoutExerciseCard';
+
 import {
     addWorkoutExercise,
+    addWorkoutSet,
     getWorkoutById,
     removeWorkoutExercise,
 } from '../services/api';
 
 import type {
     AddWorkoutExerciseRequest,
+    CreateWorkoutSetRequest,
     Workout,
     WorkoutExercise,
 } from '../types/workout';
@@ -87,6 +95,24 @@ function WorkoutSessionPage() {
     const [
         removeExerciseError,
         setRemoveExerciseError,
+    ] = useState<string | null>(null);
+
+    const [
+        exerciseForSet,
+        setExerciseForSet,
+    ] =
+        useState<WorkoutExercise | null>(
+            null
+        );
+
+    const [
+        isAddingSet,
+        setIsAddingSet,
+    ] = useState(false);
+
+    const [
+        addSetError,
+        setAddSetError,
     ] = useState<string | null>(null);
 
     useEffect(() => {
@@ -275,6 +301,59 @@ function WorkoutSessionPage() {
         }
     }
 
+    function openAddSetDialog(
+        exercise: WorkoutExercise
+    ) {
+        setAddSetError(null);
+        setExerciseForSet(exercise);
+    }
+
+    function closeAddSetDialog() {
+        if (isAddingSet) {
+            return;
+        }
+
+        setAddSetError(null);
+        setExerciseForSet(null);
+    }
+
+    async function handleAddSet(
+        request: CreateWorkoutSetRequest
+    ) {
+        if (
+            !workout ||
+            !exerciseForSet
+        ) {
+            return;
+        }
+
+        try {
+            setIsAddingSet(true);
+            setAddSetError(null);
+
+            await addWorkoutSet(
+                workout.id,
+                exerciseForSet.id,
+                request
+            );
+
+            await refreshWorkout(
+                workout.id
+            );
+
+            setExerciseForSet(null);
+        } catch (error) {
+            setAddSetError(
+                getErrorMessage(
+                    error,
+                    'Unable to add the set.'
+                )
+            );
+        } finally {
+            setIsAddingSet(false);
+        }
+    }
+
     if (isLoading) {
         return (
             <main className="app-shell">
@@ -451,87 +530,17 @@ function WorkoutSessionPage() {
                         <div className="workout-session-exercise-list">
                             {workout.exercises.map(
                                 (exercise) => (
-                                    <article
+                                    <WorkoutExerciseCard
                                         key={exercise.id}
-                                        className="workout-session-exercise"
-                                    >
-                                        <header className="workout-session-exercise__header">
-                                            <div>
-                                                <span>
-                                                    Exercise{' '}
-                                                    {exercise.orderIndex}
-                                                </span>
-
-                                                <h3>
-                                                    {exercise.exerciseName}
-                                                </h3>
-                                            </div>
-
-                                            <div className="workout-exercise-actions">
-                                                <span className="workout-type-badge">
-                                                    {formatTrackingType(
-                                                        exercise.trackingType
-                                                    )}
-                                                </span>
-
-                                                {isActive && (
-                                                    <button
-                                                        type="button"
-                                                        className="workout-exercise-remove-button"
-                                                        onClick={() =>
-                                                            openRemoveExerciseDialog(
-                                                                exercise
-                                                            )
-                                                        }
-                                                    >
-                                                        Remove
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </header>
-
-                                        {exercise.notes && (
-                                            <p className="workout-session-exercise__notes">
-                                                {exercise.notes}
-                                            </p>
-                                        )}
-
-                                        {exercise.sets.length ===
-                                            0 ? (
-                                            <p className="workout-session-exercise__empty">
-                                                No sets recorded.
-                                            </p>
-                                        ) : (
-                                            <div className="workout-session-set-list">
-                                                {exercise.sets.map(
-                                                    (set) => (
-                                                        <div
-                                                            key={set.id}
-                                                            className="workout-session-set"
-                                                        >
-                                                            <strong>
-                                                                Set{' '}
-                                                                {set.setNumber}
-                                                            </strong>
-
-                                                            <span>
-                                                                {formatSetSummary(
-                                                                    exercise.trackingType,
-                                                                    set
-                                                                )}
-                                                            </span>
-
-                                                            {set.rpe !== null && (
-                                                                <span>
-                                                                    RPE {set.rpe}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    )
-                                                )}
-                                            </div>
-                                        )}
-                                    </article>
+                                        exercise={exercise}
+                                        isActive={isActive}
+                                        onAddSet={
+                                            openAddSetDialog
+                                        }
+                                        onRemove={
+                                            openRemoveExerciseDialog
+                                        }
+                                    />
                                 )
                             )}
                         </div>
@@ -577,88 +586,25 @@ function WorkoutSessionPage() {
                     handleRemoveExercise
                 }
             />
+
+            <AddWorkoutSetDialog
+                isOpen={
+                    exerciseForSet !== null
+                }
+                exercise={exerciseForSet}
+                isSubmitting={
+                    isAddingSet
+                }
+                error={addSetError}
+                onClose={
+                    closeAddSetDialog
+                }
+                onSubmit={
+                    handleAddSet
+                }
+            />
         </>
     );
-}
-
-function formatSetSummary(
-    trackingType:
-        WorkoutExercise['trackingType'],
-    set:
-        WorkoutExercise['sets'][number]
-): string {
-    switch (trackingType) {
-        case 'WeightAndReps':
-            return (
-                `${set.weightKg ?? 0} kg × ` +
-                `${set.reps ?? 0}`
-            );
-
-        case 'RepsOnly':
-            return `${set.reps ?? 0} reps`;
-
-        case 'Duration':
-            return formatDuration(
-                set.durationSeconds
-            );
-
-        case 'DistanceAndDuration':
-            return (
-                `${set.distanceMeters ?? 0} m · ` +
-                formatDuration(
-                    set.durationSeconds
-                )
-            );
-
-        default:
-            return 'Recorded set';
-    }
-}
-
-function formatTrackingType(
-    trackingType:
-        WorkoutExercise['trackingType']
-): string {
-    switch (trackingType) {
-        case 'WeightAndReps':
-            return 'Weight + Reps';
-
-        case 'RepsOnly':
-            return 'Reps';
-
-        case 'Duration':
-            return 'Duration';
-
-        case 'DistanceAndDuration':
-            return 'Distance + Duration';
-
-        default:
-            return trackingType;
-    }
-}
-
-function formatDuration(
-    durationSeconds: number | null
-): string {
-    if (durationSeconds === null) {
-        return 'No duration';
-    }
-
-    const minutes =
-        Math.floor(durationSeconds / 60);
-
-    const seconds =
-        durationSeconds % 60;
-
-    if (minutes === 0) {
-        return `${seconds}s`;
-    }
-
-    if (seconds === 0) {
-        return `${minutes}m`;
-    }
-
-    return `${minutes}m ${seconds}s`;
 }
 
 function getErrorMessage(
