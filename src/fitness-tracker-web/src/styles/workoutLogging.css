@@ -1,0 +1,208 @@
+.workout-section__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.workout-session__empty {
+    display: grid;
+    justify-items: start;
+    gap: 0.75rem;
+}
+
+.workout-exercise-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.workout-exercise-remove-button {
+    min-height: 1.9rem;
+    padding: 0.25rem 0.55rem;
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    border-radius: 0.45rem;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+    .workout-exercise-remove-button:hover {
+        background: rgba(220, 38, 38, 0.08);
+    }
+
+    .workout-exercise-remove-button:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
+.workout-button--danger {
+    border-color: rgba(220, 38, 38, 0.45);
+    background: #b91c1c;
+    color: #ffffff;
+}
+
+.workout-exercise-dialog {
+    width: min(680px, calc(100% - 2rem));
+}
+
+.workout-exercise-dialog__description {
+    margin: 0.8rem 0 1.25rem;
+    line-height: 1.6;
+    opacity: 0.7;
+}
+
+.workout-picker-state {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid rgba(127, 127, 127, 0.2);
+    border-radius: 0.6rem;
+    background: rgba(127, 127, 127, 0.04);
+    text-align: center;
+    opacity: 0.75;
+}
+
+.workout-exercise-picker {
+    display: grid;
+    gap: 0.5rem;
+    max-height: 320px;
+    margin-top: 1rem;
+    padding-right: 0.25rem;
+    overflow-y: auto;
+}
+
+.workout-exercise-picker__item {
+    display: grid;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0.9rem;
+    border: 1px solid rgba(127, 127, 127, 0.25);
+    border-radius: 0.65rem;
+    background: rgba(127, 127, 127, 0.03);
+    color: inherit;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+}
+
+    .workout-exercise-picker__item:hover {
+        background: rgba(127, 127, 127, 0.08);
+    }
+
+.workout-exercise-picker__item--selected {
+    border-color: currentColor;
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.workout-exercise-picker__item:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+.workout-exercise-picker__main {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+    .workout-exercise-picker__main span {
+        font-size: 0.78rem;
+        font-weight: 700;
+        opacity: 0.65;
+    }
+
+.workout-exercise-picker__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+    .workout-exercise-picker__meta span {
+        padding: 0.18rem 0.45rem;
+        border-radius: 999px;
+        background: rgba(127, 127, 127, 0.1);
+        font-size: 0.72rem;
+        font-weight: 600;
+        opacity: 0.8;
+    }
+
+.workout-exercise-selection {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.25rem;
+    padding: 1rem;
+    border: 1px solid rgba(127, 127, 127, 0.25);
+    border-radius: 0.7rem;
+    background: rgba(127, 127, 127, 0.04);
+}
+
+    .workout-exercise-selection h3 {
+        margin: 0.15rem 0 0.25rem;
+    }
+
+    .workout-exercise-selection p {
+        margin: 0;
+    }
+
+.workout-exercise-selection__label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    opacity: 0.55;
+}
+
+.workout-remove-dialog {
+    width: min(500px, calc(100% - 2rem));
+}
+
+.workout-remove-dialog__message {
+    margin-top: 1.25rem;
+    line-height: 1.6;
+}
+
+.workout-remove-dialog__warning {
+    padding: 0.8rem;
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    border-radius: 0.55rem;
+    background: rgba(220, 38, 38, 0.08);
+}
+
+@media (max-width: 640px) {
+    .workout-section__actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+        .workout-section__actions .workout-button {
+            width: 100%;
+        }
+
+    .workout-exercise-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .workout-exercise-dialog {
+        width: calc(100% - 1rem);
+    }
+
+    .workout-exercise-picker {
+        max-height: 280px;
+    }
+
+    .workout-exercise-picker__main {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .workout-remove-dialog {
+        width: calc(100% - 1rem);
+    }
+}
