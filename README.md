@@ -73,13 +73,14 @@ The project is also intended to demonstrate practical software-development conce
 
 ## Currently In Development
 
-The current development phase is focused on **preparing Workout Logging for frontend integration**:
+The current development phase is focused on **building the React workout logging workflow**:
 
-* Completing active-workout editing and correction operations
-* Finalizing workout notes and update behavior
-* Verifying the full workout lifecycle
-* Preparing React API contracts for workout logging
-* Building the React workout logging workflow
+* Creating frontend Workout API contracts
+* Building the workout creation interface
+* Building the active workout logging screen
+* Adding exercise selection to active workouts
+* Adding tracking-specific set entry forms
+* Supporting workout corrections and completion from React
 
 ---
 
@@ -97,6 +98,7 @@ The following foundation, database, Exercise Management, frontend, and applicati
 * CORS configured between React and ASP.NET Core
 * React-to-API communication verified
 * API health endpoint created
+* Active-workout correction operations implemented for workout details, exercises, and sets
 * OpenAPI document generation configured
 * Scalar interactive API documentation configured
 * Entity Framework Core configured
@@ -1728,7 +1730,7 @@ Development is being completed incrementally so each architectural layer can be 
 * [x] Record duration
 * [x] Record distance
 * [x] Record RPE
-* [ ] Add workout notes
+* [x] Add workout notes
 * [x] Complete workouts
 * [ ] Build React workout logging interface
 
