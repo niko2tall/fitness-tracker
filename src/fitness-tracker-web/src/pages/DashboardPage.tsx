@@ -47,16 +47,16 @@ function DashboardPage() {
                     <h2>Workouts</h2>
 
                     <p>
-                        Workout logging and performance tracking
-                        will be built in the next development
-                        phase.
+                        Start a workout, continue an active
+                        session, or review your completed
+                        workout history.
                     </p>
 
                     <Link
                         to="/workouts"
                         className="dashboard-card__link"
                     >
-                        View Workouts
+                        Open Workouts
                     </Link>
                 </article>
             </section>

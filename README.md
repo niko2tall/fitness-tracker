@@ -1,790 +1,379 @@
 # Fitness Tracker
 
-A full-stack fitness tracking application built with **ASP.NET Core**, **React**, **TypeScript**, **Entity Framework Core**, and **SQLite**.
+A full-stack fitness tracking application for logging strength and cardio workouts, managing reusable exercises, recording workout performance, and reviewing training history.
 
-The project is being developed as a portfolio application to demonstrate full-stack software development, REST API design, relational database design, frontend/backend integration, and responsive application development.
+The project is being built as a portfolio application with a separate ASP.NET Core Web API and React frontend so the backend can eventually support multiple clients, including the current web app and a future PWA or native client.
 
-Fitness Tracker is intended to provide a centralized place for users to record strength workouts, cardio activities, exercise performance, body measurements, and long-term fitness progress.
+## Current Status
 
-The application is being designed with **mobile use in mind**, with responsive web support as the initial target and Progressive Web App functionality planned for a later stage.
+The project currently supports end-to-end Exercise Management and a substantial Workout Logging backend, along with the first real Workout frontend workflow.
 
----
+### Completed
 
-## Table of Contents
-
-* [Project Overview](#project-overview)
-* [Current Status](#current-status)
-* [Features](#features)
-* [Technology Stack](#technology-stack)
-* [Architecture](#architecture)
-* [Project Structure](#project-structure)
-* [Domain Model](#domain-model)
-* [Exercise Tracking Types](#exercise-tracking-types)
-* [Workout Types](#workout-types)
-* [Set Types](#set-types)
-* [Design Decisions](#design-decisions)
-* [API](#api)
-* [Getting Started](#getting-started)
-* [Running the Application](#running-the-application)
-* [Environment Configuration](#environment-configuration)
-* [CORS](#cors)
-* [Database](#database)
-* [Database Relationships](#database-relationships)
-* [Development Roadmap](#development-roadmap)
-* [Git Workflow](#git-workflow)
-* [Building the Project](#building-the-project)
-* [Future Improvements](#future-improvements)
-* [Project Goals](#project-goals)
-* [Portfolio Status](#portfolio-status)
-
----
-
-# Project Overview
-
-Fitness Tracker is a full-stack application designed to support both **strength training** and **cardiovascular exercise tracking**.
-
-Rather than limiting the project to basic workout entries, the application is being structured around reusable exercises, workout sessions, exercise performance, individual sets, measurements, and long-term historical data.
-
-The backend is implemented as a separate REST API so the same backend can eventually support multiple clients, including:
-
-* Web browsers
-* Mobile browsers
-* Progressive Web Apps
-* Potential native mobile applications
-
-The project is also intended to demonstrate practical software-development concepts including:
-
-* REST API development
-* Relational database design
-* Entity relationships
-* Data validation
-* CRUD operations
-* Frontend/backend separation
-* Client-side routing
-* Responsive UI design
-* Authentication and authorization
-* Historical data tracking
-* Application analytics
-* Git-based development workflow
-
----
-
-# Current Status
+- Repository and solution structure established
+- ASP.NET Core Web API created with controller-based endpoints
+- React + TypeScript + Vite frontend created
+- HTTPS development certificate configured
+- Fixed local API and frontend ports
+- CORS configured between the React frontend and API
+- Health endpoint implemented
+- OpenAPI document generation configured
+- Scalar API reference configured
+- EF Core and SQLite integrated
+- Initial relational domain model implemented
+- Database relationships, indexes, enum conversions, and delete behaviors configured
+- Initial database migration created and applied
+- Built-in exercise library seeded through EF Core migration
+- Exercise DTOs and service layer implemented
+- Exercise REST API implemented
+- Exercise validation and built-in exercise protection implemented
+- Exercise archive workflow implemented
+- Exercise API tested through Scalar
+- Exercise Library implemented in React
+- Exercise search and filtering implemented
+- Exercise detail view implemented
+- Custom exercise creation implemented
+- Custom exercise editing implemented
+- Custom exercise archiving implemented
+- Exercise API validation errors surfaced in React
+- Exercise Management verified end-to-end
+- Application routing and main navigation implemented with React Router
+- Dashboard, Exercise, Workout, and fallback routes added
+- Server-controlled development user abstraction implemented for pre-authentication workout ownership
+- Workout DTOs and service layer implemented
+- Initial Workout REST API implemented with server-controlled ownership
+- Active workouts support ordered exercise assignment with ownership, archive, duplicate, and type validation
+- Workout set logging implemented with tracking-type-specific validation
+- Strength performance supports weight, repetitions, set type, notes, and RPE
+- Reps-only performance logging supported
+- Duration-based performance logging supported
+- Distance-and-duration cardio performance logging supported
+- Workout completion implemented with server-controlled lifecycle timestamps
+- Completed workouts are protected from normal logging mutations
+- Active-workout correction operations implemented for workout details, exercises, and sets
+- Frontend API layer split into shared and feature-specific clients
+- Full Workout API client implemented in TypeScript
+- Workout list implemented in React
+- Active and completed workouts separated in the UI
+- Workout creation dialog implemented
+- Successful workout creation navigates directly to the session route
+- Dedicated `/workouts/{workoutId}` session route implemented
+- Persisted workout exercises and sets can be viewed from React
+- Workout timestamps are displayed in browser-local time
+- Workout list, creation, and session-detail views are responsive
 
 ## Currently In Development
 
-The current development phase is focused on **building the React workout logging workflow**:
+The current development phase is focused on the **active React workout logging experience**:
 
-* Building the workout list and creation interface
-* Creating the active workout logging screen
-* Adding exercise selection to active workouts
-* Adding tracking-specific set entry forms
-* Supporting workout corrections and completion from React
-
----
-
-## Completed
-
-The following foundation, database, Exercise Management, frontend, and application-structure work has been implemented:
-
-* GitHub repository created and connected to the local project
-* Visual Studio solution created
-* ASP.NET Core Web API created with .NET 10
-* React frontend created with Vite and TypeScript
-* Frontend and backend projects separated
-* HTTPS development certificate configured
-* Predictable local development ports configured
-* CORS configured between React and ASP.NET Core
-* React-to-API communication verified
-* API health endpoint created
-* Active-workout correction operations implemented for workout details, exercises, and sets
-* OpenAPI document generation configured
-* Scalar interactive API documentation configured
-* Entity Framework Core configured
-* SQLite database provider configured
-* EF Core command-line tooling configured
-* Initial fitness domain model designed
-* Core domain model classes created
-* Application enums created
-* Workout completion implemented with server-controlled lifecycle timestamps and post-completion mutation protection
-* `FitnessTrackerDbContext` created
-* Entity relationships and foreign keys configured
-* Database delete behaviours configured
-* Database indexes and uniqueness constraints configured
-* Enum-to-string database conversions configured
-* SQLite connection string configured
-* Initial Entity Framework Core migration created
-* Local SQLite database created
-* Database schema verified
-* EF Core migration history verified
-* Built-in exercise library seeded through Entity Framework Core migrations
-* Exercise request and response DTOs implemented
-* Exercise service layer implemented
-* Exercise business rules and validation implemented
-* Exercise REST API implemented
-* Exercise retrieval by list and ID implemented
-* Custom exercise creation implemented
-* Custom exercise editing implemented
-* Custom exercise soft-archiving implemented
-* Built-in exercise modification protection implemented
-* Exercise API validation and error handling implemented
-* Exercise API tested through Scalar
-* Workout set logging implemented with tracking-type-specific validation for strength and cardio performance
-* React exercise library connected to the ASP.NET Core API
-* Client-side exercise search and filtering implemented
-* Server-controlled development user abstraction implemented for pre-authentication workout ownership
-* Responsive exercise detail interface implemented
-* Custom exercise creation implemented in React
-* Custom exercise editing implemented in React
-* Custom exercise soft-archiving implemented in React
-* API validation and conflict errors surfaced in the frontend
-* Exercise management interface verified on desktop and mobile
-* Complete Exercise CRUD workflow verified end-to-end
-* Client-side routing implemented with React Router
-* Shared application navigation implemented
-* Dashboard route created
-* Exercise Management moved into a dedicated routed page
-* Workouts route created for the next development phase
-* Not-found route implemented
-* Git-based milestone workflow established
-* Initial Workout REST API implemented with server-controlled workout ownership
-* Frontend API layer refactored into shared and feature-specific clients with full Workout API coverage
+- Adding exercise selection to active workouts
+- Adding exercise removal and correction controls
+- Building tracking-specific set entry forms
+- Adding set editing and removal
+- Adding workout editing and completion controls
 
 ---
 
-## Not Yet Implemented
+## Technology Stack
 
-The following functionality is planned but not yet complete:
+### Backend
 
-* Workout API and service layer
-* Workout creation interface
-* Workout history
-* Workout editing and archiving
-* Personal record detection
-* Progress charts
-* Body measurement interface and charts
-* Authentication
-* User registration
-* Authorization and per-user data isolation
-* PWA installation
-* Production deployment
+- C#
+- .NET 10
+- ASP.NET Core Web API
+- Controller-based REST endpoints
+- Entity Framework Core
+- SQLite
+- OpenAPI
+- Scalar
 
----
+### Frontend
 
-# Features
+- React
+- TypeScript
+- Vite
+- React Router
+- HTML
+- CSS
+- Fetch API
 
-## Exercise Management
+### Development Tools
 
-Exercise Management is the first completed end-to-end feature in the application.
-
-Current functionality includes:
-
-* Built-in exercise library
-* Strength and cardio exercise types
-* Multiple exercise tracking methods
-* Exercise search
-* Exercise-type filtering
-* Muscle-group filtering
-* Equipment filtering
-* Exercise detail views
-* Custom exercise creation
-* Custom exercise editing
-* Custom exercise archiving
-* Duplicate-name protection
-* Exercise-type and tracking-method validation
-* Responsive desktop and mobile layouts
-* Protection of built-in exercises from user modification
-* Active workouts support ordered exercise assignment with type, ownership, archive, and duplicate validation
-
-Built-in exercises are seeded through Entity Framework Core migrations, while user-created exercises are stored as custom records.
-
-Archived exercises are retained in the database to preserve future historical workout relationships.
+- Visual Studio 2026
+- Visual Studio Code
+- EF Core CLI
+- Git
+- GitHub
+- Node.js
+- npm
 
 ---
 
-## Strength Training
+## Architecture
 
-Planned strength-training functionality includes:
-
-* Create workouts
-* Select exercises from the exercise library
-* Record multiple exercises per workout
-* Record multiple sets per exercise
-* Record repetitions
-* Record weight
-* Track warm-up sets
-* Track working sets
-* Track drop sets
-* Track sets taken to failure
-* Record RPE
-* Add exercise-specific notes
-* Add set-specific notes
-* Review previous workouts
-* Track strength progression
-* Detect personal records
-* Calculate training volume
-
-Example:
+The project uses a separated client/server architecture:
 
 ```text
-Push Day
-
-Bench Press
-95 lb × 10       Warmup
-135 lb × 8       Warmup
-185 lb × 8       Working
-185 lb × 7       Working
-175 lb × 9       Working
-
-Incline Dumbbell Press
-70 lb × 10       Working
-70 lb × 9        Working
+React / TypeScript
+        |
+        | HTTPS / JSON
+        v
+ASP.NET Core Web API
+        |
+        | EF Core
+        v
+      SQLite
 ```
 
----
+The frontend does not access the database directly.
 
-## Cardio
+The API is responsible for:
 
-Cardio tracking is being designed to support activities including:
+- Validation
+- Business rules
+- Ownership enforcement
+- Lifecycle state
+- Persistence
+- Server-controlled IDs and timestamps
 
-* Outdoor running
-* Treadmill running
-* Cycling
-* Rowing
-* Other duration-based cardio
+The React client is responsible for:
 
-Planned workout data includes:
+- User interaction
+- Presentation
+- Local UI state
+- Calling the API through typed feature clients
 
-* Distance
-* Duration
-* Pace
-* Activity notes
-* RPE
-* Workout history
+The separate API design also keeps the project open to future clients such as:
 
-Example:
-
-```text
-Sunday Long Run
-
-Distance:
-21.3 km
-
-Duration:
-1:58:32
-
-Average Pace:
-Calculated from distance and duration
-```
-
-The database stores the underlying distance and duration rather than storing calculated pace.
+- Progressive Web App
+- Native mobile application
+- Additional web clients
 
 ---
 
-## Body Measurements
-
-The application will also support body measurement history.
-
-Initial measurement tracking includes:
-
-* Body weight
-* Body-fat percentage
-* Recording date
-* Notes
-
-Future versions may add measurements such as:
-
-* Waist
-* Chest
-* Arms
-* Legs
-* Hips
-
-Measurement history will eventually be visualized using progress charts.
-
----
-
-# Technology Stack
-
-## Backend
-
-* C#
-* .NET 10
-* ASP.NET Core Web API
-* Controller-based API architecture
-* Entity Framework Core
-* SQLite
-* OpenAPI
-* Scalar API Reference
-
----
-
-## Frontend
-
-* React
-* TypeScript
-* React Router
-* Vite
-* HTML
-* CSS
-* Fetch API
-
-The frontend currently uses client-side routing to separate the Dashboard, Exercise Management, and Workout areas of the application.
-
-Additional frontend libraries may be introduced as the interface develops.
-
----
-
-## Database
-
-Current local development database:
-
-* SQLite
-
-Data access:
-
-* Entity Framework Core
-
-Schema management:
-
-* Entity Framework Core migrations
-
-The application is structured so that the database provider can be replaced with a larger relational database system in the future if necessary.
-
-Possible future options include:
-
-* SQL Server
-* PostgreSQL
-
----
-
-## Development Tools
-
-* Visual Studio 2026
-* .NET SDK 10.0.400
-* Git
-* GitHub
-* Node.js
-* npm
-* EF Core CLI
-* Scalar
-* DB Browser for SQLite
-
----
-
-# Architecture
-
-Fitness Tracker uses a separated frontend/backend architecture.
-
-```text
-┌─────────────────────────────┐
-│      React + TypeScript     │
-│                             │
-│   Dashboard / Exercises     │
-│         / Workouts          │
-│                             │
-│       React Router          │
-└──────────────┬──────────────┘
-               │
-               │ HTTPS
-               │ JSON
-               │ REST
-               ▼
-┌─────────────────────────────┐
-│     ASP.NET Core Web API    │
-│                             │
-│        Controllers          │
-│        Services             │
-│        DTOs                 │
-└──────────────┬──────────────┘
-               │
-               │ Entity Framework Core
-               ▼
-┌─────────────────────────────┐
-│           SQLite            │
-│                             │
-│      Relational Data        │
-└─────────────────────────────┘
-```
-
-The separation between frontend and backend allows additional clients to use the same API in the future.
-
-For example:
-
-```text
-React Web App ───────┐
-                     │
-Future Mobile App ───┼──► ASP.NET Core API ───► Database
-                     │
-Future Desktop App ──┘
-```
-
-The backend also separates HTTP handling, business logic, API contracts, and persistence:
-
-```text
-Controller
-    ↓
-Service
-    ↓
-Entity Framework Core
-    ↓
-SQLite
-```
-
-For Exercise Management:
-
-```text
-React Exercise UI
-        ↓
-Frontend API Client
-        ↓
-ExercisesController
-        ↓
-IExerciseService
-        ↓
-ExerciseService
-        ↓
-FitnessTrackerDbContext
-        ↓
-SQLite
-```
-
----
-
-# Project Structure
-
-The repository is organized into separate backend and frontend applications.
+## Project Structure
 
 ```text
 fitness-tracker
-│
-├── .gitignore
-├── README.md
 ├── FitnessTracker.slnx
 │
-└── src
-    │
-    ├── FitnessTracker.Api
-    │   │
-    │   ├── Controllers
-    │   │   ├── ExercisesController.cs
-    │   │   └── HealthController.cs
-    │   │
-    │   ├── Data
-    │   │   ├── Seed
-    │   │   │   └── ExerciseSeedData.cs
-    │   │   │
-    │   │   ├── FitnessTrackerDbContext.cs
-    │   │   └── FitnessTracker.db
-    │   │
-    │   ├── DTOs
-    │   │   └── Exercises
-    │   │       ├── CreateExerciseDto.cs
-    │   │       ├── ExerciseResponseDto.cs
-    │   │       └── UpdateExerciseDto.cs
-    │   │
-    │   ├── Migrations
-    │   │   ├── <timestamp>_InitialCreate.cs
-    │   │   ├── <timestamp>_SeedBuiltInExercises.cs
-    │   │   └── FitnessTrackerDbContextModelSnapshot.cs
-    │   │
-    │   ├── Models
-    │   │   │
-    │   │   ├── Enums
-    │   │   │   ├── DistanceUnit.cs
-    │   │   │   ├── ExerciseTrackingType.cs
-    │   │   │   ├── ExerciseType.cs
-    │   │   │   ├── SetType.cs
-    │   │   │   ├── WeightUnit.cs
-    │   │   │   └── WorkoutType.cs
-    │   │   │
-    │   │   ├── ApplicationUser.cs
-    │   │   ├── BodyMeasurement.cs
-    │   │   ├── Exercise.cs
-    │   │   ├── Workout.cs
-    │   │   ├── WorkoutExercise.cs
-    │   │   └── WorkoutSet.cs
-    │   │
-    │   ├── Services
-    │   │   └── Exercises
-    │   │       ├── ExerciseService.cs
-    │   │       └── IExerciseService.cs
-    │   │
-    │   ├── Properties
-    │   │   └── launchSettings.json
-    │   │
-    │   ├── Program.cs
-    │   ├── appsettings.json
-    │   └── FitnessTracker.Api.csproj
-    │
-    └── fitness-tracker-web
-        │
-        ├── public
-        │
-        ├── src
-        │   │
-        │   ├── components
-        │   │   ├── exercises
-        │   │   │   ├── ArchiveExerciseDialog.tsx
-        │   │   │   ├── CreateExerciseDialog.tsx
-        │   │   │   ├── EditExerciseDialog.tsx
-        │   │   │   ├── ExerciseCard.tsx
-        │   │   │   ├── ExerciseDetailsDialog.tsx
-        │   │   │   ├── ExerciseFilters.tsx
-        │   │   │   └── ExerciseList.tsx
-        │   │   │
-        │   │   └── layout
-        │   │       └── AppLayout.tsx
-        │   │
-        │   ├── pages
-        │   │   ├── DashboardPage.tsx
-        │   │   ├── ExercisesPage.tsx
-        │   │   ├── NotFoundPage.tsx
-        │   │   └── WorkoutsPage.tsx
-        │   │
-        ├── services
-        │   ├── api.ts
-        │   ├── apiClient.ts
-        │   ├── exercisesApi.ts
-        │   ├── healthApi.ts
-        │   └── workoutsApi.ts
-        │
-        ├── types
-        │   ├── exercise.ts
-        │   └── workout.ts
-        │   │
-        │   ├── App.css
-        │   ├── App.tsx
-        │   ├── index.css
-        │   └── main.tsx
-        │
-        ├── .env.development
-        ├── index.html
-        ├── package.json
-        ├── package-lock.json
-        ├── tsconfig.json
-        └── vite.config.ts
+├── src
+│   ├── FitnessTracker.Api
+│   │   ├── Controllers
+│   │   │   ├── ExercisesController.cs
+│   │   │   ├── HealthController.cs
+│   │   │   └── WorkoutsController.cs
+│   │   │
+│   │   ├── Data
+│   │   │   ├── Seed
+│   │   │   │   └── ExerciseSeedData.cs
+│   │   │   ├── DevelopmentDataInitializer.cs
+│   │   │   ├── FitnessTrackerDbContext.cs
+│   │   │   └── FitnessTracker.db
+│   │   │
+│   │   ├── Development
+│   │   │   └── DevelopmentUser.cs
+│   │   │
+│   │   ├── DTOs
+│   │   │   ├── Exercises
+│   │   │   │   ├── CreateExerciseDto.cs
+│   │   │   │   ├── ExerciseResponseDto.cs
+│   │   │   │   └── UpdateExerciseDto.cs
+│   │   │   │
+│   │   │   └── Workouts
+│   │   │       ├── AddWorkoutExerciseDto.cs
+│   │   │       ├── CreateWorkoutDto.cs
+│   │   │       ├── CreateWorkoutSetDto.cs
+│   │   │       ├── UpdateWorkoutDto.cs
+│   │   │       ├── UpdateWorkoutSetDto.cs
+│   │   │       ├── WorkoutExerciseResponseDto.cs
+│   │   │       ├── WorkoutResponseDto.cs
+│   │   │       ├── WorkoutSetResponseDto.cs
+│   │   │       └── WorkoutSummaryDto.cs
+│   │   │
+│   │   ├── Migrations
+│   │   │   ├── <timestamp>_InitialCreate.cs
+│   │   │   ├── <timestamp>_SeedBuiltInExercises.cs
+│   │   │   └── FitnessTrackerDbContextModelSnapshot.cs
+│   │   │
+│   │   ├── Models
+│   │   │   ├── Enums
+│   │   │   │   ├── DistanceUnit.cs
+│   │   │   │   ├── ExerciseTrackingType.cs
+│   │   │   │   ├── ExerciseType.cs
+│   │   │   │   ├── SetType.cs
+│   │   │   │   ├── WeightUnit.cs
+│   │   │   │   └── WorkoutType.cs
+│   │   │   │
+│   │   │   ├── ApplicationUser.cs
+│   │   │   ├── BodyMeasurement.cs
+│   │   │   ├── Exercise.cs
+│   │   │   ├── Workout.cs
+│   │   │   ├── WorkoutExercise.cs
+│   │   │   └── WorkoutSet.cs
+│   │   │
+│   │   ├── Services
+│   │   │   ├── Exercises
+│   │   │   │   ├── ExerciseService.cs
+│   │   │   │   └── IExerciseService.cs
+│   │   │   │
+│   │   │   ├── Users
+│   │   │   │   ├── DevelopmentCurrentUserService.cs
+│   │   │   │   └── ICurrentUserService.cs
+│   │   │   │
+│   │   │   └── Workouts
+│   │   │       ├── IWorkoutService.cs
+│   │   │       └── WorkoutService.cs
+│   │   │
+│   │   ├── Properties
+│   │   │   └── launchSettings.json
+│   │   │
+│   │   ├── appsettings.json
+│   │   ├── FitnessTracker.Api.csproj
+│   │   └── Program.cs
+│   │
+│   └── fitness-tracker-web
+│       ├── src
+│       │   ├── components
+│       │   │   ├── exercises
+│       │   │   │   ├── ArchiveExerciseDialog.tsx
+│       │   │   │   ├── CreateExerciseDialog.tsx
+│       │   │   │   ├── EditExerciseDialog.tsx
+│       │   │   │   ├── ExerciseCard.tsx
+│       │   │   │   ├── ExerciseDetailsDialog.tsx
+│       │   │   │   ├── ExerciseFilters.tsx
+│       │   │   │   └── ExerciseList.tsx
+│       │   │   │
+│       │   │   ├── layout
+│       │   │   │   └── AppLayout.tsx
+│       │   │   │
+│       │   │   └── workouts
+│       │   │       ├── CreateWorkoutDialog.tsx
+│       │   │       └── WorkoutSummaryCard.tsx
+│       │   │
+│       │   ├── pages
+│       │   │   ├── DashboardPage.tsx
+│       │   │   ├── ExercisesPage.tsx
+│       │   │   ├── NotFoundPage.tsx
+│       │   │   ├── WorkoutsPage.tsx
+│       │   │   └── WorkoutSessionPage.tsx
+│       │   │
+│       │   ├── services
+│       │   │   ├── api.ts
+│       │   │   ├── apiClient.ts
+│       │   │   ├── exercisesApi.ts
+│       │   │   ├── healthApi.ts
+│       │   │   └── workoutsApi.ts
+│       │   │
+│       │   ├── styles
+│       │   │   └── workouts.css
+│       │   │
+│       │   ├── types
+│       │   │   ├── exercise.ts
+│       │   │   └── workout.ts
+│       │   │
+│       │   ├── utils
+│       │   │   └── dateTime.ts
+│       │   │
+│       │   ├── App.css
+│       │   ├── App.tsx
+│       │   ├── index.css
+│       │   └── main.tsx
+│       │
+│       ├── .env.development
+│       ├── index.html
+│       ├── package.json
+│       ├── package-lock.json
+│       ├── tsconfig.json
+│       └── vite.config.ts
+│
+├── .gitignore
+└── README.md
 ```
 
-`FitnessTracker.db` is a local development artifact and is excluded from Git source control.
+`FitnessTracker.db` is a local development artifact and is ignored by Git.
 
 ---
 
-# Domain Model
+## Domain Model
 
-The application uses several related entities to represent fitness activity.
+The current domain contains six main entities:
 
-```text
-ApplicationUser
-    │
-    ├─────────────── Workouts
-    │                   │
-    │                   └──────── WorkoutExercises
-    │                                │
-    │                                ├──────── Exercise
-    │                                │
-    │                                └──────── WorkoutSets
-    │
-    ├─────────────── BodyMeasurements
-    │
-    └─────────────── CustomExercises
-```
+### ApplicationUser
 
----
+Represents an application user and owns:
 
-## ApplicationUser
+- Workouts
+- Body measurements
+- Custom exercises
 
-Represents an application user.
+Authentication has not yet been implemented. During development, a server-controlled development user is used so Workout ownership can be modeled correctly without allowing the client to submit arbitrary user IDs.
 
-Initial fields include:
+### Exercise
 
-```text
-Id
-DisplayName
-PreferredWeightUnit
-PreferredDistanceUnit
-CreatedAtUtc
-```
+Represents a reusable exercise definition.
 
-The user entity will later be integrated with ASP.NET Core Identity when authentication is implemented.
+Exercises can be:
 
----
+- Built-in
+- Custom
+- Strength
+- Cardio
+- Archived
 
-## Workout
+Archived exercises remain available to historical workouts but cannot be selected for new workout logging.
 
-Represents an individual training session.
+### Workout
 
-Example:
+Represents one training session.
 
-```text
-Push Day
-Leg Day
-Upper Body
-Sunday Long Run
-Tempo Run
-```
+A Workout contains:
 
-Important fields include:
+- Name
+- Workout type
+- Start time
+- Optional end time
+- Notes
+- Creation and update timestamps
+- Ordered WorkoutExercises
 
-```text
-Id
-UserId
-Name
-WorkoutType
-StartedAtUtc
-EndedAtUtc
-Notes
-CreatedAtUtc
-UpdatedAtUtc
-```
+### WorkoutExercise
 
-A user can have many workouts.
+Represents an Exercise used inside a specific Workout.
 
-```text
-ApplicationUser
-      1
-      │
-      │
-      *
-   Workout
-```
+This explicit join entity stores:
+
+- Workout relationship
+- Exercise relationship
+- Order within the workout
+- Exercise-specific workout notes
+- WorkoutSets
+
+### WorkoutSet
+
+Represents one recorded performance entry.
+
+Depending on the Exercise tracking method, a set may contain:
+
+- Repetitions
+- Weight
+- Duration
+- Distance
+- RPE
+- Set type
+- Notes
+
+### BodyMeasurement
+
+Represents user body measurements recorded over time.
+
+Body-measurement API and frontend functionality are planned for a later phase.
 
 ---
 
-## Exercise
+## Exercise Tracking Types
 
-Represents the definition of an exercise or activity.
-
-Examples:
-
-```text
-Bench Press
-Back Squat
-Deadlift
-Pull-Up
-Outdoor Run
-Treadmill Run
-Cycling
-```
-
-An exercise contains information such as:
-
-```text
-Name
-ExerciseType
-TrackingType
-PrimaryMuscleGroup
-Equipment
-IsCustom
-IsArchived
-```
-
-Exercises may either be built-in or user-created custom exercises.
-
-Built-in exercises are seeded through Entity Framework Core migrations and cannot be edited or archived through the user-facing Exercise API.
-
-Custom exercises can be created, updated, and archived through the application.
-
----
-
-## WorkoutExercise
-
-`WorkoutExercise` represents an exercise being performed during a particular workout.
-
-This entity exists because additional information belongs to the relationship between a workout and an exercise.
-
-For example:
-
-```text
-Push Day
-
-1. Bench Press
-2. Incline Dumbbell Press
-3. Cable Fly
-```
-
-The order of the exercises belongs to the workout rather than to the exercise definition.
-
-Important fields include:
-
-```text
-WorkoutId
-ExerciseId
-OrderIndex
-Notes
-```
-
----
-
-## WorkoutSet
-
-Represents an individual set or recorded performance entry.
-
-Strength example:
-
-```text
-Weight:
-83.9 kg
-
-Reps:
-8
-
-RPE:
-8
-```
-
-Cardio example:
-
-```text
-Distance:
-5000 metres
-
-Duration:
-1425 seconds
-```
-
-Important fields include:
-
-```text
-WorkoutExerciseId
-SetNumber
-SetType
-Reps
-WeightKg
-DurationSeconds
-DistanceMeters
-Rpe
-IsCompleted
-Notes
-```
-
-Several fields are nullable because different exercise types require different forms of tracking.
-
----
-
-## BodyMeasurement
-
-Represents a user's body measurement at a specific point in time.
-
-Initial fields include:
-
-```text
-UserId
-RecordedAtUtc
-WeightKg
-BodyFatPercentage
-Notes
-```
-
-This data will eventually support fitness progress visualization.
-
----
-
-# Exercise Tracking Types
-
-Different exercises require different input methods.
-
-The application currently defines:
+Exercises use one of four tracking strategies:
 
 ```text
 WeightAndReps
@@ -793,27 +382,60 @@ Duration
 DistanceAndDuration
 ```
 
-Examples:
+### WeightAndReps
 
-| Exercise | Tracking Type |
-| --- | --- |
-| Bench Press | WeightAndReps |
-| Back Squat | WeightAndReps |
-| Pull-Up | RepsOnly |
-| Push-Up | RepsOnly |
-| Plank | Duration |
-| Outdoor Run | DistanceAndDuration |
-| Cycling | DistanceAndDuration |
+Used for exercises such as:
 
-The React exercise-management interface already uses this value to provide appropriate tracking-method choices when custom exercises are created or edited.
+- Barbell Bench Press
+- Back Squat
+- Deadlift
 
-The same value will later determine which controls are displayed while logging exercise performance during workouts.
+Recorded fields:
+
+- Weight
+- Repetitions
+- Optional RPE
+- Set type
+- Optional notes
+
+### RepsOnly
+
+Used for movements where repetitions are the main tracked value.
+
+Recorded fields:
+
+- Repetitions
+- Optional RPE
+- Set type
+- Optional notes
+
+### Duration
+
+Used for exercises such as timed holds.
+
+Recorded fields:
+
+- Duration
+- Optional RPE
+- Set type
+- Optional notes
+
+### DistanceAndDuration
+
+Used for cardio activities such as running.
+
+Recorded fields:
+
+- Distance
+- Duration
+- Optional RPE
+- Optional notes
+
+Pace and similar values are calculated from source data rather than persisted separately.
 
 ---
 
-# Workout Types
-
-Workouts are currently categorized as:
+## Workout Types
 
 ```text
 Strength
@@ -821,24 +443,16 @@ Cardio
 Mixed
 ```
 
-Example:
+Workout/exercise compatibility is enforced by the API:
 
-```text
-Push Day
-→ Strength
-
-10K Run
-→ Cardio
-
-Gym Session + Conditioning
-→ Mixed
-```
+- Strength workouts accept Strength exercises
+- Cardio workouts accept Cardio exercises
+- Mixed workouts accept either
+- Existing exercise compatibility is checked before changing a workout type
 
 ---
 
-# Set Types
-
-Strength sets can be classified using:
+## Set Types
 
 ```text
 Warmup
@@ -847,367 +461,374 @@ Drop
 Failure
 ```
 
-Example:
-
-```text
-Bench Press
-
-Set 1
-95 lb × 10
-Warmup
-
-Set 2
-135 lb × 8
-Warmup
-
-Set 3
-185 lb × 8
-Working
-
-Set 4
-185 lb × 7
-Working
-```
+For the current cardio implementation, performance entries use the `Working` set type.
 
 ---
 
-# Design Decisions
+## Design Decisions
 
-Several architectural decisions have been made deliberately to keep the application maintainable and extensible.
+### Separate API and frontend
 
-## Canonical Weight Storage
+The backend is intentionally independent from the React application so other clients can use the same API later.
 
-Weight is stored internally in:
+### DTO separation
 
-```text
-kilograms
-```
+API request/response contracts are kept separate from EF Core entities.
 
-The frontend can eventually display either:
+This prevents clients from directly controlling server-owned fields and allows API contracts to evolve independently of the database model.
 
-```text
-kilograms
-```
+### Service layer
 
-or:
+Controllers delegate business rules and persistence behavior to feature services.
 
-```text
-pounds
-```
+Current service areas include:
 
-based on the user's preference.
+- Exercise service
+- Workout service
+- Current-user abstraction
 
-This avoids storing the same type of measurement using inconsistent units.
+### Server-controlled ownership
 
----
+Clients do not submit Workout `UserId` values.
 
-## Canonical Distance Storage
+The server determines the current user and applies ownership internally.
 
-Distance is stored internally in:
+A temporary development implementation is used until authentication is added.
 
-```text
-metres
-```
+### Canonical units
 
-It can later be displayed as:
+The database stores canonical units:
 
-```text
-kilometres
-```
+- Weight: kilograms
+- Distance: metres
 
-or:
+User preference and display conversion can be handled at the client/application layer.
 
-```text
-miles
-```
+### UTC timestamps
 
-depending on user preference.
+Persisted timestamps use UTC.
 
----
+The React frontend converts timestamps to browser-local time for display.
 
-## Calculated Values Are Not Stored Unnecessarily
+### Calculated values are not stored unnecessarily
 
-Where possible, the application stores underlying facts rather than values that can be calculated.
+Values such as:
 
-For example:
+- Pace
+- Workout duration
+- Exercise count
 
-```text
-Workout Duration
-=
-EndedAtUtc - StartedAtUtc
-```
+are derived from existing source data when needed.
 
-Strength training volume can be calculated using:
+### Exercise archiving
 
-```text
-Volume
-=
-Weight × Repetitions
-```
+Exercise definitions are soft-archived rather than deleted.
 
-Running pace can be calculated using:
+This preserves historical Workout references.
 
-```text
-Pace
-=
-Duration / Distance
-```
+### Completed workouts are read-only
 
-This prevents calculated values from becoming inconsistent with their source data.
+Normal Workout logging endpoints allow editing only while a Workout is active.
 
----
+Once `EndedAtUtc` is populated:
 
-## UTC Date Storage
+- New exercises cannot be added
+- Existing exercises cannot be removed
+- Sets cannot be added
+- Sets cannot be edited
+- Sets cannot be removed
+- Workout details cannot be edited
 
-Application timestamps are stored in UTC.
+Historical editing can be designed separately if needed later.
 
-Examples:
+### Server-assigned ordering
 
-```text
-StartedAtUtc
-EndedAtUtc
-CreatedAtUtc
-UpdatedAtUtc
-RecordedAtUtc
-```
+The server assigns:
 
-The frontend will convert UTC timestamps into the user's local time for display where appropriate.
+- `WorkoutExercise.OrderIndex`
+- `WorkoutSet.SetNumber`
+
+The client does not determine these values.
+
+When items are removed, remaining indexes/numbers are normalized.
+
+### Client-side routing
+
+React Router provides distinct application routes instead of keeping every feature inside a single page component.
 
 ---
 
-## Exercise Archiving
+## Database
 
-Exercises that may be associated with historical workout data should not be permanently deleted.
+### Provider
 
-Custom exercises can instead be marked:
+SQLite
+
+### Connection String
 
 ```text
-IsArchived = true
+Data Source=Data/FitnessTracker.db
 ```
 
-Archived exercises are excluded from the normal active exercise library while remaining available for historical references.
+### Tables
 
-Built-in exercises are protected from user modification and archiving.
+```text
+Users
+Exercises
+Workouts
+WorkoutExercises
+WorkoutSets
+BodyMeasurements
+__EFMigrationsHistory
+```
+
+### Important Relationships
+
+```text
+ApplicationUser
+├── Workouts
+├── BodyMeasurements
+└── CustomExercises
+
+Workout
+└── WorkoutExercises
+    ├── Exercise
+    └── WorkoutSets
+```
+
+### Delete Behaviors
+
+- User → Workouts: Cascade
+- User → BodyMeasurements: Cascade
+- User → CustomExercises: SetNull
+- Workout → WorkoutExercises: Cascade
+- WorkoutExercise → WorkoutSets: Cascade
+- Exercise → WorkoutExercises: Restrict
+
+Exercise deletion is restricted because historical Workout records may reference the Exercise.
+
+### Important Indexes
+
+- Workout `(UserId, StartedAtUtc)`
+- WorkoutExercise unique `(WorkoutId, OrderIndex)`
+- WorkoutSet unique `(WorkoutExerciseId, SetNumber)`
+- BodyMeasurement `(UserId, RecordedAtUtc)`
+- Exercise `CreatedByUserId`
+- Exercise `(Name, IsArchived)`
 
 ---
 
-## API DTO Separation
+## Database Migrations
 
-Entity Framework Core entities are not exposed directly as API contracts.
-
-Requests and responses use dedicated DTOs such as:
+Current migrations:
 
 ```text
-CreateExerciseDto
-UpdateExerciseDto
-ExerciseResponseDto
+InitialCreate
+SeedBuiltInExercises
 ```
 
-This prevents clients from directly controlling server-managed properties such as IDs, creation timestamps, archive state, and ownership information.
+The first migration created the application schema.
+
+The second migration inserted the built-in Exercise library using stable GUIDs.
+
+Local SQLite database files are ignored by Git while migrations are committed.
 
 ---
 
-## Service Layer
+## Built-In Exercise Library
 
-Business logic is kept outside API controllers.
+The application currently seeds 42 built-in exercises across Strength and Cardio categories.
 
-Exercise requests follow:
+Built-in exercises:
 
-```text
-ExercisesController
-        ↓
-IExerciseService
-        ↓
-ExerciseService
-        ↓
-FitnessTrackerDbContext
-```
+- Are created through migration data
+- Use stable IDs
+- Cannot be edited
+- Cannot be archived
+- Can be used in workouts
 
-This keeps controllers focused on HTTP behavior while validation and application rules remain in the service layer.
+Custom exercises can be:
 
----
-
-## Separate REST API
-
-The React frontend does not communicate directly with the database.
-
-All requests follow:
-
-```text
-React
-   ↓
-ASP.NET Core API
-   ↓
-Entity Framework Core
-   ↓
-Database
-```
-
-This keeps application responsibilities separated and makes additional clients possible later.
-
----
-
-## Client-Side Routing
-
-The React application uses React Router to separate major application areas.
-
-Current routes include:
-
-```text
-/
-→ Dashboard
-
-/exercises
-→ Exercise Management
-
-/workouts
-→ Workout Management
-```
-
-This keeps individual features out of the root `App.tsx` component and provides a scalable structure as the application grows.
-
----
-
-# API
-
-The ASP.NET Core backend currently runs locally at:
-
-```text
-https://localhost:7081
-```
-
-HTTP development endpoint:
-
-```text
-http://localhost:5081
-```
-
----
-
-## Health Check
-
-Endpoint:
-
-```http
-GET /api/health
-```
-
-Local URL:
-
-```text
-https://localhost:7081/api/health
-```
-
-Current response:
-
-```json
-{
-  "status": "healthy",
-  "application": "Fitness Tracker API"
-}
-```
+- Created
+- Edited
+- Archived
 
 ---
 
 ## Exercise API
 
-The Exercise API currently supports:
+Base route:
+
+```http
+/api/exercises
+```
+
+### List Exercises
 
 ```http
 GET /api/exercises
 ```
 
-Returns the active exercise library.
-
-Optional query parameter:
-
-```text
-includeArchived=true
-```
-
-Example:
+Optional archived inclusion:
 
 ```http
 GET /api/exercises?includeArchived=true
 ```
 
----
+### Get Exercise
 
 ```http
 GET /api/exercises/{id}
 ```
 
-Returns a specific exercise by GUID.
-
----
+### Create Custom Exercise
 
 ```http
 POST /api/exercises
 ```
 
-Creates a custom exercise.
-
-Example request:
+Example:
 
 ```json
 {
-  "name": "Kettlebell Goblet Squat",
+  "name": "Cable Chest Press",
   "exerciseType": "Strength",
   "trackingType": "WeightAndReps",
-  "primaryMuscleGroup": "Quadriceps",
-  "equipment": "Kettlebell"
+  "primaryMuscleGroup": "Chest",
+  "equipment": "Cable"
 }
 ```
 
-Successful creation returns:
-
-```text
-201 Created
-```
-
----
+### Update Custom Exercise
 
 ```http
 PUT /api/exercises/{id}
 ```
 
-Updates an active custom exercise.
-
-Built-in exercises cannot be modified.
-
----
+### Archive Custom Exercise
 
 ```http
 DELETE /api/exercises/{id}
 ```
 
-Soft-archives a custom exercise.
+Archiving is a soft-delete operation.
 
-The record remains in the database with:
+### Exercise Business Rules
 
-```text
-IsArchived = true
+- Exercise names are checked case-insensitively for active duplicates
+- Built-in exercises cannot be edited
+- Built-in exercises cannot be archived
+- Archived custom exercises cannot be edited
+- Strength/Cardio tracking-type combinations are validated
+- Server-owned fields are not accepted from client requests
+
+---
+
+## Workout API
+
+Base route:
+
+```http
+/api/workouts
 ```
 
-Built-in exercises cannot be archived.
+### List Workouts
 
-### Add Exercise to Workout
+```http
+GET /api/workouts
+```
+
+Returns lightweight workout summaries belonging to the current application user.
+
+### Get Workout
+
+```http
+GET /api/workouts/{id}
+```
+
+Returns the full nested Workout, including exercises and sets.
+
+### Start Workout
+
+```http
+POST /api/workouts
+```
+
+Example:
+
+```json
+{
+  "name": "Push Day",
+  "workoutType": "Strength",
+  "notes": "Chest, shoulders, and triceps"
+}
+```
+
+The server assigns ownership and lifecycle timestamps.
+
+### Update Active Workout
+
+```http
+PUT /api/workouts/{workoutId}
+```
+
+Only active workouts can be changed.
+
+### Add Exercise
 
 ```http
 POST /api/workouts/{workoutId}/exercises
 ```
 
-Example:
-{
-  "exerciseId": "10000000-0000-0000-0000-000000000001",
-  "notes": "Pause each rep on chest"
-}
+The server assigns exercise order and validates compatibility, ownership, archive state, and duplicates.
+
+### Remove Exercise
+
+```http
+DELETE /api/workouts/{workoutId}/exercises/{workoutExerciseId}
+```
+
+Returns `204 No Content` on success and renumbers remaining exercises.
+
+### Add Set
+
+```http
+POST /api/workouts/{workoutId}/exercises/{workoutExerciseId}/sets
+```
+
+The server validates performance data against the Exercise tracking type.
+
+### Update Set
+
+```http
+PUT /api/workouts/{workoutId}/exercises/{workoutExerciseId}/sets/{setId}
+```
+
+### Remove Set
+
+```http
+DELETE /api/workouts/{workoutId}/exercises/{workoutExerciseId}/sets/{setId}
+```
+
+Remaining set numbers are normalized after deletion.
+
+### Complete Workout
+
+```http
+POST /api/workouts/{workoutId}/complete
+```
+
+Completion requires at least one completed set.
+
+Once completed, the Workout becomes read-only to normal logging operations.
 
 ---
 
-## Exercise API Response Codes
+## API Error Handling
 
-Exercise operations may return:
+The API uses appropriate HTTP status codes and ASP.NET Core Problem Details.
+
+Typical responses include:
 
 ```text
 200 OK
@@ -1218,785 +839,479 @@ Exercise operations may return:
 409 Conflict
 ```
 
-Validation and business-rule errors use ASP.NET Core problem responses and are surfaced by the React frontend.
+The React API client parses both standard Problem Details and ASP.NET Core validation errors.
 
 ---
 
-## Workout API
-
-The initial Workout API currently supports:
-
-```http
-GET /api/workouts
-
-## OpenAPI
-
-The OpenAPI specification is available during development at:
+## Frontend API Layer
 
 ```text
-https://localhost:7081/openapi/v1.json
+apiClient.ts
+├── Base URL configuration
+├── fetch wrapper
+├── HTTP status checking
+└── ProblemDetails parsing
+
+healthApi.ts
+└── Health endpoint
+
+exercisesApi.ts
+└── Exercise endpoints
+
+workoutsApi.ts
+└── Workout endpoints
 ```
 
----
-
-## Scalar API Documentation
-
-Interactive API documentation is available during development at:
-
-```text
-https://localhost:7081/scalar
-```
-
-Current API endpoints can be tested directly through Scalar during development.
-
----
-
-# Getting Started
-
-## Prerequisites
-
-Before running the project locally, install:
-
-* Git
-* .NET 10 SDK
-* Node.js
-* npm
-
-The project was initially developed using:
-
-```text
-Visual Studio 2026
-.NET SDK 10.0.400
-```
-
----
-
-## Clone the Repository
-
-```bash
-git clone https://github.com/niko2tall/fitness-tracker.git
-```
-
-Navigate into the repository:
-
-```bash
-cd fitness-tracker
-```
-
----
-
-## Restore .NET Dependencies
-
-From the repository root:
-
-```bash
-dotnet restore
-```
-
----
-
-## Install Frontend Dependencies
-
-Navigate to the React application:
-
-```bash
-cd src/fitness-tracker-web
-```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Return to the repository root if necessary:
-
-```bash
-cd ../..
-```
-
----
-
-## Trust the Development HTTPS Certificate
-
-For local HTTPS development:
-
-```bash
-dotnet dev-certs https --trust
-```
-
-Follow the operating system prompt to trust the development certificate.
-
----
-
-## Create the Local Database
-
-Navigate to the API project:
-
-```bash
-cd src/FitnessTracker.Api
-```
-
-Apply all Entity Framework Core migrations:
-
-```bash
-dotnet ef database update
-```
-
-This creates the local SQLite database and applies:
-
-```text
-InitialCreate
-SeedBuiltInExercises
-```
-
-The local database file is ignored by Git and can be recreated from the migration history.
-
----
-
-# Running the Application
-
-The frontend and backend run as separate development processes.
-
-Both must be running for the complete application to work.
-
----
-
-## Start the Backend
-
-Open a terminal from the repository root.
-
-Navigate to:
-
-```bash
-cd src/FitnessTracker.Api
-```
-
-Run:
-
-```bash
-dotnet run --launch-profile https
-```
-
-Expected addresses:
-
-```text
-https://localhost:7081
-http://localhost:5081
-```
-
-Keep this terminal running.
-
----
-
-## Start the Frontend
-
-Open a second terminal.
-
-Navigate to:
-
-```bash
-cd src/fitness-tracker-web
-```
-
-Run:
-
-```bash
-npm run dev
-```
-
-The Vite development server should run at:
-
-```text
-http://localhost:5173
-```
+`api.ts` acts as a barrel export.
 
 ---
 
 ## Frontend Routes
 
-Current frontend routes include:
-
 ```text
-http://localhost:5173/
-```
+/
+Dashboard
 
-Dashboard.
+/exercises
+Exercise Library
 
-```text
-http://localhost:5173/exercises
-```
+/workouts
+Workout list and workout creation
 
-Exercise Management.
-
-```text
-http://localhost:5173/workouts
-```
-
-Workout Management route for the next development phase.
-
----
-
-## Verify Frontend-to-Backend Communication
-
-With both applications running, open:
-
-```text
-http://localhost:5173/exercises
-```
-
-The React application should request:
-
-```http
-GET https://localhost:7081/api/exercises
-```
-
-and display the exercise library stored in SQLite.
-
-Exercise details, creation, editing, and archiving should also communicate with the ASP.NET Core API.
-
-The browser Network tools can be used to verify requests such as:
-
-```text
-GET     /api/exercises
-GET     /api/exercises/{id}
-POST    /api/exercises
-PUT     /api/exercises/{id}
-DELETE  /api/exercises/{id}
+/workouts/{workoutId}
+Workout session details and active logging workflow
 ```
 
 ---
 
-# Environment Configuration
+## Current React Features
 
-The frontend development environment uses:
+### Dashboard
 
-```text
-src/fitness-tracker-web/.env.development
-```
+Provides navigation into Exercise Management and Workout Tracking.
 
-Current configuration:
+### Exercise Library
 
-```env
-VITE_API_BASE_URL=https://localhost:7081
-```
+Supports:
 
-Vite environment variables intended for frontend use must use the:
+- Built-in and custom exercises
+- Search and filtering
+- Exercise details
+- Custom exercise creation
+- Custom exercise editing
+- Custom exercise archiving
+- API validation messages
+- Responsive layouts
 
-```text
-VITE_
-```
+### Workouts
 
-prefix.
+Currently supports:
 
-Secrets should never be stored in frontend environment variables because frontend values are accessible to users of the application.
+- Loading real Workout summaries
+- Active and Completed sections
+- Workout status/type indicators
+- Exercise counts
+- Localized timestamps
+- Empty state
+- Start Workout dialog
+- Strength/Cardio/Mixed creation
+- Automatic navigation after creation
+- Dedicated Workout session URLs
+- Loading full nested Workout data
+- Displaying existing exercises and sets
+- Read-only completed Workout display
+- Responsive layouts
 
 ---
 
-# CORS
+## Local Development URLs
 
-During local development:
+### React
 
 ```text
-Frontend:
 http://localhost:5173
 ```
 
-communicates with:
+### API HTTPS
 
 ```text
-Backend:
 https://localhost:7081
 ```
 
-ASP.NET Core CORS configuration permits requests from the Vite development server.
+### API HTTP
 
-Production CORS configuration will be updated when the application is deployed.
+```text
+http://localhost:5081
+```
+
+### Health
+
+```text
+https://localhost:7081/api/health
+```
+
+### Exercise API
+
+```text
+https://localhost:7081/api/exercises
+```
+
+### Workout API
+
+```text
+https://localhost:7081/api/workouts
+```
+
+### OpenAPI JSON
+
+```text
+https://localhost:7081/openapi/v1.json
+```
+
+### Scalar
+
+```text
+https://localhost:7081/scalar
+```
 
 ---
 
-# Database
+## Getting Started
 
-The application currently uses:
+### Prerequisites
 
-```text
-Entity Framework Core
-        ↓
-SQLite
+Install:
+
+- .NET 10 SDK
+- Node.js
+- npm
+- Git
+
+The project is currently developed with .NET SDK 10.0.400.
+
+### 1. Clone the Repository
+
+```powershell
+git clone https://github.com/niko2tall/fitness-tracker.git
+cd fitness-tracker
 ```
 
-The local connection string is configured in the ASP.NET Core application.
+### 2. Restore Backend Packages
 
-Current database flow:
-
-```text
-Domain Models
-      ↓
-FitnessTrackerDbContext
-      ↓
-Entity Framework Core
-      ↓
-Migrations
-      ↓
-SQLite Database
+```powershell
+dotnet restore
 ```
 
-Current migrations include:
+### 3. Trust the ASP.NET Development Certificate
 
-```text
-InitialCreate
-SeedBuiltInExercises
+```powershell
+dotnet dev-certs https --trust
 ```
 
-The database currently contains the application tables:
+### 4. Apply Database Migrations
 
-```text
-Users
-Exercises
-Workouts
-WorkoutExercises
-WorkoutSets
-BodyMeasurements
-```
-
-Entity Framework Core also maintains:
-
-```text
-__EFMigrationsHistory
-```
-
-to record applied migrations.
-
-The local SQLite database file is excluded from Git source control.
-
-A new development database can be recreated using:
-
-```bash
+```powershell
+cd src/FitnessTracker.Api
 dotnet ef database update
 ```
 
----
+### 5. Run the API
 
-# Database Relationships
+```powershell
+dotnet run --launch-profile https
+```
 
-The current database model includes the following relationships:
+### 6. Install Frontend Dependencies
+
+In another terminal:
+
+```powershell
+cd src/fitness-tracker-web
+npm install
+```
+
+### 7. Configure Frontend API URL
+
+`src/fitness-tracker-web/.env.development`:
 
 ```text
-ApplicationUser
-│
-├── 1 → many Workouts
-│
-├── 1 → many BodyMeasurements
-│
-└── 1 → many Custom Exercises
-
-
-Workout
-│
-└── 1 → many WorkoutExercises
-
-
-Exercise
-│
-└── 1 → many WorkoutExercises
-
-
-WorkoutExercise
-│
-└── 1 → many WorkoutSets
+VITE_API_BASE_URL=https://localhost:7081
 ```
 
-Current delete behaviour includes:
+### 8. Run React
+
+```powershell
+npm run dev
+```
+
+Open:
 
 ```text
-User → Workouts
-CASCADE
-
-User → BodyMeasurements
-CASCADE
-
-User → Custom Exercises
-SET NULL
-
-Workout → WorkoutExercises
-CASCADE
-
-Exercise → WorkoutExercises
-RESTRICT
-
-WorkoutExercise → WorkoutSets
-CASCADE
-```
-
-The database also includes uniqueness constraints for:
-
-```text
-WorkoutId + OrderIndex
-```
-
-and:
-
-```text
-WorkoutExerciseId + SetNumber
-```
-
-to protect exercise ordering and set numbering within workouts.
-
----
-
-# Development Roadmap
-
-Development is being completed incrementally so each architectural layer can be tested before another is introduced.
-
-## Phase 1 — Project Foundation
-
-* [x] Create GitHub repository
-* [x] Create Visual Studio solution
-* [x] Create ASP.NET Core API
-* [x] Create React frontend
-* [x] Configure TypeScript
-* [x] Configure HTTPS
-* [x] Configure CORS
-* [x] Connect React to ASP.NET Core
-* [x] Add API health endpoint
-* [x] Add OpenAPI
-* [x] Add Scalar API documentation
-
----
-
-## Phase 2 — Domain and Database
-
-* [x] Design initial domain model
-* [x] Create domain entities
-* [x] Create application enums
-* [x] Create `FitnessTrackerDbContext`
-* [x] Configure entity relationships
-* [x] Configure database indexes
-* [x] Configure delete behaviour
-* [x] Configure enum conversions
-* [x] Configure SQLite
-* [x] Create initial migration
-* [x] Create local database
-* [x] Verify database schema
-
----
-
-## Phase 3 — Exercise Management API
-
-* [x] Seed built-in exercises
-* [x] Create exercise DTOs
-* [x] Create exercise service
-* [x] Create Exercise API controller
-* [x] Implement GET exercises
-* [x] Implement GET exercise by ID
-* [x] Implement POST exercise
-* [x] Implement PUT exercise
-* [x] Implement exercise archiving
-* [x] Add API validation and business rules
-* [x] Test Exercise API using Scalar
-
----
-
-## Phase 4 — Exercise Frontend
-
-* [x] Create exercise API client
-* [x] Create exercise list
-* [x] Create exercise search and filtering
-* [x] Create exercise details
-* [x] Create custom exercise form
-* [x] Create exercise editing and archiving
-* [x] Implement responsive Exercise Management layout
-* [x] Verify Exercise CRUD workflow end-to-end
-
----
-
-## Phase 5 — Application Structure
-
-* [x] Add client-side routing
-* [x] Create shared application navigation
-* [x] Move Exercise Management into its own page
-* [x] Create Dashboard route
-* [x] Create Workouts route
-* [x] Add not-found route
-* [x] Verify desktop and mobile navigation
-
----
-
-## Phase 6 — Workout Logging
-
-* [x] Create workout DTOs
-* [x] Add development current-user abstraction
-* [x] Create workout service
-* [x] Create workout API
-* [x] Create frontend workout API contracts and client
-* [ ] Create workout creation workflow
-* [x] Add exercises to workouts
-* [x] Add sets to exercises
-* [x] Record weight and repetitions
-* [x] Record duration
-* [x] Record distance
-* [x] Record RPE
-* [x] Add workout notes
-* [x] Complete workouts
-* [ ] Build React workout logging interface
-
----
-
-## Phase 7 — Workout History
-
-* [ ] Display workout history
-* [ ] Filter workouts
-* [ ] View workout details
-* [ ] Edit previous workouts
-* [ ] Archive or remove workouts
-* [ ] Show previous exercise performance
-
----
-
-## Phase 8 — Progress Tracking
-
-* [ ] Calculate training volume
-* [ ] Detect personal records
-* [ ] Display exercise progression
-* [ ] Display workout frequency
-* [ ] Display running totals
-* [ ] Calculate pace
-* [ ] Track body weight
-* [ ] Display body measurement history
-* [ ] Add progress charts
-
----
-
-## Phase 9 — Authentication
-
-* [ ] Integrate ASP.NET Core Identity
-* [ ] Extend `ApplicationUser`
-* [ ] Add registration
-* [ ] Add login
-* [ ] Add logout
-* [ ] Protect user data
-* [ ] Add authorization
-* [ ] Associate workouts with authenticated users
-* [ ] Associate custom exercises with authenticated users
-
----
-
-## Phase 10 — Mobile and PWA
-
-* [ ] Complete application-wide responsive UI
-* [ ] Refine mobile navigation
-* [ ] Create mobile-friendly workout logging interface
-* [ ] Add PWA manifest
-* [ ] Add application icons
-* [ ] Add installable web application support
-* [ ] Investigate offline workout logging
-
----
-
-## Phase 11 — Deployment
-
-* [ ] Select production database
-* [ ] Configure production environment
-* [ ] Deploy ASP.NET Core API
-* [ ] Deploy React frontend
-* [ ] Configure production CORS
-* [ ] Configure HTTPS
-* [ ] Configure SPA route fallback
-* [ ] Add deployed application URL
-* [ ] Add screenshots to README
-
----
-
-# Git Workflow
-
-Development is committed in logical milestones rather than after every individual file.
-
-Examples of project milestones:
-
-```text
-Project foundation
-      ↓
-Domain model
-      ↓
-Database configuration
-      ↓
-Exercise API
-      ↓
-Exercise frontend
-      ↓
-Application routing
-      ↓
-Workout API
-      ↓
-Workout frontend
-      ↓
-Authentication
-      ↓
-Deployment
-```
-
-Typical workflow:
-
-```bash
-git status
-```
-
-Stage changes:
-
-```bash
-git add .
-```
-
-Commit:
-
-```bash
-git commit -m "Describe completed feature"
-```
-
-Push:
-
-```bash
-git push
-```
-
-Commit messages are intended to describe complete development milestones.
-
-Examples:
-
-```text
-Set up ASP.NET Core API and React frontend
-
-Add core fitness tracker domain models
-
-Add comprehensive project README
-
-Add EF Core database context and model configuration
-
-Configure SQLite database integration
-
-Add initial database migration
-
-Seed built-in exercise library
-
-Add exercise API DTOs
-
-Add exercise service layer
-
-Add exercise read API endpoints
-
-Add exercise write API endpoints
-
-Add React exercise library
-
-Add exercise search and filtering
-
-Add exercise detail view
-
-Add custom exercise creation UI
-
-Complete exercise management frontend
-
-Add application routing and navigation
+http://localhost:5173
 ```
 
 ---
 
-# Building the Project
+## Building the Project
 
-From the repository root:
+### Backend
 
-```bash
-dotnet build FitnessTracker.slnx
+```powershell
+dotnet build .\FitnessTracker.slnx
 ```
 
-A successful build should end with:
+### Frontend
 
-```text
-Build succeeded.
-```
-
-Frontend production builds can be tested separately from:
-
-```bash
+```powershell
 cd src/fitness-tracker-web
 npm run build
 ```
 
-Both builds are checked at major development milestones.
-
 ---
 
-# Future Improvements
+## EF Core Commands
 
-Potential future additions include:
-
-* Workout templates
-* Saved workout routines
-* Training programs
-* Exercise favorites
-* Rest timers
-* Automatic personal record detection
-* Exercise history during active workouts
-* Estimated one-rep maximum calculations
-* Weekly and monthly volume analysis
-* Muscle-group volume tracking
-* Workout streaks
-* Running split tracking
-* Interval workout support
-* Heart-rate data
-* Calorie estimates
-* Data export
-* CSV export
-* User profile customization
-* Theme support
-* Manual light/dark theme selection
-* Push notifications
-* Offline workout logging
-* Cloud synchronization
-* Native mobile client
-
-These features are not guaranteed and will be evaluated as the core application develops.
-
----
-
-# Project Goals
-
-The primary goal of Fitness Tracker is to create a complete full-stack application that demonstrates practical software engineering rather than only isolated programming examples.
-
-The project is intended to demonstrate experience with:
+Run EF commands from:
 
 ```text
-C#
-ASP.NET Core
-REST APIs
-React
-TypeScript
-React Router
-Entity Framework Core
-Relational Databases
-SQL
-Frontend / Backend Integration
-Responsive Design
-Authentication
-Git
-GitHub
-Software Architecture
+src/FitnessTracker.Api
 ```
 
-The project also provides an opportunity to demonstrate database-focused development while still building a complete user-facing interface.
+Apply migrations:
+
+```powershell
+dotnet ef database update
+```
+
+Create a migration only when the EF model intentionally changes:
+
+```powershell
+dotnet ef migrations add MigrationName
+```
+
+View migrations:
+
+```powershell
+dotnet ef migrations list
+```
 
 ---
 
-# Portfolio Status
+## Development Principles
 
-Fitness Tracker is an active portfolio project.
+- Keep database entities separate from API DTOs
+- Keep controllers thin
+- Put business logic in services
+- Keep ownership decisions on the server
+- Store canonical measurement units
+- Store timestamps in UTC
+- Avoid storing values that can be calculated
+- Preserve historical references
+- Use explicit relational entities when relationships contain data
+- Keep API responses convenient for frontend use
+- Keep feature-specific frontend API code separate
+- Maintain responsive layouts as features are introduced
+- Build backend behavior before depending on it in the UI
+- Commit coherent development milestones rather than every small edit
 
-The repository represents the development process as well as the finished application, with features being added incrementally and committed as working milestones.
+---
 
-The Exercise Management feature is currently implemented end-to-end across the database, REST API, and React frontend.
+## Roadmap
 
-Current development is moving into workout logging and workout data management.
+### Phase 1 — Project Foundation
 
-A live deployment is not currently available.
+- [x] Create GitHub repository
+- [x] Create solution
+- [x] Create ASP.NET Core API
+- [x] Create React + TypeScript + Vite frontend
+- [x] Configure HTTPS
+- [x] Configure development ports
+- [x] Configure CORS
+- [x] Create health endpoint
+- [x] Configure OpenAPI
+- [x] Configure Scalar
+- [x] Add project README
 
-Screenshots and deployment links will be added as the application reaches a more complete state.
+### Phase 2 — Domain and Database
+
+- [x] Design core domain model
+- [x] Add domain enums
+- [x] Add EF Core
+- [x] Add SQLite
+- [x] Create DbContext
+- [x] Configure relationships
+- [x] Configure delete behaviors
+- [x] Configure indexes
+- [x] Configure enum storage
+- [x] Create initial migration
+- [x] Create local database
+- [x] Verify migration history
+- [x] Seed built-in exercise library
+
+### Phase 3 — Exercise Management API
+
+- [x] Create Exercise DTOs
+- [x] Create Exercise service
+- [x] Add Exercise read endpoints
+- [x] Add Exercise create endpoint
+- [x] Add Exercise update endpoint
+- [x] Add Exercise archive endpoint
+- [x] Add Exercise validation
+- [x] Protect built-in exercises
+- [x] Test Exercise API through Scalar
+
+### Phase 4 — Exercise Frontend
+
+- [x] Create Exercise TypeScript contracts
+- [x] Connect React to Exercise API
+- [x] Build Exercise Library
+- [x] Add search
+- [x] Add filtering
+- [x] Add Exercise details
+- [x] Add custom Exercise creation
+- [x] Add custom Exercise editing
+- [x] Add custom Exercise archiving
+- [x] Surface API validation messages
+- [x] Verify responsive layout
+- [x] Verify Exercise CRUD end-to-end
+
+### Phase 5 — Application Structure
+
+- [x] Add React Router
+- [x] Add shared application layout
+- [x] Add Dashboard
+- [x] Add Exercise route
+- [x] Add Workout route
+- [x] Add Not Found route
+- [x] Add responsive navigation
+
+### Phase 6 — Workout Logging
+
+- [x] Create Workout DTOs
+- [x] Add development current-user abstraction
+- [x] Create Workout service
+- [x] Create Workout API
+- [x] Create frontend Workout API contracts and client
+- [x] Create Workout creation workflow
+- [x] Add exercises to Workouts
+- [x] Add sets to exercises
+- [x] Record weight and repetitions
+- [x] Record duration
+- [x] Record distance
+- [x] Record RPE
+- [x] Add Workout notes
+- [x] Complete Workouts
+- [ ] Build full React Workout logging interface
+
+### Phase 7 — Workout History
+
+- [ ] Build Workout history page
+- [ ] Add detailed completed Workout view
+- [ ] Add filtering and date navigation
+- [ ] Add useful Workout summary metrics
+- [ ] Decide whether historical Workout editing is supported
+
+### Phase 8 — Progress Tracking
+
+- [ ] Personal-record detection
+- [ ] Strength progress charts
+- [ ] Exercise history
+- [ ] Body-measurement API
+- [ ] Body-measurement UI
+- [ ] Body-weight charts
+- [ ] Additional progress metrics
+
+### Phase 9 — Authentication
+
+- [ ] Add authentication
+- [ ] Add registration and login
+- [ ] Replace development current-user implementation
+- [ ] Associate custom Exercises with authenticated users
+- [ ] Scope all user-owned resources to authenticated identity
+
+### Phase 10 — Mobile / PWA
+
+- [ ] Add web app manifest
+- [ ] Add installable PWA behavior
+- [ ] Review touch interactions
+- [ ] Improve offline/error handling
+- [ ] Optimize the active Workout logger for mobile use
+
+### Phase 11 — Deployment
+
+- [ ] Select production hosting
+- [ ] Select production database strategy
+- [ ] Configure production environment
+- [ ] Configure SPA route fallback
+- [ ] Deploy API
+- [ ] Deploy frontend
+- [ ] Add production configuration
+- [ ] Add live project URL
+
+---
+
+## Git Workflow
+
+Major development milestones include:
+
+```text
+Set up ASP.NET Core API and React frontend
+Add core fitness tracker domain models
+Add comprehensive project README
+Add EF Core database context and model configuration
+Configure SQLite database integration
+Add initial database migration
+Update database development progress
+Seed built-in exercise library
+Add exercise API DTOs
+Add exercise service layer
+Add exercise read API endpoints
+Add exercise write API endpoints
+Document completed exercise API
+Add React exercise library
+Add exercise search and filtering
+Add exercise detail view
+Add custom exercise creation UI
+Complete exercise management frontend
+Add application routing and navigation
+Add workout API DTOs
+Add workout service foundation
+Add initial workout API endpoints
+Add workout exercise assignment
+Add workout set logging
+Add workout completion workflow
+Add active workout correction operations
+Add frontend workout API client
+Add workout list and creation UI
+```
+
+---
+
+## Portfolio Status
+
+The application currently demonstrates:
+
+- Full-stack architecture
+- C# and ASP.NET Core API development
+- REST API design
+- Entity Framework Core
+- Relational database modeling
+- SQLite persistence
+- Database migrations
+- Seed data
+- DTO-based API contracts
+- Service-layer architecture
+- Server-controlled resource ownership
+- Validation and business-rule enforcement
+- Nested resource design
+- TypeScript API modeling
+- React component development
+- React Router
+- Responsive UI design
+- Frontend/backend integration
+- Error handling across API and UI layers
+- Git-based incremental development
+
+Exercise Management is complete end-to-end.
+
+Workout Logging has a complete backend lifecycle and now includes the first React workflows for listing, creating, routing to, and viewing Workout sessions. Current development is focused on making active Workout sessions fully interactive from the frontend.

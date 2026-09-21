@@ -20,6 +20,9 @@ import NotFoundPage
 import WorkoutsPage
     from './pages/WorkoutsPage';
 
+import WorkoutSessionPage
+    from './pages/WorkoutSessionPage';
+
 function App() {
     return (
         <Routes>
@@ -37,6 +40,11 @@ function App() {
                 <Route
                     path="/workouts"
                     element={<WorkoutsPage />}
+                />
+
+                <Route
+                    path="/workouts/:workoutId"
+                    element={<WorkoutSessionPage />}
                 />
 
                 <Route
