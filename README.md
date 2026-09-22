@@ -6,7 +6,7 @@ The project is being built as a portfolio application with a separate ASP.NET Co
 
 ## Current Status
 
-Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes both the Exercise History API foundation and a dedicated React Exercise History experience.
+Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes the Exercise History API, a dedicated React Exercise History experience, and tracking-type-specific personal-record detection derived from finalized Workout Sets.
 
 ### Current Development Focus
 
@@ -15,7 +15,7 @@ The current development phase is **Progress Tracking**:
 - Exercise History API and frontend contracts
 - Exercise History UI
 - Historical Workout links for each Exercise
-- Personal-record detection
+- Tracking-type-specific personal-record detection
 - Strength progress charts
 - Body-measurement API
 - Body-measurement UI
@@ -203,7 +203,8 @@ fitness-tracker
 │       │   │   │   └── AppLayout.tsx
 │       │   │   │
 │       │   │   ├── progress
-│       │   │   │   └── ExerciseHistoryWorkoutCard.tsx
+│       │   │   │   ├── ExerciseHistoryWorkoutCard.tsx
+│       │   │   │   └── ExercisePersonalRecords.tsx
 │       │   │   │
 │       │   │   └── workouts
 │       │   │       ├── AddWorkoutExerciseDialog.tsx
@@ -252,6 +253,7 @@ fitness-tracker
 │       │   │
 │       │   ├── utils
 │       │   │   ├── dateTime.ts
+│       │   │   ├── personalRecords.ts
 │       │   │   └── workoutMetrics.ts
 │       │   │
 │       │   ├── App.css
@@ -830,10 +832,12 @@ Supports:
 - Links back to the originating completed Workout
 - Session count and total historical Set count
 - Most-recent and first-logged timestamps
+- Tracking-type-specific personal-record cards
+- Source Workout and Set references for each record
 - Archived Exercise history remains viewable
 - Empty-history state
 - API error/loading states
-- Responsive historical Set layout
+- Responsive historical Set and record layouts
 - Direct Exercise History links from Workout Exercise cards
 
 ### Workout History
@@ -884,6 +888,52 @@ EndedAtUtc - StartedAtUtc
 No additional database field is stored for duration.
 
 Invalid or incomplete timestamps are excluded from duration aggregation rather than producing misleading values.
+
+---
+
+## Personal Record Detection
+
+Personal records are derived on the frontend from finalized Exercise History data. They are not stored as separate database rows.
+
+Current records depend on `ExerciseTrackingType`.
+
+### WeightAndReps
+
+- Heaviest Weight
+- Most Reps in a Set
+- Highest Set Volume (`WeightKg × Reps`)
+
+### RepsOnly
+
+- Most Reps in a Set
+
+### Duration
+
+- Longest Duration
+
+### DistanceAndDuration
+
+- Longest Distance
+- Longest Duration
+- Fastest Average Pace
+
+Fastest pace is calculated only when both distance and duration are greater than zero.
+
+Each record retains its source:
+
+- Workout ID
+- Workout name
+- completion timestamp
+- Set number
+- Set type
+- source Set details
+
+When two performances have the same record value, the most recent one is retained because Exercise History arrives newest-first and record replacement occurs only for a strictly better value.
+
+The implementation uses finalized completed-Workout data only, so active-session corrections cannot temporarily alter Progress records.
+
+Records remain derived instead of persisted so corrected or newly finalized historical data automatically produces the appropriate current record without synchronization logic.
+
 
 ---
 
@@ -970,6 +1020,12 @@ If history grows substantially, the same UI can later be backed by server-side f
 Current History metrics are derived from the same lightweight filtered Workout summaries already loaded for the page.
 
 This avoids extra API calls and redundant aggregate storage.
+
+### Derived Personal Records
+
+Exercise personal records are calculated from finalized Exercise History responses rather than persisted separately.
+
+This keeps the completed Workout/Set data as the source of truth and avoids stale record rows when historical data changes through a future explicit correction workflow.
 
 ---
 
@@ -1261,7 +1317,7 @@ dotnet ef migrations list
 - [x] Add Exercise History TypeScript contracts/client
 - [x] Build Exercise History UI
 - [x] Add Exercise History links from Workout sessions
-- [ ] Personal-record detection
+- [x] Add tracking-type-specific personal-record detection
 - [ ] Strength progress charts
 - [ ] Body-measurement API
 - [ ] Body-measurement UI
@@ -1340,6 +1396,7 @@ Add workout history metrics and duration
 Finalize historical workout read-only experience
 Add exercise progress history API foundation
 Add exercise history React experience
+Add exercise personal record detection
 ```
 
 ### Recent Part Milestones
@@ -1365,6 +1422,7 @@ Part 58 — Workout History metrics and duration display
 Part 59 — Historical Workout policy and lifecycle-aware detail navigation
 Part 60 — Exercise History API and frontend contracts
 Part 61 — Exercise History React experience
+Part 62 — Tracking-type-specific personal record detection
 ```
 
 ---
@@ -1411,4 +1469,4 @@ The initial Workout Logging workflow is complete end-to-end: users can create Wo
 
 Workout History is complete for the current project scope. Completed Workouts can be searched, filtered, browsed by month, summarized with duration and aggregate metrics, and opened in a lifecycle-aware read-only detail experience.
 
-Progress Tracking now includes a current-user-scoped Exercise History API, matching TypeScript client contracts, and a dedicated React Exercise History page. Users can open an Exercise's finalized historical performances from Workout sessions, review tracking-specific Sets grouped by completed Workout, and navigate back to the originating Workout. This provides the UI foundation needed for personal-record detection and progress charts.
+Progress Tracking now includes a current-user-scoped Exercise History API, matching TypeScript client contracts, a dedicated React Exercise History page, and tracking-type-specific personal-record detection. Records are derived from finalized historical Sets and retain links to their source Workouts, providing the foundation for the upcoming strength and cardio progress charts.

@@ -12,6 +12,9 @@ import {
 import ExerciseHistoryWorkoutCard
     from '../components/progress/ExerciseHistoryWorkoutCard';
 
+import ExercisePersonalRecords
+    from '../components/progress/ExercisePersonalRecords';
+
 import {
     getExerciseHistory,
 } from '../services/api';
@@ -233,9 +236,10 @@ function ExerciseHistoryPage() {
                     </h1>
 
                     <p className="page-header__description">
-                        Review your completed
-                        performance history for
-                        this exercise.
+                        Review completed
+                        performance history and
+                        current personal records
+                        for this exercise.
                     </p>
                 </div>
             </header>
@@ -365,6 +369,13 @@ function ExerciseHistoryPage() {
                     </small>
                 </article>
             </section>
+
+            {history.entries.length >
+                0 && (
+                    <ExercisePersonalRecords
+                        history={history}
+                    />
+                )}
 
             {history.entries.length ===
                 0 ? (

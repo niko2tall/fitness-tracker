@@ -117,6 +117,110 @@
     opacity: 0.55;
 }
 
+.exercise-pr-section {
+    display: grid;
+    gap: 1rem;
+}
+
+.exercise-pr-section__description {
+    max-width: 720px;
+    margin: -0.25rem 0 0;
+    line-height: 1.55;
+    font-size: 0.85rem;
+    opacity: 0.68;
+}
+
+.exercise-pr-grid {
+    display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(240px, 1fr) );
+    gap: 0.9rem;
+}
+
+.exercise-pr-card {
+    display: grid;
+    align-content: start;
+    gap: 0.7rem;
+    min-width: 0;
+    padding: 1rem;
+    border: 1px solid rgba(127, 127, 127, 0.26);
+    border-radius: 0.75rem;
+    background: rgba(127, 127, 127, 0.045);
+}
+
+.exercise-pr-card__label {
+    margin: 0;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.6;
+}
+
+.exercise-pr-card__value {
+    font-size: 1.65rem;
+    line-height: 1.15;
+}
+
+.exercise-pr-card__detail {
+    margin: -0.2rem 0 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    opacity: 0.7;
+}
+
+.exercise-pr-card__source {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(127, 127, 127, 0.16);
+}
+
+    .exercise-pr-card__source > div {
+        display: grid;
+        gap: 0.15rem;
+    }
+
+    .exercise-pr-card__source dt {
+        font-size: 0.66rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        opacity: 0.5;
+    }
+
+    .exercise-pr-card__source dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+
+.exercise-pr-card__link {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    margin-top: auto;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid rgba(127, 127, 127, 0.3);
+    border-radius: 0.5rem;
+    color: inherit;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+    .exercise-pr-card__link:hover {
+        background: rgba(127, 127, 127, 0.08);
+    }
+
+    .exercise-pr-card__link:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
 .exercise-history-section {
     display: grid;
     gap: 1rem;
@@ -315,11 +419,13 @@
     }
 
     .exercise-history-workout__link,
-    .exercise-history-action-link {
+    .exercise-history-action-link,
+    .exercise-pr-card__link {
         width: 100%;
     }
 
-    .exercise-history-summary {
+    .exercise-history-summary,
+    .exercise-pr-grid {
         grid-template-columns: 1fr;
     }
 }
