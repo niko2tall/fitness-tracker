@@ -15,6 +15,12 @@ import AddWorkoutExerciseDialog
 import AddWorkoutSetDialog
     from '../components/workouts/AddWorkoutSetDialog';
 
+import CompleteWorkoutDialog
+    from '../components/workouts/CompleteWorkoutDialog';
+
+import EditWorkoutDialog
+    from '../components/workouts/EditWorkoutDialog';
+
 import EditWorkoutSetDialog
     from '../components/workouts/EditWorkoutSetDialog';
 
@@ -30,15 +36,18 @@ import WorkoutExerciseCard
 import {
     addWorkoutExercise,
     addWorkoutSet,
+    completeWorkout,
     getWorkoutById,
     removeWorkoutExercise,
     removeWorkoutSet,
+    updateWorkout,
     updateWorkoutSet,
 } from '../services/api';
 
 import type {
     AddWorkoutExerciseRequest,
     CreateWorkoutSetRequest,
+    UpdateWorkoutRequest,
     UpdateWorkoutSetRequest,
     Workout,
     WorkoutExercise,
@@ -67,9 +76,10 @@ function WorkoutSessionPage() {
     const [
         workout,
         setWorkout,
-    ] = useState<Workout | null>(
-        null
-    );
+    ] =
+        useState<Workout | null>(
+            null
+        );
 
     const [
         isLoading,
@@ -79,9 +89,46 @@ function WorkoutSessionPage() {
     const [
         error,
         setError,
-    ] = useState<string | null>(
-        null
-    );
+    ] =
+        useState<string | null>(
+            null
+        );
+
+    const [
+        isEditWorkoutOpen,
+        setIsEditWorkoutOpen,
+    ] = useState(false);
+
+    const [
+        isEditingWorkout,
+        setIsEditingWorkout,
+    ] = useState(false);
+
+    const [
+        editWorkoutError,
+        setEditWorkoutError,
+    ] =
+        useState<string | null>(
+            null
+        );
+
+    const [
+        isCompleteWorkoutOpen,
+        setIsCompleteWorkoutOpen,
+    ] = useState(false);
+
+    const [
+        isCompletingWorkout,
+        setIsCompletingWorkout,
+    ] = useState(false);
+
+    const [
+        completeWorkoutError,
+        setCompleteWorkoutError,
+    ] =
+        useState<string | null>(
+            null
+        );
 
     const [
         isAddExerciseOpen,
@@ -96,17 +143,18 @@ function WorkoutSessionPage() {
     const [
         addExerciseError,
         setAddExerciseError,
-    ] = useState<string | null>(
-        null
-    );
+    ] =
+        useState<string | null>(
+            null
+        );
 
     const [
         exerciseToRemove,
         setExerciseToRemove,
     ] =
-        useState<WorkoutExercise | null>(
-            null
-        );
+        useState<
+            WorkoutExercise | null
+        >(null);
 
     const [
         isRemovingExercise,
@@ -116,17 +164,18 @@ function WorkoutSessionPage() {
     const [
         removeExerciseError,
         setRemoveExerciseError,
-    ] = useState<string | null>(
-        null
-    );
+    ] =
+        useState<string | null>(
+            null
+        );
 
     const [
         exerciseForSet,
         setExerciseForSet,
     ] =
-        useState<WorkoutExercise | null>(
-            null
-        );
+        useState<
+            WorkoutExercise | null
+        >(null);
 
     const [
         isAddingSet,
@@ -136,17 +185,18 @@ function WorkoutSessionPage() {
     const [
         addSetError,
         setAddSetError,
-    ] = useState<string | null>(
-        null
-    );
+    ] =
+        useState<string | null>(
+            null
+        );
 
     const [
         setToEdit,
         setSetToEdit,
     ] =
-        useState<WorkoutSetTarget | null>(
-            null
-        );
+        useState<
+            WorkoutSetTarget | null
+        >(null);
 
     const [
         isEditingSet,
@@ -156,17 +206,18 @@ function WorkoutSessionPage() {
     const [
         editSetError,
         setEditSetError,
-    ] = useState<string | null>(
-        null
-    );
+    ] =
+        useState<string | null>(
+            null
+        );
 
     const [
         setToRemove,
         setSetToRemove,
     ] =
-        useState<WorkoutSetTarget | null>(
-            null
-        );
+        useState<
+            WorkoutSetTarget | null
+        >(null);
 
     const [
         isRemovingSet,
@@ -176,9 +227,10 @@ function WorkoutSessionPage() {
     const [
         removeSetError,
         setRemoveSetError,
-    ] = useState<string | null>(
-        null
-    );
+    ] =
+        useState<string | null>(
+            null
+        );
 
     useEffect(() => {
         if (!workoutId) {
@@ -253,6 +305,19 @@ function WorkoutSessionPage() {
             [workout]
         );
 
+    const hasCompletedSet =
+        useMemo(
+            () =>
+                workout?.exercises.some(
+                    (exercise) =>
+                        exercise.sets.some(
+                            (set) =>
+                                set.isCompleted
+                        )
+                ) ?? false,
+            [workout]
+        );
+
     const existingExerciseIds =
         useMemo(
             () =>
@@ -274,6 +339,117 @@ function WorkoutSessionPage() {
         setWorkout(
             refreshedWorkout
         );
+    }
+
+    function openEditWorkoutDialog() {
+        setEditWorkoutError(null);
+        setIsEditWorkoutOpen(true);
+    }
+
+    function closeEditWorkoutDialog() {
+        if (isEditingWorkout) {
+            return;
+        }
+
+        setEditWorkoutError(null);
+        setIsEditWorkoutOpen(false);
+    }
+
+    async function handleEditWorkout(
+        request:
+            UpdateWorkoutRequest
+    ) {
+        if (!workout) {
+            return;
+        }
+
+        try {
+            setIsEditingWorkout(true);
+            setEditWorkoutError(null);
+
+            const updatedWorkout =
+                await updateWorkout(
+                    workout.id,
+                    request
+                );
+
+            setWorkout(
+                updatedWorkout
+            );
+
+            setIsEditWorkoutOpen(
+                false
+            );
+        } catch (error) {
+            setEditWorkoutError(
+                getErrorMessage(
+                    error,
+                    'Unable to update the workout.'
+                )
+            );
+        } finally {
+            setIsEditingWorkout(false);
+        }
+    }
+
+    function openCompleteWorkoutDialog() {
+        setCompleteWorkoutError(null);
+
+        setIsCompleteWorkoutOpen(
+            true
+        );
+    }
+
+    function closeCompleteWorkoutDialog() {
+        if (isCompletingWorkout) {
+            return;
+        }
+
+        setCompleteWorkoutError(null);
+
+        setIsCompleteWorkoutOpen(
+            false
+        );
+    }
+
+    async function handleCompleteWorkout() {
+        if (!workout) {
+            return;
+        }
+
+        try {
+            setIsCompletingWorkout(
+                true
+            );
+
+            setCompleteWorkoutError(
+                null
+            );
+
+            const completedWorkout =
+                await completeWorkout(
+                    workout.id
+                );
+
+            setWorkout(
+                completedWorkout
+            );
+
+            setIsCompleteWorkoutOpen(
+                false
+            );
+        } catch (error) {
+            setCompleteWorkoutError(
+                getErrorMessage(
+                    error,
+                    'Unable to complete the workout.'
+                )
+            );
+        } finally {
+            setIsCompletingWorkout(
+                false
+            );
+        }
     }
 
     function openAddExerciseDialog() {
@@ -640,6 +816,43 @@ function WorkoutSessionPage() {
                             </p>
                         )}
                     </div>
+
+                    {isActive && (
+                        <div className="workout-session__header-actions">
+                            <div className="workout-session__header-button-row">
+                                <button
+                                    type="button"
+                                    className="workout-button workout-button--secondary"
+                                    onClick={
+                                        openEditWorkoutDialog
+                                    }
+                                >
+                                    Edit Workout
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className="workout-button workout-button--primary"
+                                    disabled={
+                                        !hasCompletedSet
+                                    }
+                                    onClick={
+                                        openCompleteWorkoutDialog
+                                    }
+                                >
+                                    Complete Workout
+                                </button>
+                            </div>
+
+                            {!hasCompletedSet && (
+                                <span className="workout-session__completion-hint">
+                                    Record at least one
+                                    set before completing
+                                    this workout.
+                                </span>
+                            )}
+                        </div>
+                    )}
                 </header>
 
                 <section className="workout-session__summary">
@@ -775,6 +988,44 @@ function WorkoutSessionPage() {
                     )}
                 </section>
             </main>
+
+            <EditWorkoutDialog
+                isOpen={
+                    isEditWorkoutOpen
+                }
+                workout={workout}
+                isSubmitting={
+                    isEditingWorkout
+                }
+                error={
+                    editWorkoutError
+                }
+                onClose={
+                    closeEditWorkoutDialog
+                }
+                onSubmit={
+                    handleEditWorkout
+                }
+            />
+
+            <CompleteWorkoutDialog
+                isOpen={
+                    isCompleteWorkoutOpen
+                }
+                workout={workout}
+                isSubmitting={
+                    isCompletingWorkout
+                }
+                error={
+                    completeWorkoutError
+                }
+                onClose={
+                    closeCompleteWorkoutDialog
+                }
+                onConfirm={
+                    handleCompleteWorkout
+                }
+            />
 
             <AddWorkoutExerciseDialog
                 isOpen={
