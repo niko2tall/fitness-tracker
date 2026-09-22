@@ -8,13 +8,16 @@ import {
     Link,
 } from 'react-router-dom';
 
+import WorkoutHistoryCard
+    from '../components/workouts/WorkoutHistoryCard';
+
 import WorkoutHistoryFilters, {
     type WorkoutHistoryDateMode,
     type WorkoutHistoryTypeFilter,
 } from '../components/workouts/WorkoutHistoryFilters';
 
-import WorkoutSummaryCard
-    from '../components/workouts/WorkoutSummaryCard';
+import WorkoutHistoryMetrics
+    from '../components/workouts/WorkoutHistoryMetrics';
 
 import {
     getWorkouts,
@@ -250,7 +253,9 @@ function WorkoutHistoryPage() {
     ) {
         setDateMode(value);
 
-        if (value === 'month') {
+        if (
+            value === 'month'
+        ) {
             setSelectedMonth(
                 (current) => {
                     if (
@@ -307,10 +312,11 @@ function WorkoutHistoryPage() {
                     </h1>
 
                     <p className="page-header__description">
-                        Search and filter your
-                        completed training sessions,
-                        or browse your history
-                        month by month.
+                        Search your completed
+                        sessions, browse by month,
+                        and review training-time
+                        and workout-duration
+                        trends.
                     </p>
                 </div>
             </header>
@@ -382,33 +388,14 @@ function WorkoutHistoryPage() {
                 completedWorkouts.length >
                 0 && (
                     <>
-                        <section className="workout-history-summary">
-                            <div className="workout-history-summary-card">
-                                <span>
-                                    Total Completed
-                                </span>
-
-                                <strong>
-                                    {
-                                        completedWorkouts
-                                            .length
-                                    }
-                                </strong>
-                            </div>
-
-                            <div className="workout-history-summary-card">
-                                <span>
-                                    Showing
-                                </span>
-
-                                <strong>
-                                    {
-                                        filteredWorkouts
-                                            .length
-                                    }
-                                </strong>
-                            </div>
-                        </section>
+                        <WorkoutHistoryMetrics
+                            workouts={
+                                filteredWorkouts
+                            }
+                            totalCompletedCount={
+                                completedWorkouts.length
+                            }
+                        />
 
                         <WorkoutHistoryFilters
                             searchTerm={
@@ -512,10 +499,10 @@ function WorkoutHistoryPage() {
                                     </button>
                                 </div>
                             ) : (
-                                <div className="workout-card-grid">
+                                <div className="workout-history-card-grid">
                                     {filteredWorkouts.map(
                                         (workout) => (
-                                            <WorkoutSummaryCard
+                                            <WorkoutHistoryCard
                                                 key={
                                                     workout.id
                                                 }

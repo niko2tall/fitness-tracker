@@ -6,7 +6,7 @@ The project is being built as a portfolio application with a separate ASP.NET Co
 
 ## Current Status
 
-Exercise Management is complete end-to-end. The initial Workout Logging phase is also complete end-to-end. The application now includes a dedicated Workout History experience with client-side search, Workout Type filtering, all-time/month views, and month-by-month navigation.
+Exercise Management is complete end-to-end. The initial Workout Logging workflow is also complete end-to-end. Workout History now includes completed-session browsing, search, Workout Type filtering, month navigation, duration-aware history cards, and aggregate history metrics calculated from persisted Workout summaries.
 
 ### Current Development Focus
 
@@ -17,8 +17,8 @@ The current development phase is **Workout History**:
 - Workout Type filtering
 - All-history and month views
 - Previous/next month navigation
-- Useful history summary metrics
 - Workout-duration display
+- Filter-aware history summary metrics
 - Historical-editing policy
 - Progress and personal-record features after history is complete
 
@@ -90,6 +90,7 @@ React owns:
 - User interaction
 - Local UI state
 - Search and filtering
+- History aggregation
 - User-friendly measurement entry
 - Typed API communication
 
@@ -200,7 +201,9 @@ fitness-tracker
 │       │   │       ├── RemoveWorkoutExerciseDialog.tsx
 │       │   │       ├── RemoveWorkoutSetDialog.tsx
 │       │   │       ├── WorkoutExerciseCard.tsx
+│       │   │       ├── WorkoutHistoryCard.tsx
 │       │   │       ├── WorkoutHistoryFilters.tsx
+│       │   │       ├── WorkoutHistoryMetrics.tsx
 │       │   │       └── WorkoutSummaryCard.tsx
 │       │   │
 │       │   ├── pages
@@ -228,7 +231,8 @@ fitness-tracker
 │       │   │   └── workout.ts
 │       │   │
 │       │   ├── utils
-│       │   │   └── dateTime.ts
+│       │   │   ├── dateTime.ts
+│       │   │   └── workoutMetrics.ts
 │       │   │
 │       │   ├── App.css
 │       │   ├── App.tsx
@@ -734,11 +738,40 @@ Supports:
 - Next-month navigation up to the current month
 - Clear-filter behavior
 - Result counts
-- Completed Workout cards
+- Duration-aware completed Workout cards
+- Total filtered training time
+- Average filtered Workout duration
+- Average filtered Exercises per Workout
+- Filter-aware summary metrics
 - Read-only session links
 - Empty-history state
 - No-filter-match state
 - Responsive controls and card layout
+
+---
+
+## Workout History Metrics
+
+The current History metrics are calculated from `WorkoutSummary` data already returned by the API.
+
+For the currently filtered result set, React derives:
+
+- Matching Workout count
+- Total training time
+- Average Workout duration
+- Average Exercises per Workout
+
+Workout duration is calculated from:
+
+```text
+EndedAtUtc - StartedAtUtc
+```
+
+No additional database fields are stored for duration.
+
+Invalid or incomplete timestamps are excluded from duration aggregation rather than producing misleading values.
+
+This keeps duration as a derived value while still making it useful in the History experience.
 
 ---
 
@@ -809,6 +842,12 @@ Active Workout management and completed Workout review are separate frontend con
 The current dataset is small enough to load Workout summaries once and apply search/type/month filters in React.
 
 If history grows substantially, the same UI can later be backed by server-side filtering and pagination.
+
+### Client-Side History Metrics
+
+Current History metrics are derived from the same lightweight filtered Workout summaries already loaded for the page.
+
+This avoids extra API calls and avoids storing redundant aggregate values.
 
 ---
 
@@ -1087,8 +1126,8 @@ dotnet ef migrations list
 - [x] Add Workout Type filtering
 - [x] Add all-history/month view controls
 - [x] Add previous/next month navigation
-- [ ] Add useful Workout summary metrics
-- [ ] Add Workout-duration display
+- [x] Add useful Workout summary metrics
+- [x] Add Workout-duration display
 - [ ] Decide whether historical Workout editing is supported
 - [ ] Consider server-side filtering/pagination when dataset size warrants it
 
@@ -1170,6 +1209,7 @@ Add workout set correction controls
 Add workout editing and completion UI
 Add dedicated workout history
 Add workout history filtering and date navigation
+Add workout history metrics and duration
 ```
 
 ### Recent Part Milestones
@@ -1191,6 +1231,7 @@ Part 54 — Workout Set correction controls
 Part 55 — Workout editing and completion UI
 Part 56 — Dedicated Workout History
 Part 57 — Workout History filtering and date navigation
+Part 58 — Workout History metrics and duration display
 ```
 
 ---
@@ -1225,10 +1266,12 @@ The project currently demonstrates:
 - Destructive-action confirmation workflows
 - Client-side search and filtering
 - Date-based history navigation
+- Derived duration calculations
+- Filter-aware aggregate metrics
 - Git-based incremental development
 
 Exercise Management is complete end-to-end.
 
 The initial Workout Logging workflow is complete end-to-end: users can create Workouts, edit active Workout metadata, manage Exercises, record/edit/remove tracking-specific Sets, complete the Workout, and review the resulting read-only session.
 
-Workout History now provides a dedicated completed-session experience with search, Workout Type filtering, and month navigation. The next History work will focus on richer summary metrics and Workout-duration information.
+Workout History now provides a dedicated completed-session experience with search, Workout Type filtering, month navigation, duration-aware cards, and filter-aware aggregate metrics. The remaining History design decision is whether completed Workouts should ever support historical editing or remain permanently read-only.
