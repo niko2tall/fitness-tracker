@@ -6,21 +6,21 @@ The project is being built as a portfolio application with a separate ASP.NET Co
 
 ## Current Status
 
-Exercise Management is complete end-to-end. The initial Workout Logging workflow is also complete end-to-end. Workout History now includes completed-session browsing, search, Workout Type filtering, month navigation, duration-aware history cards, and aggregate history metrics calculated from persisted Workout summaries.
+Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is also complete for the current project scope, with completed-session browsing, search, Workout Type filtering, month navigation, duration-aware history cards, aggregate history metrics, lifecycle-aware navigation, and an explicit read-only historical-record policy.
 
 ### Current Development Focus
 
-The current development phase is **Workout History**:
+The next major phase is **Progress Tracking**:
 
-- Completed Workout history
-- Workout-name search
-- Workout Type filtering
-- All-history and month views
-- Previous/next month navigation
-- Workout-duration display
-- Filter-aware history summary metrics
-- Historical-editing policy
-- Progress and personal-record features after history is complete
+- Personal-record detection
+- Exercise history
+- Strength progress charts
+- Body-measurement API
+- Body-measurement UI
+- Body-weight charts
+- Additional progress metrics
+
+The current completed Workout History experience remains available as the foundation for those future analytics features.
 
 ---
 
@@ -195,6 +195,7 @@ fitness-tracker
 │       │   │       ├── AddWorkoutExerciseDialog.tsx
 │       │   │       ├── AddWorkoutSetDialog.tsx
 │       │   │       ├── CompleteWorkoutDialog.tsx
+│       │   │       ├── CompletedWorkoutNotice.tsx
 │       │   │       ├── CreateWorkoutDialog.tsx
 │       │   │       ├── EditWorkoutDialog.tsx
 │       │   │       ├── EditWorkoutSetDialog.tsx
@@ -222,6 +223,7 @@ fitness-tracker
 │       │   │   └── workoutsApi.ts
 │       │   │
 │       │   ├── styles
+│       │   │   ├── completedWorkout.css
 │       │   │   ├── workoutHistory.css
 │       │   │   ├── workoutLogging.css
 │       │   │   └── workouts.css
@@ -452,6 +454,29 @@ Completed Workouts reject normal logging mutations.
 
 ---
 
+## Historical Workout Policy
+
+Completed Workouts are treated as **read-only historical records**.
+
+This is an intentional application policy rather than only a UI limitation.
+
+After a Workout is completed:
+
+- Workout metadata cannot be edited through normal logging operations
+- Exercises cannot be added or removed
+- Sets cannot be added, edited, or removed
+- Historical Exercise, Set, performance, RPE, and notes data remain visible
+- The Workout remains retrievable through Workout History
+- Completed session navigation returns to `/history` rather than the active Workout list
+
+The React UI explains the read-only state and hides mutation controls.
+
+The API independently enforces the same lifecycle restrictions with conflict responses, so manually crafted client requests cannot bypass the policy.
+
+If historical correction is ever required in the future, it should be introduced as an explicit correction/audit workflow rather than silently reopening completed Workouts for normal editing.
+
+---
+
 ## Database
 
 ### Provider
@@ -608,6 +633,7 @@ POST   /api/workouts/{workoutId}/complete
 - Cardio performance currently uses SetType Working
 - Completion requires at least one completed Set
 - Completed Workouts remain retrievable as history
+- Completed Workouts reject normal mutation operations
 
 ---
 
@@ -664,11 +690,16 @@ Exercise Library
 Active Workout management and Workout creation
 
 /workouts/{workoutId}
-Workout session details and logging
+Workout session details and logging / read-only completed detail
 
 /history
 Completed Workout history
 ```
+
+The shared Workout detail route is lifecycle-aware:
+
+- Active Workout → back navigation returns to `/workouts`
+- Completed Workout → back navigation returns to `/history`
 
 ---
 
@@ -721,7 +752,6 @@ Supports:
 - Canonical unit conversion
 - Workout completion
 - Immediate Active → Completed transition
-- Read-only completed session view
 - Responsive layouts
 
 ### Workout History
@@ -743,7 +773,9 @@ Supports:
 - Average filtered Workout duration
 - Average filtered Exercises per Workout
 - Filter-aware summary metrics
-- Read-only session links
+- Read-only completed-session details
+- History-aware back navigation
+- Read-only historical-record notice
 - Empty-history state
 - No-filter-match state
 - Responsive controls and card layout
@@ -767,11 +799,9 @@ Workout duration is calculated from:
 EndedAtUtc - StartedAtUtc
 ```
 
-No additional database fields are stored for duration.
+No additional database field is stored for duration.
 
 Invalid or incomplete timestamps are excluded from duration aggregation rather than producing misleading values.
-
-This keeps duration as a derived value while still making it useful in the History experience.
 
 ---
 
@@ -815,7 +845,13 @@ Historical Workout references remain intact.
 
 ### Completed Workouts Are Read-Only
 
-Normal logging operations are restricted to active Workouts.
+Normal logging operations are restricted to active Workouts. Completed Workouts are treated as historical records.
+
+### Explicit Historical Correction Policy
+
+The application does not reopen completed Workouts for ordinary editing.
+
+If correction support is needed later, it should be implemented as a distinct auditable workflow.
 
 ### Server-Assigned Ordering
 
@@ -837,6 +873,10 @@ Friendly UI values are converted to canonical API values and back.
 
 Active Workout management and completed Workout review are separate frontend concerns.
 
+### Lifecycle-Aware Shared Detail Page
+
+The same Workout Session route renders both active and completed sessions, but navigation and controls adapt to lifecycle state.
+
 ### Client-Side History Filtering
 
 The current dataset is small enough to load Workout summaries once and apply search/type/month filters in React.
@@ -847,7 +887,7 @@ If history grows substantially, the same UI can later be backed by server-side f
 
 Current History metrics are derived from the same lightweight filtered Workout summaries already loaded for the page.
 
-This avoids extra API calls and avoids storing redundant aggregate values.
+This avoids extra API calls and redundant aggregate storage.
 
 ---
 
@@ -1128,7 +1168,9 @@ dotnet ef migrations list
 - [x] Add previous/next month navigation
 - [x] Add useful Workout summary metrics
 - [x] Add Workout-duration display
-- [ ] Decide whether historical Workout editing is supported
+- [x] Define completed Workouts as read-only historical records
+- [x] Add lifecycle-aware completed-session navigation
+- [x] Add completed-session read-only guidance
 - [ ] Consider server-side filtering/pagination when dataset size warrants it
 
 ### Phase 8 — Progress Tracking
@@ -1210,6 +1252,7 @@ Add workout editing and completion UI
 Add dedicated workout history
 Add workout history filtering and date navigation
 Add workout history metrics and duration
+Finalize historical workout read-only experience
 ```
 
 ### Recent Part Milestones
@@ -1232,6 +1275,7 @@ Part 55 — Workout editing and completion UI
 Part 56 — Dedicated Workout History
 Part 57 — Workout History filtering and date navigation
 Part 58 — Workout History metrics and duration display
+Part 59 — Historical Workout policy and lifecycle-aware detail navigation
 ```
 
 ---
@@ -1268,10 +1312,12 @@ The project currently demonstrates:
 - Date-based history navigation
 - Derived duration calculations
 - Filter-aware aggregate metrics
+- Explicit immutable-history design
+- Lifecycle-aware navigation
 - Git-based incremental development
 
 Exercise Management is complete end-to-end.
 
 The initial Workout Logging workflow is complete end-to-end: users can create Workouts, edit active Workout metadata, manage Exercises, record/edit/remove tracking-specific Sets, complete the Workout, and review the resulting read-only session.
 
-Workout History now provides a dedicated completed-session experience with search, Workout Type filtering, month navigation, duration-aware cards, and filter-aware aggregate metrics. The remaining History design decision is whether completed Workouts should ever support historical editing or remain permanently read-only.
+Workout History is complete for the current project scope. Completed Workouts can be searched, filtered, browsed by month, summarized with duration and aggregate metrics, and opened in a lifecycle-aware read-only detail experience. The next major development phase is Progress Tracking.

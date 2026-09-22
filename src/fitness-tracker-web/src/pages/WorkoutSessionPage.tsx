@@ -18,6 +18,9 @@ import AddWorkoutSetDialog
 import CompleteWorkoutDialog
     from '../components/workouts/CompleteWorkoutDialog';
 
+import CompletedWorkoutNotice
+    from '../components/workouts/CompletedWorkoutNotice';
+
 import EditWorkoutDialog
     from '../components/workouts/EditWorkoutDialog';
 
@@ -60,6 +63,7 @@ import {
 
 import '../styles/workouts.css';
 import '../styles/workoutLogging.css';
+import '../styles/completedWorkout.css';
 
 interface WorkoutSetTarget {
     exercise: WorkoutExercise;
@@ -776,14 +780,24 @@ function WorkoutSessionPage() {
     const isActive =
         workout.endedAtUtc === null;
 
+    const backDestination =
+        isActive
+            ? '/workouts'
+            : '/history';
+
+    const backLabel =
+        isActive
+            ? 'Workouts'
+            : 'Workout History';
+
     return (
         <>
             <main className="app-shell workout-session">
                 <Link
-                    to="/workouts"
+                    to={backDestination}
                     className="workout-back-link"
                 >
-                    ← Workouts
+                    ← {backLabel}
                 </Link>
 
                 <header className="workout-session__header">
@@ -855,9 +869,19 @@ function WorkoutSessionPage() {
                     )}
                 </header>
 
+                {!isActive && (
+                    <CompletedWorkoutNotice
+                        completedAtUtc={
+                            workout.endedAtUtc
+                        }
+                    />
+                )}
+
                 <section className="workout-session__summary">
                     <div>
-                        <span>Started</span>
+                        <span>
+                            Started
+                        </span>
 
                         <strong>
                             {formatDateTime(
@@ -867,7 +891,9 @@ function WorkoutSessionPage() {
                     </div>
 
                     <div>
-                        <span>Exercises</span>
+                        <span>
+                            Exercises
+                        </span>
 
                         <strong>
                             {
@@ -878,7 +904,9 @@ function WorkoutSessionPage() {
                     </div>
 
                     <div>
-                        <span>Sets</span>
+                        <span>
+                            Sets
+                        </span>
 
                         <strong>
                             {totalSetCount}
@@ -993,7 +1021,9 @@ function WorkoutSessionPage() {
                 isOpen={
                     isEditWorkoutOpen
                 }
-                workout={workout}
+                workout={
+                    workout
+                }
                 isSubmitting={
                     isEditingWorkout
                 }
@@ -1012,7 +1042,9 @@ function WorkoutSessionPage() {
                 isOpen={
                     isCompleteWorkoutOpen
                 }
-                workout={workout}
+                workout={
+                    workout
+                }
                 isSubmitting={
                     isCompletingWorkout
                 }
@@ -1075,7 +1107,8 @@ function WorkoutSessionPage() {
 
             <AddWorkoutSetDialog
                 isOpen={
-                    exerciseForSet !== null
+                    exerciseForSet !==
+                    null
                 }
                 exercise={
                     exerciseForSet
@@ -1096,7 +1129,8 @@ function WorkoutSessionPage() {
 
             <EditWorkoutSetDialog
                 isOpen={
-                    setToEdit !== null
+                    setToEdit !==
+                    null
                 }
                 exercise={
                     setToEdit?.exercise ??
@@ -1122,7 +1156,8 @@ function WorkoutSessionPage() {
 
             <RemoveWorkoutSetDialog
                 isOpen={
-                    setToRemove !== null
+                    setToRemove !==
+                    null
                 }
                 exercise={
                     setToRemove?.exercise ??

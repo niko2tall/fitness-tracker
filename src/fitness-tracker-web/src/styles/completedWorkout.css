@@ -1,0 +1,77 @@
+.completed-workout-notice {
+    padding: 1rem 1.1rem;
+    border: 1px solid rgba(127, 127, 127, 0.25);
+    border-radius: 0.8rem;
+    background: rgba(127, 127, 127, 0.045);
+}
+
+.completed-workout-notice__content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+.completed-workout-notice__eyebrow {
+    margin: 0 0 0.3rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    opacity: 0.6;
+}
+
+.completed-workout-notice h2 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.completed-workout-notice__description {
+    max-width: 650px;
+    margin: 0.45rem 0 0;
+    line-height: 1.55;
+    opacity: 0.72;
+}
+
+.completed-workout-notice__timestamp {
+    margin: 0.55rem 0 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    opacity: 0.62;
+}
+
+.completed-workout-notice__link {
+    display: inline-flex;
+    min-height: 40px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid rgba(127, 127, 127, 0.3);
+    border-radius: 0.55rem;
+    color: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+    .completed-workout-notice__link:hover {
+        background: rgba(127, 127, 127, 0.08);
+    }
+
+    .completed-workout-notice__link:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
+@media (max-width: 640px) {
+    .completed-workout-notice__content {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .completed-workout-notice__link {
+        width: 100%;
+    }
+}
