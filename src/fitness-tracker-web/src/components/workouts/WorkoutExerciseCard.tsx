@@ -1,3 +1,7 @@
+import {
+    Link,
+} from 'react-router-dom';
+
 import type {
     WorkoutExercise,
     WorkoutSet,
@@ -54,6 +58,13 @@ function WorkoutExerciseCard({
                         )}
                     </span>
 
+                    <Link
+                        to={`/progress/exercises/${exercise.exerciseId}`}
+                        className="workout-text-link"
+                    >
+                        History
+                    </Link>
+
                     {isActive && (
                         <button
                             type="button"
@@ -76,7 +87,9 @@ function WorkoutExerciseCard({
 
             <div className="workout-exercise-set-header">
                 <div>
-                    <h4>Sets</h4>
+                    <h4>
+                        Sets
+                    </h4>
 
                     <span>
                         {exercise.sets.length === 1

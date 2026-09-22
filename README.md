@@ -6,7 +6,7 @@ The project is being built as a portfolio application with a separate ASP.NET Co
 
 ## Current Status
 
-Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking has now started with a dedicated Exercise History API foundation and matching TypeScript client contracts.
+Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes both the Exercise History API foundation and a dedicated React Exercise History experience.
 
 ### Current Development Focus
 
@@ -14,6 +14,7 @@ The current development phase is **Progress Tracking**:
 
 - Exercise History API and frontend contracts
 - Exercise History UI
+- Historical Workout links for each Exercise
 - Personal-record detection
 - Strength progress charts
 - Body-measurement API
@@ -21,7 +22,7 @@ The current development phase is **Progress Tracking**:
 - Body-weight charts
 - Additional progress metrics
 
-The completed Workout History experience remains the historical source for these future analytics features.
+The completed Workout History experience remains the historical source for these analytics features.
 
 ---
 
@@ -201,6 +202,9 @@ fitness-tracker
 │       │   │   ├── layout
 │       │   │   │   └── AppLayout.tsx
 │       │   │   │
+│       │   │   ├── progress
+│       │   │   │   └── ExerciseHistoryWorkoutCard.tsx
+│       │   │   │
 │       │   │   └── workouts
 │       │   │       ├── AddWorkoutExerciseDialog.tsx
 │       │   │       ├── AddWorkoutSetDialog.tsx
@@ -219,6 +223,7 @@ fitness-tracker
 │       │   │
 │       │   ├── pages
 │       │   │   ├── DashboardPage.tsx
+│       │   │   ├── ExerciseHistoryPage.tsx
 │       │   │   ├── ExercisesPage.tsx
 │       │   │   ├── NotFoundPage.tsx
 │       │   │   ├── WorkoutHistoryPage.tsx
@@ -235,6 +240,7 @@ fitness-tracker
 │       │   │
 │       │   ├── styles
 │       │   │   ├── completedWorkout.css
+│       │   │   ├── exerciseHistory.css
 │       │   │   ├── workoutHistory.css
 │       │   │   ├── workoutLogging.css
 │       │   │   └── workouts.css
@@ -747,6 +753,9 @@ Workout session details and logging / read-only completed detail
 
 /history
 Completed Workout history
+
+/progress/exercises/{exerciseId}
+Exercise-specific completed performance history
 ```
 
 The shared Workout detail route is lifecycle-aware:
@@ -806,6 +815,26 @@ Supports:
 - Workout completion
 - Immediate Active → Completed transition
 - Responsive layouts
+
+### Exercise Progress History
+
+Supports:
+
+- Dedicated `/progress/exercises/{exerciseId}` route
+- Exercise metadata and tracking type display
+- Completed Workout occurrences only
+- Historical Sets grouped by Workout
+- Tracking-specific Set summaries
+- SetType, RPE, and notes display
+- Exercise-specific Workout notes
+- Links back to the originating completed Workout
+- Session count and total historical Set count
+- Most-recent and first-logged timestamps
+- Archived Exercise history remains viewable
+- Empty-history state
+- API error/loading states
+- Responsive historical Set layout
+- Direct Exercise History links from Workout Exercise cards
 
 ### Workout History
 
@@ -1230,7 +1259,8 @@ dotnet ef migrations list
 
 - [x] Add Exercise History API foundation
 - [x] Add Exercise History TypeScript contracts/client
-- [ ] Build Exercise History UI
+- [x] Build Exercise History UI
+- [x] Add Exercise History links from Workout sessions
 - [ ] Personal-record detection
 - [ ] Strength progress charts
 - [ ] Body-measurement API
@@ -1309,6 +1339,7 @@ Add workout history filtering and date navigation
 Add workout history metrics and duration
 Finalize historical workout read-only experience
 Add exercise progress history API foundation
+Add exercise history React experience
 ```
 
 ### Recent Part Milestones
@@ -1333,6 +1364,7 @@ Part 57 — Workout History filtering and date navigation
 Part 58 — Workout History metrics and duration display
 Part 59 — Historical Workout policy and lifecycle-aware detail navigation
 Part 60 — Exercise History API and frontend contracts
+Part 61 — Exercise History React experience
 ```
 
 ---
@@ -1379,4 +1411,4 @@ The initial Workout Logging workflow is complete end-to-end: users can create Wo
 
 Workout History is complete for the current project scope. Completed Workouts can be searched, filtered, browsed by month, summarized with duration and aggregate metrics, and opened in a lifecycle-aware read-only detail experience.
 
-Progress Tracking has now begun with a current-user-scoped Exercise History API and TypeScript client contracts. This provides the historical performance dataset needed for the upcoming Exercise History UI, personal-record detection, and progress charts.
+Progress Tracking now includes a current-user-scoped Exercise History API, matching TypeScript client contracts, and a dedicated React Exercise History page. Users can open an Exercise's finalized historical performances from Workout sessions, review tracking-specific Sets grouped by completed Workout, and navigate back to the originating Workout. This provides the UI foundation needed for personal-record detection and progress charts.

@@ -11,6 +11,9 @@ import AppLayout
 import DashboardPage
     from './pages/DashboardPage';
 
+import ExerciseHistoryPage
+    from './pages/ExerciseHistoryPage';
+
 import ExercisesPage
     from './pages/ExercisesPage';
 
@@ -62,6 +65,13 @@ function App() {
                     path="/history"
                     element={
                         <WorkoutHistoryPage />
+                    }
+                />
+
+                <Route
+                    path="/progress/exercises/:exerciseId"
+                    element={
+                        <ExerciseHistoryPage />
                     }
                 />
 
