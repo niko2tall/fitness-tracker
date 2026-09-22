@@ -1,15 +1,26 @@
 import type {
+    ExerciseTrackingType,
+} from '../types/exercise';
+
+import type {
     ExerciseHistoryResponse,
     ExerciseHistorySet,
     ExerciseHistoryWorkout,
 } from '../types/progress';
 
-export type StrengthTrendMetric =
+export type ExerciseTrendMetric =
     | 'HeaviestWeight'
     | 'MostReps'
-    | 'HighestSetVolume';
+    | 'HighestSetVolume'
+    | 'LongestDuration'
+    | 'LongestDistance'
+    | 'FastestPace';
 
-export interface StrengthTrendPoint {
+export type ExerciseTrendDirection =
+    | 'higher'
+    | 'lower';
+
+export interface ExerciseTrendPoint {
     workoutId: string;
     workoutName: string;
     achievedAtUtc: string;
@@ -20,16 +31,17 @@ export interface StrengthTrendPoint {
     value: number;
 }
 
-export interface StrengthTrendSeries {
-    metric: StrengthTrendMetric;
+export interface ExerciseTrendSeries {
+    metric: ExerciseTrendMetric;
     label: string;
     unit: string;
+    direction: ExerciseTrendDirection;
 
-    points: StrengthTrendPoint[];
+    points: ExerciseTrendPoint[];
 
-    earliestPoint: StrengthTrendPoint;
-    latestPoint: StrengthTrendPoint;
-    bestPoint: StrengthTrendPoint;
+    earliestPoint: ExerciseTrendPoint;
+    latestPoint: ExerciseTrendPoint;
+    bestPoint: ExerciseTrendPoint;
 
     absoluteChange: number;
     percentageChange: number | null;
@@ -41,15 +53,53 @@ interface SessionMetricResult {
     value: number;
 }
 
-export const strengthTrendMetrics:
-    readonly StrengthTrendMetric[] = [
+const weightAndRepsMetrics:
+    readonly ExerciseTrendMetric[] = [
         'HeaviestWeight',
         'MostReps',
         'HighestSetVolume',
     ];
 
-export function getStrengthTrendMetricLabel(
-    metric: StrengthTrendMetric
+const repsOnlyMetrics:
+    readonly ExerciseTrendMetric[] = [
+        'MostReps',
+    ];
+
+const durationMetrics:
+    readonly ExerciseTrendMetric[] = [
+        'LongestDuration',
+    ];
+
+const distanceAndDurationMetrics:
+    readonly ExerciseTrendMetric[] = [
+        'LongestDistance',
+        'LongestDuration',
+        'FastestPace',
+    ];
+
+export function getAvailableExerciseTrendMetrics(
+    trackingType: ExerciseTrackingType
+): readonly ExerciseTrendMetric[] {
+    switch (trackingType) {
+        case 'WeightAndReps':
+            return weightAndRepsMetrics;
+
+        case 'RepsOnly':
+            return repsOnlyMetrics;
+
+        case 'Duration':
+            return durationMetrics;
+
+        case 'DistanceAndDuration':
+            return distanceAndDurationMetrics;
+
+        default:
+            return [];
+    }
+}
+
+export function getExerciseTrendMetricLabel(
+    metric: ExerciseTrendMetric
 ): string {
     switch (metric) {
         case 'HeaviestWeight':
@@ -61,39 +111,74 @@ export function getStrengthTrendMetricLabel(
         case 'HighestSetVolume':
             return 'Highest Set Volume';
 
+        case 'LongestDuration':
+            return 'Longest Duration';
+
+        case 'LongestDistance':
+            return 'Longest Distance';
+
+        case 'FastestPace':
+            return 'Fastest Pace';
+
         default:
             return metric;
     }
 }
 
-export function getStrengthTrendMetricUnit(
-    metric: StrengthTrendMetric
+export function getExerciseTrendMetricUnit(
+    metric: ExerciseTrendMetric
 ): string {
     switch (metric) {
         case 'HeaviestWeight':
+        case 'HighestSetVolume':
             return 'kg';
 
         case 'MostReps':
             return 'reps';
 
-        case 'HighestSetVolume':
-            return 'kg';
+        case 'LongestDuration':
+            return 'time';
+
+        case 'LongestDistance':
+            return 'distance';
+
+        case 'FastestPace':
+            return 'min/km';
 
         default:
             return '';
     }
 }
 
-export function buildStrengthTrendSeries(
+export function getExerciseTrendDirection(
+    metric: ExerciseTrendMetric
+): ExerciseTrendDirection {
+    return metric === 'FastestPace'
+        ? 'lower'
+        : 'higher';
+}
+
+export function buildExerciseTrendSeries(
     history: ExerciseHistoryResponse,
-    metric: StrengthTrendMetric
-): StrengthTrendSeries | null {
+    metric: ExerciseTrendMetric
+): ExerciseTrendSeries | null {
+    const availableMetrics =
+        getAvailableExerciseTrendMetrics(
+            history.trackingType
+        );
+
     if (
-        history.trackingType !==
-        'WeightAndReps'
+        !availableMetrics.includes(
+            metric
+        )
     ) {
         return null;
     }
+
+    const direction =
+        getExerciseTrendDirection(
+            metric
+        );
 
     const points =
         history.entries
@@ -101,13 +186,14 @@ export function buildStrengthTrendSeries(
                 (entry) =>
                     getSessionMetricPoint(
                         entry,
-                        metric
+                        metric,
+                        direction
                     )
             )
             .filter(
                 (
                     point
-                ): point is StrengthTrendPoint =>
+                ): point is ExerciseTrendPoint =>
                     point !== null
             )
             .sort(
@@ -143,8 +229,11 @@ export function buildStrengthTrendSeries(
                 best,
                 point
             ) =>
-                point.value >=
-                    best.value
+                isBetterOrEqual(
+                    point.value,
+                    best.value,
+                    direction
+                )
                     ? point
                     : best,
             points[0]
@@ -166,14 +255,16 @@ export function buildStrengthTrendSeries(
         metric,
 
         label:
-            getStrengthTrendMetricLabel(
+            getExerciseTrendMetricLabel(
                 metric
             ),
 
         unit:
-            getStrengthTrendMetricUnit(
+            getExerciseTrendMetricUnit(
                 metric
             ),
+
+        direction,
 
         points,
 
@@ -186,8 +277,8 @@ export function buildStrengthTrendSeries(
     };
 }
 
-export function formatStrengthTrendValue(
-    metric: StrengthTrendMetric,
+export function formatExerciseTrendValue(
+    metric: ExerciseTrendMetric,
     value: number
 ): string {
     switch (metric) {
@@ -212,6 +303,21 @@ export function formatStrengthTrendValue(
                 )} kg`
             );
 
+        case 'LongestDuration':
+            return formatDuration(
+                value
+            );
+
+        case 'LongestDistance':
+            return formatDistance(
+                value
+            );
+
+        case 'FastestPace':
+            return formatPace(
+                value
+            );
+
         default:
             return formatNumber(
                 value
@@ -219,14 +325,116 @@ export function formatStrengthTrendValue(
     }
 }
 
+export function formatExerciseTrendAxisValue(
+    metric: ExerciseTrendMetric,
+    value: number
+): string {
+    switch (metric) {
+        case 'HeaviestWeight':
+        case 'HighestSetVolume':
+        case 'MostReps':
+            return formatNumber(
+                value
+            );
+
+        case 'LongestDuration':
+            return formatCompactTime(
+                value
+            );
+
+        case 'LongestDistance':
+            return formatDistance(
+                value
+            );
+
+        case 'FastestPace':
+            return formatPaceCompact(
+                value
+            );
+
+        default:
+            return formatNumber(
+                value
+            );
+    }
+}
+
+export function formatExerciseTrendChange(
+    metric: ExerciseTrendMetric,
+    value: number
+): string {
+    const prefix =
+        value > 0
+            ? '+'
+            : value < 0
+                ? '-'
+                : '';
+
+    const absoluteValue =
+        Math.abs(value);
+
+    switch (metric) {
+        case 'HeaviestWeight':
+        case 'HighestSetVolume':
+            return (
+                `${prefix}` +
+                `${formatNumber(
+                    absoluteValue
+                )} kg`
+            );
+
+        case 'MostReps':
+            return (
+                `${prefix}` +
+                `${formatNumber(
+                    absoluteValue
+                )} reps`
+            );
+
+        case 'LongestDuration':
+            return (
+                `${prefix}` +
+                formatDuration(
+                    absoluteValue
+                )
+            );
+
+        case 'LongestDistance':
+            return (
+                `${prefix}` +
+                formatDistance(
+                    absoluteValue
+                )
+            );
+
+        case 'FastestPace':
+            return (
+                `${prefix}` +
+                formatPace(
+                    absoluteValue
+                )
+            );
+
+        default:
+            return (
+                `${prefix}` +
+                formatNumber(
+                    absoluteValue
+                )
+            );
+    }
+}
+
 function getSessionMetricPoint(
     entry: ExerciseHistoryWorkout,
-    metric: StrengthTrendMetric
-): StrengthTrendPoint | null {
+    metric: ExerciseTrendMetric,
+    direction: ExerciseTrendDirection
+): ExerciseTrendPoint | null {
     const result =
         getBestSessionMetric(
             entry,
-            metric
+            metric,
+            direction
         );
 
     if (!result) {
@@ -257,7 +465,8 @@ function getSessionMetricPoint(
 
 function getBestSessionMetric(
     entry: ExerciseHistoryWorkout,
-    metric: StrengthTrendMetric
+    metric: ExerciseTrendMetric,
+    direction: ExerciseTrendDirection
 ): SessionMetricResult | null {
     let best:
         SessionMetricResult | null =
@@ -281,7 +490,11 @@ function getBestSessionMetric(
 
         if (
             best === null ||
-            value > best.value
+            isBetter(
+                value,
+                best.value,
+                direction
+            )
         ) {
             best = {
                 entry,
@@ -296,7 +509,7 @@ function getBestSessionMetric(
 
 function getMetricValue(
     set: ExerciseHistorySet,
-    metric: StrengthTrendMetric
+    metric: ExerciseTrendMetric
 ): number | null {
     switch (metric) {
         case 'HeaviestWeight':
@@ -334,9 +547,67 @@ function getMetricValue(
                 set.reps
             );
 
+        case 'LongestDuration':
+            if (
+                set.durationSeconds === null ||
+                set.durationSeconds <= 0
+            ) {
+                return null;
+            }
+
+            return set.durationSeconds;
+
+        case 'LongestDistance':
+            if (
+                set.distanceMeters === null ||
+                set.distanceMeters <= 0
+            ) {
+                return null;
+            }
+
+            return set.distanceMeters;
+
+        case 'FastestPace':
+            if (
+                set.distanceMeters === null ||
+                set.durationSeconds === null ||
+                set.distanceMeters <= 0 ||
+                set.durationSeconds <= 0
+            ) {
+                return null;
+            }
+
+            return (
+                set.durationSeconds /
+                (
+                    set.distanceMeters /
+                    1000
+                )
+            );
+
         default:
             return null;
     }
+}
+
+function isBetter(
+    candidate: number,
+    current: number,
+    direction: ExerciseTrendDirection
+): boolean {
+    return direction === 'higher'
+        ? candidate > current
+        : candidate < current;
+}
+
+function isBetterOrEqual(
+    candidate: number,
+    current: number,
+    direction: ExerciseTrendDirection
+): boolean {
+    return direction === 'higher'
+        ? candidate >= current
+        : candidate <= current;
 }
 
 function getTimestamp(
@@ -350,6 +621,172 @@ function getTimestamp(
     )
         ? timestamp
         : 0;
+}
+
+function formatDistance(
+    distanceMeters: number
+): string {
+    if (
+        distanceMeters >= 1000
+    ) {
+        return (
+            `${formatNumber(
+                distanceMeters /
+                1000
+            )} km`
+        );
+    }
+
+    return (
+        `${formatNumber(
+            distanceMeters
+        )} m`
+    );
+}
+
+function formatDuration(
+    durationSeconds: number
+): string {
+    const roundedSeconds =
+        Math.round(
+            durationSeconds
+        );
+
+    const hours =
+        Math.floor(
+            roundedSeconds /
+            3600
+        );
+
+    const minutes =
+        Math.floor(
+            (
+                roundedSeconds %
+                3600
+            ) / 60
+        );
+
+    const seconds =
+        roundedSeconds %
+        60;
+
+    if (hours > 0) {
+        return [
+            `${hours}h`,
+
+            minutes > 0
+                ? `${minutes}m`
+                : null,
+
+            seconds > 0
+                ? `${seconds}s`
+                : null,
+        ]
+            .filter(Boolean)
+            .join(' ');
+    }
+
+    if (minutes > 0) {
+        return [
+            `${minutes}m`,
+
+            seconds > 0
+                ? `${seconds}s`
+                : null,
+        ]
+            .filter(Boolean)
+            .join(' ');
+    }
+
+    return `${seconds}s`;
+}
+
+function formatCompactTime(
+    durationSeconds: number
+): string {
+    const roundedSeconds =
+        Math.round(
+            durationSeconds
+        );
+
+    const hours =
+        Math.floor(
+            roundedSeconds /
+            3600
+        );
+
+    const minutes =
+        Math.floor(
+            (
+                roundedSeconds %
+                3600
+            ) / 60
+        );
+
+    const seconds =
+        roundedSeconds %
+        60;
+
+    if (hours > 0) {
+        return (
+            `${hours}:` +
+            `${minutes
+                .toString()
+                .padStart(
+                    2,
+                    '0'
+                )}`
+        );
+    }
+
+    return (
+        `${minutes}:` +
+        `${seconds
+            .toString()
+            .padStart(
+                2,
+                '0'
+            )}`
+    );
+}
+
+function formatPace(
+    secondsPerKilometre: number
+): string {
+    return (
+        `${formatPaceCompact(
+            secondsPerKilometre
+        )} /km`
+    );
+}
+
+function formatPaceCompact(
+    secondsPerKilometre: number
+): string {
+    const roundedSeconds =
+        Math.round(
+            secondsPerKilometre
+        );
+
+    const minutes =
+        Math.floor(
+            roundedSeconds /
+            60
+        );
+
+    const seconds =
+        roundedSeconds %
+        60;
+
+    return (
+        `${minutes}:` +
+        `${seconds
+            .toString()
+            .padStart(
+                2,
+                '0'
+            )}`
+    );
 }
 
 function formatNumber(

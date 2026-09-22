@@ -12,48 +12,65 @@ import type {
 } from '../../types/progress';
 
 import {
-    buildStrengthTrendSeries,
-    formatStrengthTrendValue,
-    getStrengthTrendMetricLabel,
-    strengthTrendMetrics,
-    type StrengthTrendMetric,
+    buildExerciseTrendSeries,
+    formatExerciseTrendAxisValue,
+    formatExerciseTrendChange,
+    formatExerciseTrendValue,
+    getAvailableExerciseTrendMetrics,
+    getExerciseTrendMetricLabel,
+    type ExerciseTrendDirection,
+    type ExerciseTrendMetric,
+    type ExerciseTrendPoint,
 } from '../../utils/exerciseTrends';
 
-interface ExerciseStrengthTrendProps {
+interface ExercisePerformanceTrendProps {
     history: ExerciseHistoryResponse;
 }
 
-interface ChartPoint {
+interface ChartPoint
+    extends ExerciseTrendPoint {
     x: number;
     y: number;
-
-    workoutId: string;
-    workoutName: string;
-    achievedAtUtc: string;
-    setNumber: number;
-    setType: string;
-
-    value: number;
 }
 
-function ExerciseStrengthTrend({
+function ExercisePerformanceTrend({
     history,
-}: ExerciseStrengthTrendProps) {
-    const [
-        selectedMetric,
-        setSelectedMetric,
-    ] =
-        useState<StrengthTrendMetric>(
-            'HeaviestWeight'
+}: ExercisePerformanceTrendProps) {
+    const availableMetrics =
+        useMemo(
+            () =>
+                getAvailableExerciseTrendMetrics(
+                    history.trackingType
+                ),
+            [history.trackingType]
         );
+
+    const [
+        requestedMetric,
+        setRequestedMetric,
+    ] =
+        useState<ExerciseTrendMetric>(
+            () =>
+                availableMetrics[0] ??
+                'MostReps'
+        );
+
+    const selectedMetric =
+        availableMetrics.includes(
+            requestedMetric
+        )
+            ? requestedMetric
+            : availableMetrics[0];
 
     const series =
         useMemo(
             () =>
-                buildStrengthTrendSeries(
-                    history,
-                    selectedMetric
-                ),
+                selectedMetric
+                    ? buildExerciseTrendSeries(
+                        history,
+                        selectedMetric
+                    )
+                    : null,
             [
                 history,
                 selectedMetric,
@@ -61,19 +78,16 @@ function ExerciseStrengthTrend({
         );
 
     if (
-        history.trackingType !==
-        'WeightAndReps'
+        !selectedMetric ||
+        !series
     ) {
-        return null;
-    }
-
-    if (!series) {
         return null;
     }
 
     const chart =
         createChartGeometry(
-            series.points
+            series.points,
+            series.direction
         );
 
     return (
@@ -84,7 +98,9 @@ function ExerciseStrengthTrend({
             <header className="workout-section__header">
                 <div>
                     <p className="workout-section__eyebrow">
-                        Strength Progress
+                        {getProgressEyebrow(
+                            history.trackingType
+                        )}
                     </p>
 
                     <h2 id="exercise-trend-title">
@@ -99,42 +115,45 @@ function ExerciseStrengthTrend({
 
             <p className="exercise-trend-section__description">
                 Each point represents the best
-                Set for the selected metric in
-                one completed Workout.
+                finalized Set for the selected
+                metric in one completed Workout.
             </p>
 
-            <div
-                className="exercise-trend-metric-selector"
-                aria-label="Strength trend metric"
-            >
-                {strengthTrendMetrics.map(
-                    (metric) => (
-                        <button
-                            key={metric}
-                            type="button"
-                            className={
-                                selectedMetric ===
-                                    metric
-                                    ? 'exercise-trend-metric-button exercise-trend-metric-button--active'
-                                    : 'exercise-trend-metric-button'
-                            }
-                            aria-pressed={
-                                selectedMetric ===
-                                metric
-                            }
-                            onClick={() =>
-                                setSelectedMetric(
-                                    metric
-                                )
-                            }
-                        >
-                            {getStrengthTrendMetricLabel(
-                                metric
-                            )}
-                        </button>
-                    )
+            {availableMetrics.length >
+                1 && (
+                    <div
+                        className="exercise-trend-metric-selector"
+                        aria-label="Progress trend metric"
+                    >
+                        {availableMetrics.map(
+                            (metric) => (
+                                <button
+                                    key={metric}
+                                    type="button"
+                                    className={
+                                        selectedMetric ===
+                                            metric
+                                            ? 'exercise-trend-metric-button exercise-trend-metric-button--active'
+                                            : 'exercise-trend-metric-button'
+                                    }
+                                    aria-pressed={
+                                        selectedMetric ===
+                                        metric
+                                    }
+                                    onClick={() =>
+                                        setRequestedMetric(
+                                            metric
+                                        )
+                                    }
+                                >
+                                    {getExerciseTrendMetricLabel(
+                                        metric
+                                    )}
+                                </button>
+                            )
+                        )}
+                    </div>
                 )}
-            </div>
 
             <div className="exercise-trend-summary">
                 <article className="exercise-trend-summary-card">
@@ -143,7 +162,7 @@ function ExerciseStrengthTrend({
                     </span>
 
                     <strong>
-                        {formatStrengthTrendValue(
+                        {formatExerciseTrendValue(
                             series.metric,
                             series
                                 .earliestPoint
@@ -166,7 +185,7 @@ function ExerciseStrengthTrend({
                     </span>
 
                     <strong>
-                        {formatStrengthTrendValue(
+                        {formatExerciseTrendValue(
                             series.metric,
                             series
                                 .latestPoint
@@ -189,7 +208,7 @@ function ExerciseStrengthTrend({
                     </span>
 
                     <strong>
-                        {formatStrengthTrendValue(
+                        {formatExerciseTrendValue(
                             series.metric,
                             series
                                 .bestPoint
@@ -212,7 +231,7 @@ function ExerciseStrengthTrend({
                     </span>
 
                     <strong>
-                        {formatChange(
+                        {formatExerciseTrendChange(
                             series.metric,
                             series.absoluteChange
                         )}
@@ -220,7 +239,8 @@ function ExerciseStrengthTrend({
 
                     <small>
                         {formatPercentageChange(
-                            series.percentageChange
+                            series.percentageChange,
+                            series.direction
                         )}
                     </small>
                 </article>
@@ -253,10 +273,13 @@ function ExerciseStrengthTrend({
                         aria-label={`${series.label} progress chart for ${history.exerciseName}`}
                     >
                         {chart.yTicks.map(
-                            (tick) => (
+                            (
+                                tick,
+                                index
+                            ) => (
                                 <g
                                     key={
-                                        tick.value
+                                        `${tick.value}-${index}`
                                     }
                                 >
                                     <line
@@ -282,7 +305,8 @@ function ExerciseStrengthTrend({
                                         }
                                         textAnchor="end"
                                     >
-                                        {formatAxisNumber(
+                                        {formatExerciseTrendAxisValue(
+                                            series.metric,
                                             tick.value
                                         )}
                                     </text>
@@ -329,18 +353,22 @@ function ExerciseStrengthTrend({
                                     cx={point.x}
                                     cy={point.y}
                                     r="5"
+                                    tabIndex={0}
                                 >
                                     <title>
                                         {[
                                             point.workoutName,
+
                                             formatShortDate(
                                                 point
                                                     .achievedAtUtc
                                             ),
-                                            formatStrengthTrendValue(
+
+                                            formatExerciseTrendValue(
                                                 series.metric,
                                                 point.value
                                             ),
+
                                             `Set ${point.setNumber} · ${point.setType}`,
                                         ].join(' — ')}
                                     </title>
@@ -452,7 +480,7 @@ function ExerciseStrengthTrend({
                                         </td>
 
                                         <td>
-                                            {formatStrengthTrendValue(
+                                            {formatExerciseTrendValue(
                                                 series.metric,
                                                 point.value
                                             )}
@@ -469,14 +497,8 @@ function ExerciseStrengthTrend({
 }
 
 function createChartGeometry(
-    points: {
-        workoutId: string;
-        workoutName: string;
-        achievedAtUtc: string;
-        setNumber: number;
-        setType: string;
-        value: number;
-    }[]
+    points: ExerciseTrendPoint[],
+    direction: ExerciseTrendDirection
 ) {
     const plotLeft = 70;
     const plotRight = 735;
@@ -597,16 +619,21 @@ function createChartGeometry(
                             ) *
                             plotWidth;
 
-                const y =
-                    plotBottom -
+                const normalizedValue =
                     (
-                        (
-                            point.value -
-                            minimum
-                        ) /
-                        range
-                    ) *
-                    plotHeight;
+                        point.value -
+                        minimum
+                    ) /
+                    range;
+
+                const y =
+                    direction === 'higher'
+                        ? plotBottom -
+                        normalizedValue *
+                        plotHeight
+                        : plotTop +
+                        normalizedValue *
+                        plotHeight;
 
                 return {
                     ...point,
@@ -636,9 +663,13 @@ function createChartGeometry(
                     );
 
                 const value =
-                    maximum -
-                    ratio *
-                    range;
+                    direction === 'higher'
+                        ? maximum -
+                        ratio *
+                        range
+                        : minimum +
+                        ratio *
+                        range;
 
                 const y =
                     plotTop +
@@ -683,44 +714,68 @@ function createChartGeometry(
     };
 }
 
-function formatChange(
-    metric: StrengthTrendMetric,
-    value: number
+function getProgressEyebrow(
+    trackingType:
+        ExerciseHistoryResponse['trackingType']
 ): string {
-    const prefix =
-        value > 0
-            ? '+'
-            : '';
+    switch (trackingType) {
+        case 'WeightAndReps':
+            return 'Strength Progress';
 
-    return (
-        `${prefix}` +
-        formatStrengthTrendValue(
-            metric,
-            value
-        )
-    );
+        case 'RepsOnly':
+            return 'Repetition Progress';
+
+        case 'Duration':
+            return 'Duration Progress';
+
+        case 'DistanceAndDuration':
+            return 'Cardio Progress';
+
+        default:
+            return 'Exercise Progress';
+    }
 }
 
 function formatPercentageChange(
-    value: number | null
+    value: number | null,
+    direction: ExerciseTrendDirection
 ): string {
     if (value === null) {
         return 'Percentage unavailable';
     }
 
-    const prefix =
-        value > 0
-            ? '+'
-            : '';
+    if (
+        Math.abs(value) <
+        0.0001
+    ) {
+        return 'No change from earliest';
+    }
 
-    return (
-        `${prefix}` +
-        `${new Intl.NumberFormat(
+    const formatted =
+        new Intl.NumberFormat(
             undefined,
             {
                 maximumFractionDigits: 1,
             }
-        ).format(value)}%` +
+        ).format(
+            Math.abs(value)
+        );
+
+    if (
+        direction === 'lower'
+    ) {
+        return value < 0
+            ? `${formatted}% faster`
+            : `${formatted}% slower`;
+    }
+
+    const prefix =
+        value > 0
+            ? '+'
+            : '-';
+
+    return (
+        `${prefix}${formatted}%` +
         ' from earliest'
     );
 }
@@ -772,17 +827,6 @@ function formatAxisDate(
     ).format(date);
 }
 
-function formatAxisNumber(
-    value: number
-): string {
-    return new Intl.NumberFormat(
-        undefined,
-        {
-            maximumFractionDigits: 1,
-        }
-    ).format(value);
-}
-
 function getTimestamp(
     value: string
 ): number {
@@ -796,4 +840,4 @@ function getTimestamp(
         : 0;
 }
 
-export default ExerciseStrengthTrend;
+export default ExercisePerformanceTrend;

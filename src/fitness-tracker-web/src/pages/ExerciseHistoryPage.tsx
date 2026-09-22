@@ -12,11 +12,11 @@ import {
 import ExerciseHistoryWorkoutCard
     from '../components/progress/ExerciseHistoryWorkoutCard';
 
+import ExercisePerformanceTrend
+    from '../components/progress/ExercisePerformanceTrend';
+
 import ExercisePersonalRecords
     from '../components/progress/ExercisePersonalRecords';
-
-import ExerciseStrengthTrend
-    from '../components/progress/ExerciseStrengthTrend';
 
 import {
     getExerciseHistory,
@@ -383,7 +383,7 @@ function ExerciseHistoryPage() {
 
             {history.entries.length >
                 0 && (
-                    <ExerciseStrengthTrend
+                    <ExercisePerformanceTrend
                         history={history}
                     />
                 )}

@@ -6,7 +6,7 @@ The project is being built as a portfolio application with a separate ASP.NET Co
 
 ## Current Status
 
-Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes the Exercise History API, a dedicated React Exercise History experience, tracking-type-specific personal-record detection, and interactive WeightAndReps strength trend charts derived from finalized Workout Sets.
+Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes the Exercise History API, a dedicated React Exercise History experience, tracking-type-specific personal-record detection, and generalized interactive trend charts for every ExerciseTrackingType.
 
 ### Current Development Focus
 
@@ -17,7 +17,9 @@ The current development phase is **Progress Tracking**:
 - Historical Workout links for each Exercise
 - Tracking-type-specific personal-record detection
 - WeightAndReps strength progress charts
-- Reps/duration/cardio trend charts
+- RepsOnly progress trends
+- Duration progress trends
+- DistanceAndDuration/cardio progress trends
 - Body-measurement API
 - Body-measurement UI
 - Body-weight charts
@@ -206,7 +208,7 @@ fitness-tracker
 │       │   │   ├── progress
 │       │   │   │   ├── ExerciseHistoryWorkoutCard.tsx
 │       │   │   │   ├── ExercisePersonalRecords.tsx
-│       │   │   │   └── ExerciseStrengthTrend.tsx
+│       │   │   │   └── ExercisePerformanceTrend.tsx
 │       │   │   │
 │       │   │   └── workouts
 │       │   │       ├── AddWorkoutExerciseDialog.tsx
@@ -837,9 +839,13 @@ Supports:
 - Most-recent and first-logged timestamps
 - Tracking-type-specific personal-record cards
 - Source Workout and Set references for each record
-- WeightAndReps strength trend chart
-- Metric switching between heaviest weight, most reps, and highest set volume
+- Generalized progress trend chart for every ExerciseTrackingType
+- WeightAndReps metrics: heaviest weight, most reps, highest set volume
+- RepsOnly metric: most reps
+- Duration metric: longest duration
+- DistanceAndDuration metrics: longest distance, longest duration, fastest pace
 - Per-session best-value aggregation
+- Metric-aware higher-is-better / lower-is-better selection
 - Earliest/latest/best/change trend summaries
 - Accessible SVG point labels and data table
 - Archived Exercise history remains viewable
@@ -899,31 +905,51 @@ Invalid or incomplete timestamps are excluded from duration aggregation rather t
 
 ---
 
-## Strength Progress Trends
+## Exercise Progress Trends
 
-For `WeightAndReps` Exercises, the Exercise History page can visualize three session-level trend metrics:
+The Exercise History page supports session-level trend charts for every current `ExerciseTrackingType`.
+
+### WeightAndReps
 
 - Heaviest Weight
 - Most Reps
 - Highest Set Volume (`WeightKg × Reps`)
 
-Each completed Workout contributes at most one point per metric. The point represents the best eligible Set for that metric in that session.
+### RepsOnly
+
+- Most Reps
+
+### Duration
+
+- Longest Duration
+
+### DistanceAndDuration
+
+- Longest Distance
+- Longest Duration
+- Fastest Average Pace
+
+Each completed Workout contributes at most one point per selected metric. The point represents the best eligible finalized Set for that metric in that session.
+
+Most metrics treat a larger value as the record/best value. `Fastest Pace` is intentionally lower-is-better because it stores seconds per kilometre.
 
 Historical Exercise entries arrive newest-first from the API, while chart points are intentionally sorted oldest-to-newest for left-to-right trend visualization.
 
 The chart is rendered with native React/SVG rather than an external charting dependency.
 
-The trend view also includes:
+The trend view includes:
 
+- Tracking-type-specific metric controls
 - Earliest value
 - Latest value
 - Best value
 - Absolute change from earliest to latest
 - Percentage change when the earliest value is greater than zero
-- Accessible SVG `<title>` labels on chart points
-- A compact data table containing the same chart values
+- Pace-aware faster/slower change wording
+- Accessible/focusable SVG point labels
+- A compact data table containing the same chart values and source Workout links
 
-No progress values are persisted separately; the chart is derived from finalized completed-Workout history.
+No progress values are persisted separately; trends are derived from finalized completed-Workout history.
 
 
 ---
@@ -1064,11 +1090,13 @@ Exercise personal records are calculated from finalized Exercise History respons
 
 This keeps the completed Workout/Set data as the source of truth and avoids stale record rows when historical data changes through a future explicit correction workflow.
 
-### Derived Strength Trends
+### Derived Exercise Trends
 
-WeightAndReps trend points are calculated from the same finalized Exercise History response.
+Trend points for every ExerciseTrackingType are calculated from the same finalized Exercise History response.
 
-The chart keeps the API/database model unchanged and avoids storing redundant per-session progress aggregates. The utility layer converts completed Sets into chronological chart points, while the React component owns metric selection and visualization.
+The chart keeps the API/database model unchanged and avoids storing redundant per-session progress aggregates. The utility layer converts completed Sets into chronological, tracking-type-aware chart points, while the React component owns metric selection and visualization.
+
+The trend model explicitly supports metric direction so `Fastest Pace` can treat a lower seconds-per-kilometre value as better while weight, reps, volume, duration, and distance use higher values.
 
 ---
 
@@ -1362,7 +1390,7 @@ dotnet ef migrations list
 - [x] Add Exercise History links from Workout sessions
 - [x] Add tracking-type-specific personal-record detection
 - [x] Add WeightAndReps strength progress charts
-- [ ] Add RepsOnly/Duration/Cardio trend charts
+- [x] Add RepsOnly/Duration/Cardio trend charts
 - [ ] Body-measurement API
 - [ ] Body-measurement UI
 - [ ] Body-weight charts
@@ -1442,6 +1470,7 @@ Add exercise progress history API foundation
 Add exercise history React experience
 Add exercise personal record detection
 Add weight and reps progress trend charts
+Generalize exercise progress trends across tracking types
 ```
 
 ### Recent Part Milestones
@@ -1469,6 +1498,7 @@ Part 60 — Exercise History API and frontend contracts
 Part 61 — Exercise History React experience
 Part 62 — Tracking-type-specific personal record detection
 Part 63 — WeightAndReps strength progress trend charts
+Part 64 — Generalized RepsOnly, Duration, and Cardio progress trends
 ```
 
 ---
@@ -1515,4 +1545,4 @@ The initial Workout Logging workflow is complete end-to-end: users can create Wo
 
 Workout History is complete for the current project scope. Completed Workouts can be searched, filtered, browsed by month, summarized with duration and aggregate metrics, and opened in a lifecycle-aware read-only detail experience.
 
-Progress Tracking now includes a current-user-scoped Exercise History API, matching TypeScript client contracts, a dedicated React Exercise History page, tracking-type-specific personal-record detection, and interactive WeightAndReps trend charts. Strength trend points are derived from finalized Sets on a per-session basis and can visualize heaviest weight, most reps, or highest set volume without additional API requests or database fields.
+Progress Tracking now includes a current-user-scoped Exercise History API, matching TypeScript client contracts, a dedicated React Exercise History page, tracking-type-specific personal-record detection, and interactive trend charts for every current tracking type. Trend points are derived from finalized Sets on a per-session basis and support weight, reps, set volume, duration, distance, and pace without additional API requests or database fields.
