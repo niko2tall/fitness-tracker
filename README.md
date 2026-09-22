@@ -6,21 +6,22 @@ The project is being built as a portfolio application with a separate ASP.NET Co
 
 ## Current Status
 
-Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is also complete for the current project scope, with completed-session browsing, search, Workout Type filtering, month navigation, duration-aware history cards, aggregate history metrics, lifecycle-aware navigation, and an explicit read-only historical-record policy.
+Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking has now started with a dedicated Exercise History API foundation and matching TypeScript client contracts.
 
 ### Current Development Focus
 
-The next major phase is **Progress Tracking**:
+The current development phase is **Progress Tracking**:
 
+- Exercise History API and frontend contracts
+- Exercise History UI
 - Personal-record detection
-- Exercise history
 - Strength progress charts
 - Body-measurement API
 - Body-measurement UI
 - Body-weight charts
 - Additional progress metrics
 
-The current completed Workout History experience remains available as the foundation for those future analytics features.
+The completed Workout History experience remains the historical source for these future analytics features.
 
 ---
 
@@ -109,6 +110,7 @@ fitness-tracker
 │   │   ├── Controllers
 │   │   │   ├── ExercisesController.cs
 │   │   │   ├── HealthController.cs
+│   │   │   ├── ProgressController.cs
 │   │   │   └── WorkoutsController.cs
 │   │   │
 │   │   ├── Data
@@ -126,6 +128,11 @@ fitness-tracker
 │   │   │   │   ├── CreateExerciseDto.cs
 │   │   │   │   ├── ExerciseResponseDto.cs
 │   │   │   │   └── UpdateExerciseDto.cs
+│   │   │   │
+│   │   │   ├── Progress
+│   │   │   │   ├── ExerciseHistoryResponseDto.cs
+│   │   │   │   ├── ExerciseHistorySetDto.cs
+│   │   │   │   └── ExerciseHistoryWorkoutDto.cs
 │   │   │   │
 │   │   │   └── Workouts
 │   │   │       ├── AddWorkoutExerciseDto.cs
@@ -163,6 +170,9 @@ fitness-tracker
 │   │   │   ├── Exercises
 │   │   │   │   ├── ExerciseService.cs
 │   │   │   │   └── IExerciseService.cs
+│   │   │   ├── Progress
+│   │   │   │   ├── IProgressService.cs
+│   │   │   │   └── ProgressService.cs
 │   │   │   ├── Users
 │   │   │   │   ├── DevelopmentCurrentUserService.cs
 │   │   │   │   └── ICurrentUserService.cs
@@ -220,6 +230,7 @@ fitness-tracker
 │       │   │   ├── apiClient.ts
 │       │   │   ├── exercisesApi.ts
 │       │   │   ├── healthApi.ts
+│       │   │   ├── progressApi.ts
 │       │   │   └── workoutsApi.ts
 │       │   │
 │       │   ├── styles
@@ -230,6 +241,7 @@ fitness-tracker
 │       │   │
 │       │   ├── types
 │       │   │   ├── exercise.ts
+│       │   │   ├── progress.ts
 │       │   │   └── workout.ts
 │       │   │
 │       │   ├── utils
@@ -637,6 +649,44 @@ POST   /api/workouts/{workoutId}/complete
 
 ---
 
+## Progress API
+
+Base route:
+
+```http
+/api/progress
+```
+
+Current operation:
+
+```http
+GET /api/progress/exercises/{exerciseId}/history
+```
+
+The Exercise History endpoint:
+
+- Returns metadata for the requested Exercise
+- Scopes historical Workout data to the current server-controlled user
+- Includes completed Workouts only
+- Includes only WorkoutExercise records with at least one completed Set
+- Returns completed Sets ordered by SetNumber
+- Keeps archived Exercises available for historical analysis
+- Returns an empty `entries` collection when the Exercise exists but has no completed history
+- Returns `404 Not Found` when the Exercise itself does not exist
+
+The response includes enough canonical performance data to support future:
+
+- Exercise History UI
+- Personal-record detection
+- Strength progress charts
+- Cardio duration/distance trends
+- Exercise-specific analytics
+
+No new database columns are required because the endpoint reads existing finalized Workout data.
+
+
+---
+
 ## API Error Handling
 
 Typical status codes include:
@@ -671,6 +721,9 @@ exercisesApi.ts
 
 workoutsApi.ts
 └── Workout endpoints
+
+progressApi.ts
+└── Exercise History / progress endpoints
 ```
 
 `api.ts` provides barrel exports for feature consumers.
@@ -1175,9 +1228,11 @@ dotnet ef migrations list
 
 ### Phase 8 — Progress Tracking
 
+- [x] Add Exercise History API foundation
+- [x] Add Exercise History TypeScript contracts/client
+- [ ] Build Exercise History UI
 - [ ] Personal-record detection
 - [ ] Strength progress charts
-- [ ] Exercise history
 - [ ] Body-measurement API
 - [ ] Body-measurement UI
 - [ ] Body-weight charts
@@ -1253,6 +1308,7 @@ Add dedicated workout history
 Add workout history filtering and date navigation
 Add workout history metrics and duration
 Finalize historical workout read-only experience
+Add exercise progress history API foundation
 ```
 
 ### Recent Part Milestones
@@ -1276,6 +1332,7 @@ Part 56 — Dedicated Workout History
 Part 57 — Workout History filtering and date navigation
 Part 58 — Workout History metrics and duration display
 Part 59 — Historical Workout policy and lifecycle-aware detail navigation
+Part 60 — Exercise History API and frontend contracts
 ```
 
 ---
@@ -1320,4 +1377,6 @@ Exercise Management is complete end-to-end.
 
 The initial Workout Logging workflow is complete end-to-end: users can create Workouts, edit active Workout metadata, manage Exercises, record/edit/remove tracking-specific Sets, complete the Workout, and review the resulting read-only session.
 
-Workout History is complete for the current project scope. Completed Workouts can be searched, filtered, browsed by month, summarized with duration and aggregate metrics, and opened in a lifecycle-aware read-only detail experience. The next major development phase is Progress Tracking.
+Workout History is complete for the current project scope. Completed Workouts can be searched, filtered, browsed by month, summarized with duration and aggregate metrics, and opened in a lifecycle-aware read-only detail experience.
+
+Progress Tracking has now begun with a current-user-scoped Exercise History API and TypeScript client contracts. This provides the historical performance dataset needed for the upcoming Exercise History UI, personal-record detection, and progress charts.
