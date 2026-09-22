@@ -1,13 +1,26 @@
 import type {
     WorkoutExercise,
+    WorkoutSet,
 } from '../../types/workout';
 
 interface WorkoutExerciseCardProps {
     exercise: WorkoutExercise;
     isActive: boolean;
+
     onAddSet: (
         exercise: WorkoutExercise
     ) => void;
+
+    onEditSet: (
+        exercise: WorkoutExercise,
+        set: WorkoutSet
+    ) => void;
+
+    onRemoveSet: (
+        exercise: WorkoutExercise,
+        set: WorkoutSet
+    ) => void;
+
     onRemove: (
         exercise: WorkoutExercise
     ) => void;
@@ -17,6 +30,8 @@ function WorkoutExerciseCard({
     exercise,
     isActive,
     onAddSet,
+    onEditSet,
+    onRemoveSet,
     onRemove,
 }: WorkoutExerciseCardProps) {
     return (
@@ -112,15 +127,49 @@ function WorkoutExerciseCard({
                                     )}
                                 </div>
 
-                                <div className="workout-session-set__meta">
-                                    {set.rpe !== null && (
-                                        <span>
-                                            RPE {set.rpe}
-                                        </span>
-                                    )}
+                                <div className="workout-session-set__right">
+                                    <div className="workout-session-set__meta">
+                                        {set.rpe !== null && (
+                                            <span>
+                                                RPE {set.rpe}
+                                            </span>
+                                        )}
 
-                                    {set.isCompleted && (
-                                        <span>Completed</span>
+                                        {set.isCompleted && (
+                                            <span>
+                                                Completed
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {isActive && (
+                                        <div className="workout-session-set__actions">
+                                            <button
+                                                type="button"
+                                                className="workout-set-action-button"
+                                                onClick={() =>
+                                                    onEditSet(
+                                                        exercise,
+                                                        set
+                                                    )
+                                                }
+                                            >
+                                                Edit
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                className="workout-set-action-button workout-set-action-button--danger"
+                                                onClick={() =>
+                                                    onRemoveSet(
+                                                        exercise,
+                                                        set
+                                                    )
+                                                }
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
 
@@ -141,8 +190,7 @@ function WorkoutExerciseCard({
 function formatSetSummary(
     trackingType:
         WorkoutExercise['trackingType'],
-    set:
-        WorkoutExercise['sets'][number]
+    set: WorkoutSet
 ): string {
     switch (trackingType) {
         case 'WeightAndReps':
@@ -179,11 +227,15 @@ function formatSetSummary(
 function formatDistance(
     distanceMeters: number | null
 ): string {
-    if (distanceMeters === null) {
+    if (
+        distanceMeters === null
+    ) {
         return 'No distance';
     }
 
-    if (distanceMeters >= 1000) {
+    if (
+        distanceMeters >= 1000
+    ) {
         return (
             `${formatNumber(
                 distanceMeters / 1000
@@ -191,15 +243,19 @@ function formatDistance(
         );
     }
 
-    return `${formatNumber(
-        distanceMeters
-    )} m`;
+    return (
+        `${formatNumber(
+            distanceMeters
+        )} m`
+    );
 }
 
 function formatDuration(
     durationSeconds: number | null
 ): string {
-    if (durationSeconds === null) {
+    if (
+        durationSeconds === null
+    ) {
         return 'No duration';
     }
 
@@ -210,8 +266,10 @@ function formatDuration(
 
     const minutes =
         Math.floor(
-            (durationSeconds % 3600) /
-            60
+            (
+                durationSeconds %
+                3600
+            ) / 60
         );
 
     const seconds =
@@ -220,9 +278,11 @@ function formatDuration(
     if (hours > 0) {
         return [
             `${hours}h`,
+
             minutes > 0
                 ? `${minutes}m`
                 : null,
+
             seconds > 0
                 ? `${seconds}s`
                 : null,
@@ -234,6 +294,7 @@ function formatDuration(
     if (minutes > 0) {
         return [
             `${minutes}m`,
+
             seconds > 0
                 ? `${seconds}s`
                 : null,

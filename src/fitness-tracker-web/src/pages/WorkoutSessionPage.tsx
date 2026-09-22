@@ -15,8 +15,14 @@ import AddWorkoutExerciseDialog
 import AddWorkoutSetDialog
     from '../components/workouts/AddWorkoutSetDialog';
 
+import EditWorkoutSetDialog
+    from '../components/workouts/EditWorkoutSetDialog';
+
 import RemoveWorkoutExerciseDialog
     from '../components/workouts/RemoveWorkoutExerciseDialog';
+
+import RemoveWorkoutSetDialog
+    from '../components/workouts/RemoveWorkoutSetDialog';
 
 import WorkoutExerciseCard
     from '../components/workouts/WorkoutExerciseCard';
@@ -26,13 +32,17 @@ import {
     addWorkoutSet,
     getWorkoutById,
     removeWorkoutExercise,
+    removeWorkoutSet,
+    updateWorkoutSet,
 } from '../services/api';
 
 import type {
     AddWorkoutExerciseRequest,
     CreateWorkoutSetRequest,
+    UpdateWorkoutSetRequest,
     Workout,
     WorkoutExercise,
+    WorkoutSet,
 } from '../types/workout';
 
 import {
@@ -41,6 +51,11 @@ import {
 
 import '../styles/workouts.css';
 import '../styles/workoutLogging.css';
+
+interface WorkoutSetTarget {
+    exercise: WorkoutExercise;
+    set: WorkoutSet;
+}
 
 function WorkoutSessionPage() {
     const {
@@ -52,7 +67,9 @@ function WorkoutSessionPage() {
     const [
         workout,
         setWorkout,
-    ] = useState<Workout | null>(null);
+    ] = useState<Workout | null>(
+        null
+    );
 
     const [
         isLoading,
@@ -62,7 +79,9 @@ function WorkoutSessionPage() {
     const [
         error,
         setError,
-    ] = useState<string | null>(null);
+    ] = useState<string | null>(
+        null
+    );
 
     const [
         isAddExerciseOpen,
@@ -77,7 +96,9 @@ function WorkoutSessionPage() {
     const [
         addExerciseError,
         setAddExerciseError,
-    ] = useState<string | null>(null);
+    ] = useState<string | null>(
+        null
+    );
 
     const [
         exerciseToRemove,
@@ -95,7 +116,9 @@ function WorkoutSessionPage() {
     const [
         removeExerciseError,
         setRemoveExerciseError,
-    ] = useState<string | null>(null);
+    ] = useState<string | null>(
+        null
+    );
 
     const [
         exerciseForSet,
@@ -113,7 +136,49 @@ function WorkoutSessionPage() {
     const [
         addSetError,
         setAddSetError,
-    ] = useState<string | null>(null);
+    ] = useState<string | null>(
+        null
+    );
+
+    const [
+        setToEdit,
+        setSetToEdit,
+    ] =
+        useState<WorkoutSetTarget | null>(
+            null
+        );
+
+    const [
+        isEditingSet,
+        setIsEditingSet,
+    ] = useState(false);
+
+    const [
+        editSetError,
+        setEditSetError,
+    ] = useState<string | null>(
+        null
+    );
+
+    const [
+        setToRemove,
+        setSetToRemove,
+    ] =
+        useState<WorkoutSetTarget | null>(
+            null
+        );
+
+    const [
+        isRemovingSet,
+        setIsRemovingSet,
+    ] = useState(false);
+
+    const [
+        removeSetError,
+        setRemoveSetError,
+    ] = useState<string | null>(
+        null
+    );
 
     useEffect(() => {
         if (!workoutId) {
@@ -122,6 +187,7 @@ function WorkoutSessionPage() {
             );
 
             setIsLoading(false);
+
             return;
         }
 
@@ -142,8 +208,10 @@ function WorkoutSessionPage() {
                 setWorkout(response);
             } catch (error) {
                 if (
-                    error instanceof DOMException &&
-                    error.name === 'AbortError'
+                    error instanceof
+                    DOMException &&
+                    error.name ===
+                    'AbortError'
                 ) {
                     return;
                 }
@@ -155,7 +223,9 @@ function WorkoutSessionPage() {
                     )
                 );
             } finally {
-                if (!controller.signal.aborted) {
+                if (
+                    !controller.signal.aborted
+                ) {
                     setIsLoading(false);
                 }
             }
@@ -201,7 +271,9 @@ function WorkoutSessionPage() {
                 currentWorkoutId
             );
 
-        setWorkout(refreshedWorkout);
+        setWorkout(
+            refreshedWorkout
+        );
     }
 
     function openAddExerciseDialog() {
@@ -219,7 +291,8 @@ function WorkoutSessionPage() {
     }
 
     async function handleAddExercise(
-        request: AddWorkoutExerciseRequest
+        request:
+            AddWorkoutExerciseRequest
     ) {
         if (!workout) {
             return;
@@ -255,7 +328,10 @@ function WorkoutSessionPage() {
         exercise: WorkoutExercise
     ) {
         setRemoveExerciseError(null);
-        setExerciseToRemove(exercise);
+
+        setExerciseToRemove(
+            exercise
+        );
     }
 
     function closeRemoveExerciseDialog() {
@@ -305,7 +381,10 @@ function WorkoutSessionPage() {
         exercise: WorkoutExercise
     ) {
         setAddSetError(null);
-        setExerciseForSet(exercise);
+
+        setExerciseForSet(
+            exercise
+        );
     }
 
     function closeAddSetDialog() {
@@ -318,7 +397,8 @@ function WorkoutSessionPage() {
     }
 
     async function handleAddSet(
-        request: CreateWorkoutSetRequest
+        request:
+            CreateWorkoutSetRequest
     ) {
         if (
             !workout ||
@@ -354,21 +434,143 @@ function WorkoutSessionPage() {
         }
     }
 
+    function openEditSetDialog(
+        exercise: WorkoutExercise,
+        set: WorkoutSet
+    ) {
+        setEditSetError(null);
+
+        setSetToEdit({
+            exercise,
+            set,
+        });
+    }
+
+    function closeEditSetDialog() {
+        if (isEditingSet) {
+            return;
+        }
+
+        setEditSetError(null);
+        setSetToEdit(null);
+    }
+
+    async function handleEditSet(
+        request:
+            UpdateWorkoutSetRequest
+    ) {
+        if (
+            !workout ||
+            !setToEdit
+        ) {
+            return;
+        }
+
+        try {
+            setIsEditingSet(true);
+            setEditSetError(null);
+
+            await updateWorkoutSet(
+                workout.id,
+                setToEdit.exercise.id,
+                setToEdit.set.id,
+                request
+            );
+
+            await refreshWorkout(
+                workout.id
+            );
+
+            setSetToEdit(null);
+        } catch (error) {
+            setEditSetError(
+                getErrorMessage(
+                    error,
+                    'Unable to update the set.'
+                )
+            );
+        } finally {
+            setIsEditingSet(false);
+        }
+    }
+
+    function openRemoveSetDialog(
+        exercise: WorkoutExercise,
+        set: WorkoutSet
+    ) {
+        setRemoveSetError(null);
+
+        setSetToRemove({
+            exercise,
+            set,
+        });
+    }
+
+    function closeRemoveSetDialog() {
+        if (isRemovingSet) {
+            return;
+        }
+
+        setRemoveSetError(null);
+        setSetToRemove(null);
+    }
+
+    async function handleRemoveSet() {
+        if (
+            !workout ||
+            !setToRemove
+        ) {
+            return;
+        }
+
+        try {
+            setIsRemovingSet(true);
+            setRemoveSetError(null);
+
+            await removeWorkoutSet(
+                workout.id,
+                setToRemove.exercise.id,
+                setToRemove.set.id
+            );
+
+            await refreshWorkout(
+                workout.id
+            );
+
+            setSetToRemove(null);
+        } catch (error) {
+            setRemoveSetError(
+                getErrorMessage(
+                    error,
+                    'Unable to remove the set.'
+                )
+            );
+        } finally {
+            setIsRemovingSet(false);
+        }
+    }
+
     if (isLoading) {
         return (
             <main className="app-shell">
                 <section className="workout-state-panel">
-                    <h1>Loading workout...</h1>
+                    <h1>
+                        Loading workout...
+                    </h1>
 
                     <p>
-                        Retrieving the workout session.
+                        Retrieving the workout
+                        session.
                     </p>
                 </section>
             </main>
         );
     }
 
-    if (error || !workout) {
+    if (
+        error ||
+        !workout
+    ) {
         return (
             <main className="app-shell">
                 <section
@@ -428,7 +630,9 @@ function WorkoutSessionPage() {
                             </span>
                         </div>
 
-                        <h1>{workout.name}</h1>
+                        <h1>
+                            {workout.name}
+                        </h1>
 
                         {workout.notes && (
                             <p className="workout-session__notes">
@@ -453,7 +657,10 @@ function WorkoutSessionPage() {
                         <span>Exercises</span>
 
                         <strong>
-                            {workout.exercises.length}
+                            {
+                                workout.exercises
+                                    .length
+                            }
                         </strong>
                     </div>
 
@@ -467,7 +674,9 @@ function WorkoutSessionPage() {
 
                     {workout.endedAtUtc && (
                         <div>
-                            <span>Completed</span>
+                            <span>
+                                Completed
+                            </span>
 
                             <strong>
                                 {formatDateTime(
@@ -485,12 +694,17 @@ function WorkoutSessionPage() {
                                 Session
                             </p>
 
-                            <h2>Exercises</h2>
+                            <h2>
+                                Exercises
+                            </h2>
                         </div>
 
                         <div className="workout-section__actions">
                             <span className="workout-section__count">
-                                {workout.exercises.length}
+                                {
+                                    workout.exercises
+                                        .length
+                                }
                             </span>
 
                             {isActive && (
@@ -507,11 +721,13 @@ function WorkoutSessionPage() {
                         </div>
                     </header>
 
-                    {workout.exercises.length === 0 ? (
+                    {workout.exercises.length ===
+                        0 ? (
                         <div className="workout-section__empty workout-session__empty">
                             <p>
-                                No exercises have been added to
-                                this workout yet.
+                                No exercises have
+                                been added to this
+                                workout yet.
                             </p>
 
                             {isActive && (
@@ -531,11 +747,23 @@ function WorkoutSessionPage() {
                             {workout.exercises.map(
                                 (exercise) => (
                                     <WorkoutExerciseCard
-                                        key={exercise.id}
-                                        exercise={exercise}
-                                        isActive={isActive}
+                                        key={
+                                            exercise.id
+                                        }
+                                        exercise={
+                                            exercise
+                                        }
+                                        isActive={
+                                            isActive
+                                        }
                                         onAddSet={
                                             openAddSetDialog
+                                        }
+                                        onEditSet={
+                                            openEditSetDialog
+                                        }
+                                        onRemoveSet={
+                                            openRemoveSetDialog
                                         }
                                         onRemove={
                                             openRemoveExerciseDialog
@@ -549,7 +777,9 @@ function WorkoutSessionPage() {
             </main>
 
             <AddWorkoutExerciseDialog
-                isOpen={isAddExerciseOpen}
+                isOpen={
+                    isAddExerciseOpen
+                }
                 workoutType={
                     workout.workoutType
                 }
@@ -559,7 +789,9 @@ function WorkoutSessionPage() {
                 isSubmitting={
                     isAddingExercise
                 }
-                error={addExerciseError}
+                error={
+                    addExerciseError
+                }
                 onClose={
                     closeAddExerciseDialog
                 }
@@ -570,9 +802,12 @@ function WorkoutSessionPage() {
 
             <RemoveWorkoutExerciseDialog
                 isOpen={
-                    exerciseToRemove !== null
+                    exerciseToRemove !==
+                    null
                 }
-                exercise={exerciseToRemove}
+                exercise={
+                    exerciseToRemove
+                }
                 isSubmitting={
                     isRemovingExercise
                 }
@@ -591,16 +826,72 @@ function WorkoutSessionPage() {
                 isOpen={
                     exerciseForSet !== null
                 }
-                exercise={exerciseForSet}
+                exercise={
+                    exerciseForSet
+                }
                 isSubmitting={
                     isAddingSet
                 }
-                error={addSetError}
+                error={
+                    addSetError
+                }
                 onClose={
                     closeAddSetDialog
                 }
                 onSubmit={
                     handleAddSet
+                }
+            />
+
+            <EditWorkoutSetDialog
+                isOpen={
+                    setToEdit !== null
+                }
+                exercise={
+                    setToEdit?.exercise ??
+                    null
+                }
+                set={
+                    setToEdit?.set ??
+                    null
+                }
+                isSubmitting={
+                    isEditingSet
+                }
+                error={
+                    editSetError
+                }
+                onClose={
+                    closeEditSetDialog
+                }
+                onSubmit={
+                    handleEditSet
+                }
+            />
+
+            <RemoveWorkoutSetDialog
+                isOpen={
+                    setToRemove !== null
+                }
+                exercise={
+                    setToRemove?.exercise ??
+                    null
+                }
+                set={
+                    setToRemove?.set ??
+                    null
+                }
+                isSubmitting={
+                    isRemovingSet
+                }
+                error={
+                    removeSetError
+                }
+                onClose={
+                    closeRemoveSetDialog
+                }
+                onConfirm={
+                    handleRemoveSet
                 }
             />
         </>
@@ -611,10 +902,13 @@ function getErrorMessage(
     error: unknown,
     fallback: string
 ): string {
-    return error instanceof Error &&
-        error.message.trim().length > 0
-        ? error.message
-        : fallback;
+    return (
+        error instanceof Error &&
+            error.message.trim().length >
+            0
+            ? error.message
+            : fallback
+    );
 }
 
 export default WorkoutSessionPage;

@@ -6,7 +6,7 @@ The project is being built as a portfolio application with a separate ASP.NET Co
 
 ## Current Status
 
-The project currently supports end-to-end Exercise Management, a complete initial Workout Logging backend lifecycle, and an increasingly complete React Workout logging experience.
+The project supports end-to-end Exercise Management, a complete initial Workout Logging backend lifecycle, and a substantial React Workout logging experience.
 
 ### Completed
 
@@ -63,28 +63,33 @@ The project currently supports end-to-end Exercise Management, a complete initia
 - Optional WorkoutExercise notes supported during Exercise assignment
 - Active WorkoutExercise removal implemented with confirmation
 - Workout session refreshes from the API after Exercise additions/removals
-- Completed Workout sessions keep Exercise-management controls hidden
 - Tracking-specific Set entry implemented in React
 - Weight-and-repetitions Set entry implemented
 - Reps-only Set entry implemented
 - Duration Set entry implemented
 - Distance-and-duration Set entry implemented
-- Cardio SetType is constrained to Working in the UI
-- User-friendly kilometre input is converted to canonical metres before API submission
+- Cardio SetType constrained to Working in the UI
+- User-friendly kilometre input converted to canonical metres before API submission
+- User-friendly duration input converted to canonical seconds before API submission
 - Set data refreshes from the API after successful creation
 - Workout Set summaries display SetType, performance data, RPE, and optional notes
-- Completed Workouts keep Set-entry controls hidden
-- Workout list, creation, session details, Exercise management, and Set entry are responsive
+- Active Workout Set editing implemented in React
+- Edit forms are pre-populated from persisted Set data
+- Canonical metres/seconds are converted back to user-friendly kilometre/minute/second values while editing
+- Active Workout Set removal implemented with confirmation
+- Set removal refreshes the Workout and reflects server-side SetNumber renumbering
+- Completed Workouts hide Set add/edit/remove controls
+- Workout list, creation, session details, Exercise management, Set entry, and Set correction are responsive
 
 ## Currently In Development
 
-The current development phase is focused on completing the **active React Workout logging experience**:
+The current development phase is focused on finishing the **active React Workout logging experience**:
 
-- Adding Set editing and removal controls
 - Adding Workout editing controls
 - Adding Workout completion controls
 - Improving active-session interaction details
 - Finalizing the mobile Workout logging experience
+- Preparing for dedicated Workout History features
 
 ---
 
@@ -137,11 +142,9 @@ ASP.NET Core Web API
       SQLite
 ```
 
-The frontend does not access the database directly.
+The API owns validation, business rules, ownership enforcement, lifecycle state, persistence, IDs, ordering, and timestamps.
 
-The API is responsible for validation, business rules, ownership enforcement, lifecycle state, persistence, and server-controlled IDs/timestamps.
-
-The React client is responsible for presentation, interaction, local UI state, user-friendly unit entry, and calling the API through typed feature clients.
+React owns presentation, interaction, local UI state, user-friendly unit entry, and typed API calls.
 
 ---
 
@@ -157,17 +160,14 @@ fitness-tracker
 │   │   │   ├── ExercisesController.cs
 │   │   │   ├── HealthController.cs
 │   │   │   └── WorkoutsController.cs
-│   │   │
 │   │   ├── Data
 │   │   │   ├── Seed
 │   │   │   │   └── ExerciseSeedData.cs
 │   │   │   ├── DevelopmentDataInitializer.cs
 │   │   │   ├── FitnessTrackerDbContext.cs
 │   │   │   └── FitnessTracker.db
-│   │   │
 │   │   ├── Development
 │   │   │   └── DevelopmentUser.cs
-│   │   │
 │   │   ├── DTOs
 │   │   │   ├── Exercises
 │   │   │   │   ├── CreateExerciseDto.cs
@@ -183,12 +183,10 @@ fitness-tracker
 │   │   │       ├── WorkoutResponseDto.cs
 │   │   │       ├── WorkoutSetResponseDto.cs
 │   │   │       └── WorkoutSummaryDto.cs
-│   │   │
 │   │   ├── Migrations
 │   │   │   ├── <timestamp>_InitialCreate.cs
 │   │   │   ├── <timestamp>_SeedBuiltInExercises.cs
 │   │   │   └── FitnessTrackerDbContextModelSnapshot.cs
-│   │   │
 │   │   ├── Models
 │   │   │   ├── Enums
 │   │   │   │   ├── DistanceUnit.cs
@@ -203,7 +201,6 @@ fitness-tracker
 │   │   │   ├── Workout.cs
 │   │   │   ├── WorkoutExercise.cs
 │   │   │   └── WorkoutSet.cs
-│   │   │
 │   │   ├── Services
 │   │   │   ├── Exercises
 │   │   │   │   ├── ExerciseService.cs
@@ -214,7 +211,6 @@ fitness-tracker
 │   │   │   └── Workouts
 │   │   │       ├── IWorkoutService.cs
 │   │   │       └── WorkoutService.cs
-│   │   │
 │   │   ├── Properties
 │   │   │   └── launchSettings.json
 │   │   ├── appsettings.json
@@ -238,39 +234,35 @@ fitness-tracker
 │       │   │       ├── AddWorkoutExerciseDialog.tsx
 │       │   │       ├── AddWorkoutSetDialog.tsx
 │       │   │       ├── CreateWorkoutDialog.tsx
+│       │   │       ├── EditWorkoutSetDialog.tsx
 │       │   │       ├── RemoveWorkoutExerciseDialog.tsx
+│       │   │       ├── RemoveWorkoutSetDialog.tsx
 │       │   │       ├── WorkoutExerciseCard.tsx
 │       │   │       └── WorkoutSummaryCard.tsx
-│       │   │
 │       │   ├── pages
 │       │   │   ├── DashboardPage.tsx
 │       │   │   ├── ExercisesPage.tsx
 │       │   │   ├── NotFoundPage.tsx
 │       │   │   ├── WorkoutsPage.tsx
 │       │   │   └── WorkoutSessionPage.tsx
-│       │   │
 │       │   ├── services
 │       │   │   ├── api.ts
 │       │   │   ├── apiClient.ts
 │       │   │   ├── exercisesApi.ts
 │       │   │   ├── healthApi.ts
 │       │   │   └── workoutsApi.ts
-│       │   │
 │       │   ├── styles
 │       │   │   ├── workoutLogging.css
 │       │   │   └── workouts.css
-│       │   │
 │       │   ├── types
 │       │   │   ├── exercise.ts
 │       │   │   └── workout.ts
-│       │   │
 │       │   ├── utils
 │       │   │   └── dateTime.ts
 │       │   ├── App.css
 │       │   ├── App.tsx
 │       │   ├── index.css
 │       │   └── main.tsx
-│       │
 │       ├── .env.development
 │       ├── index.html
 │       ├── package.json
@@ -292,13 +284,9 @@ fitness-tracker
 
 Owns Workouts, BodyMeasurements, and custom Exercises.
 
-Authentication has not yet been implemented. A server-controlled development user provides pre-authentication Workout ownership.
-
 ### Exercise
 
-A reusable built-in or custom Strength/Cardio Exercise definition.
-
-Archived Exercises remain available to historical Workouts but cannot be selected for new logging.
+A reusable Strength or Cardio Exercise definition. Exercises can be built-in, custom, active, or archived.
 
 ### Workout
 
@@ -306,15 +294,15 @@ A training session containing metadata, lifecycle timestamps, notes, and ordered
 
 ### WorkoutExercise
 
-An explicit relationship between a Workout and Exercise. It stores order, optional session-specific notes, and WorkoutSets.
+An explicit relationship between a Workout and Exercise. It stores Workout order, optional notes, and WorkoutSets.
 
 ### WorkoutSet
 
-One recorded performance entry containing the fields appropriate for its Exercise tracking type.
+One recorded performance entry containing the fields appropriate for the Exercise tracking type.
 
 ### BodyMeasurement
 
-Represents user body measurements recorded over time. API and UI support are planned for a later phase.
+Represents body measurements recorded over time. API/UI support is planned for a later phase.
 
 ---
 
@@ -329,31 +317,19 @@ DistanceAndDuration
 
 ### WeightAndReps
 
-Requires:
-
-- Weight in kilograms
-- Repetitions
-
-Supports optional RPE, SetType, and notes.
+Requires weight in kilograms and repetitions.
 
 ### RepsOnly
 
-Requires repetitions and supports optional RPE, SetType, and notes.
+Requires repetitions.
 
 ### Duration
 
-Requires duration in seconds at the API/storage layer.
-
-The React UI accepts minutes and seconds and converts them to canonical seconds before submission.
+Requires duration in seconds at the API/storage boundary. React uses minute/second inputs.
 
 ### DistanceAndDuration
 
-Requires:
-
-- Distance in metres at the API/storage layer
-- Duration in seconds
-
-The React UI accepts distance in kilometres plus minutes/seconds, then converts the values to canonical metres/seconds before submission.
+Requires distance in metres and duration in seconds at the API/storage boundary. React uses kilometre plus minute/second inputs.
 
 ---
 
@@ -365,13 +341,11 @@ Cardio
 Mixed
 ```
 
-Compatibility rules:
-
 - Strength Workouts accept Strength Exercises
 - Cardio Workouts accept Cardio Exercises
 - Mixed Workouts accept either
-- Existing Exercise compatibility is checked before changing Workout type
-- React pre-filters Exercise choices, while the API remains authoritative
+- React pre-filters Exercise choices
+- The API remains authoritative
 
 ---
 
@@ -384,9 +358,7 @@ Drop
 Failure
 ```
 
-The current Cardio model requires `Working`.
-
-The React Set-entry dialog automatically uses `Working` for Cardio Exercises and does not offer incompatible SetType choices.
+Current Cardio entries use `Working`. The React Set forms mirror that rule.
 
 ---
 
@@ -394,7 +366,7 @@ The React Set-entry dialog automatically uses `Working` for Cardio Exercises and
 
 ### Separate API and frontend
 
-The backend remains independent from the current React client.
+The backend remains independent from React.
 
 ### DTO separation
 
@@ -402,33 +374,31 @@ API contracts are separate from EF Core entities.
 
 ### Service layer
 
-Controllers delegate Workout and Exercise business rules to services.
+Controllers delegate business rules and persistence behavior to services.
 
 ### Server-controlled ownership
 
-React never submits Workout ownership IDs.
+React never submits arbitrary Workout User IDs.
 
 ### Canonical units
 
-The database stores kilograms, metres, and seconds.
-
-The UI can use more convenient entry units and convert them before submission.
+Persistence uses kilograms, metres, and seconds.
 
 ### UTC timestamps
 
-Persistent timestamps use UTC; React displays browser-local time.
+Persisted timestamps use UTC; React displays browser-local time.
 
 ### Calculated values are not stored unnecessarily
 
-Pace, Workout duration, and similar derived values are calculated from source data.
+Pace, Workout duration, and similar derived values are calculated.
 
 ### Exercise archiving
 
-Exercises are soft-archived so history remains intact.
+Exercises are soft-archived to preserve historical references.
 
 ### Completed Workouts are read-only
 
-Normal mutation operations are available only while `EndedAtUtc` is null.
+Normal Workout mutation operations are available only while a Workout is active.
 
 ### Server-assigned ordering
 
@@ -436,15 +406,19 @@ The API owns WorkoutExercise OrderIndex and WorkoutSet SetNumber.
 
 ### API remains authoritative
 
-Frontend validation improves usability, but backend validation remains the source of truth.
+Frontend validation improves usability, while backend validation remains authoritative.
 
 ### Refresh after nested mutations
 
-React reloads the Workout after nested Exercise and Set creation/removal so server-owned order, timestamps, and nested state remain authoritative.
+React reloads Workout state after nested Exercise/Set mutations so server-owned ordering, timestamps, and nested state remain correct.
 
 ### Tracking-specific forms
 
-The active Workout UI only asks for fields relevant to the selected Exercise's tracking type. This avoids presenting meaningless Weight, Reps, Duration, or Distance fields for the wrong Exercise.
+React only asks for fields relevant to the Exercise tracking type.
+
+### Round-trip unit conversion
+
+Set editing converts canonical persisted values back into user-friendly UI values, then converts them back to canonical values before updating the API.
 
 ---
 
@@ -515,18 +489,6 @@ InitialCreate
 SeedBuiltInExercises
 ```
 
-Local SQLite databases are ignored by Git.
-
----
-
-## Built-In Exercise Library
-
-The application seeds 42 built-in Strength and Cardio Exercises with stable IDs.
-
-Built-in Exercises cannot be edited or archived.
-
-Custom Exercises can be created, edited, and archived.
-
 ---
 
 ## Exercise API
@@ -545,12 +507,6 @@ GET    /api/exercises/{id}
 POST   /api/exercises
 PUT    /api/exercises/{id}
 DELETE /api/exercises/{id}
-```
-
-Optional archived inclusion:
-
-```http
-GET /api/exercises?includeArchived=true
 ```
 
 ---
@@ -581,23 +537,23 @@ DELETE /api/workouts/{workoutId}/exercises/{workoutExerciseId}/sets/{setId}
 POST   /api/workouts/{workoutId}/complete
 ```
 
-### Workout Creation
-
-React submits editable Workout fields only. IDs, ownership, and lifecycle timestamps are server-controlled.
-
-### Exercise Assignment
-
-The API validates ownership, lifecycle state, Exercise existence, archive state, type compatibility, and duplicates.
-
 ### Set Logging
 
-The API validates each Set against the Exercise tracking type.
+The API validates Set fields against the Exercise TrackingType.
 
-React now exposes tracking-specific Set forms for all supported tracking modes.
+React exposes matching create/edit forms and refreshes the full Workout after successful mutations.
 
-### Workout Completion
+### Set Editing
 
-Completion requires at least one completed Set and assigns `EndedAtUtc` server-side.
+Only active Workouts allow Set edits.
+
+The Set ID, SetNumber, and IsCompleted state remain server-controlled.
+
+### Set Removal
+
+Only active Workouts allow Set removal.
+
+The backend renumbers remaining SetNumber values, and React reloads the Workout so the new numbering is shown immediately.
 
 ---
 
@@ -678,22 +634,23 @@ Supports:
 - Workout creation
 - Dedicated session routing
 - Full nested Workout retrieval
-- Exercise assignment
+- Exercise assignment/removal
 - Exercise search and compatibility filtering
-- Exercise removal
 - Optional WorkoutExercise notes
 - Tracking-specific Set entry
-- Weight + Reps entry
-- Reps-only entry
-- Duration entry
-- Distance + Duration entry
+- Tracking-specific Set editing
+- Set removal with confirmation
+- Weight + Reps
+- Reps-only
+- Duration
+- Distance + Duration
 - Strength SetType selection
 - Cardio Working-only SetType behavior
 - Optional RPE
 - Optional Set notes
-- User-friendly duration and distance entry with canonical API conversion
-- Automatic Workout refresh after successful Set creation
-- Existing Set summary display
+- Canonical unit conversion
+- Automatic Workout refresh after Set create/edit/remove
+- Server-renumbered Set numbers after deletion
 - Read-only Completed Workout display
 - Responsive layouts
 
@@ -817,12 +774,6 @@ VITE_API_BASE_URL=https://localhost:7081
 npm run dev
 ```
 
-Open:
-
-```text
-http://localhost:5173
-```
-
 ---
 
 ## Building
@@ -842,34 +793,6 @@ npm run build
 
 ---
 
-## EF Core Commands
-
-Run from:
-
-```text
-src/FitnessTracker.Api
-```
-
-Apply migrations:
-
-```powershell
-dotnet ef database update
-```
-
-Create a migration only after an intentional EF model change:
-
-```powershell
-dotnet ef migrations add MigrationName
-```
-
-View migrations:
-
-```powershell
-dotnet ef migrations list
-```
-
----
-
 ## Development Principles
 
 - Keep entities separate from API DTOs
@@ -880,13 +803,11 @@ dotnet ef migrations list
 - Store timestamps in UTC
 - Avoid storing values that can be calculated
 - Preserve historical references
-- Use explicit relational entities when relationships contain data
 - Keep feature-specific frontend API code separate
 - Let the backend remain authoritative even when React pre-validates choices
 - Use tracking-specific forms instead of generic forms with irrelevant fields
-- Refresh server-owned nested state after mutations when useful
+- Refresh server-owned nested state after mutations
 - Maintain responsive layouts as features are introduced
-- Build backend behavior before depending on it in the UI
 - Commit coherent development milestones
 
 ---
@@ -981,7 +902,7 @@ dotnet ef migrations list
 - [x] Add active Workout Exercise selection UI
 - [x] Add active Workout Exercise removal UI
 - [x] Add tracking-specific Set entry UI
-- [ ] Add Set editing/removal UI
+- [x] Add Set editing/removal UI
 - [ ] Add Workout editing/completion UI
 - [ ] Complete full React Workout logging interface
 
@@ -1066,6 +987,7 @@ Add frontend workout API client
 Add workout list and creation UI
 Add active workout exercise management
 Add tracking-specific workout set entry
+Add workout set correction controls
 ```
 
 ---
@@ -1093,11 +1015,12 @@ The application currently demonstrates:
 - Responsive UI design
 - Frontend/backend integration
 - Error handling across API and UI layers
-- Tracking-specific form design
+- Tracking-specific create/edit form design
 - Canonical-unit conversion at client/API boundaries
 - Active resource mutation and synchronization
+- Destructive-action confirmation workflows
 - Git-based incremental development
 
 Exercise Management is complete end-to-end.
 
-Workout Logging has a complete initial backend lifecycle. The React client can list and create Workouts, open sessions, add/remove Exercises, and record Sets using forms tailored to each Exercise tracking type. Current development is focused on editing/removing recorded Sets and exposing the remaining Workout update/completion controls in React.
+Workout Logging has a complete initial backend lifecycle. The React client can list and create Workouts, open sessions, add/remove Exercises, create Sets with tracking-specific forms, and edit/remove existing Sets while the Workout remains active. Current development is focused on Workout-level editing and completion controls before moving into dedicated history and progress features.
