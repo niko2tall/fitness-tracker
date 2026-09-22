@@ -17,6 +17,9 @@ import ExercisesPage
 import NotFoundPage
     from './pages/NotFoundPage';
 
+import WorkoutHistoryPage
+    from './pages/WorkoutHistoryPage';
+
 import WorkoutsPage
     from './pages/WorkoutsPage';
 
@@ -29,27 +32,44 @@ function App() {
             <Route element={<AppLayout />}>
                 <Route
                     path="/"
-                    element={<DashboardPage />}
+                    element={
+                        <DashboardPage />
+                    }
                 />
 
                 <Route
                     path="/exercises"
-                    element={<ExercisesPage />}
+                    element={
+                        <ExercisesPage />
+                    }
                 />
 
                 <Route
                     path="/workouts"
-                    element={<WorkoutsPage />}
+                    element={
+                        <WorkoutsPage />
+                    }
                 />
 
                 <Route
                     path="/workouts/:workoutId"
-                    element={<WorkoutSessionPage />}
+                    element={
+                        <WorkoutSessionPage />
+                    }
+                />
+
+                <Route
+                    path="/history"
+                    element={
+                        <WorkoutHistoryPage />
+                    }
                 />
 
                 <Route
                     path="*"
-                    element={<NotFoundPage />}
+                    element={
+                        <NotFoundPage />
+                    }
                 />
             </Route>
         </Routes>

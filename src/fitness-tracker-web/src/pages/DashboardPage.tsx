@@ -1,4 +1,6 @@
-import { Link } from 'react-router-dom';
+import {
+    Link,
+} from 'react-router-dom';
 
 function DashboardPage() {
     return (
@@ -9,11 +11,15 @@ function DashboardPage() {
                         Fitness Tracker
                     </p>
 
-                    <h1>Dashboard</h1>
+                    <h1>
+                        Dashboard
+                    </h1>
 
                     <p className="page-header__description">
-                        Track workouts, exercises, and your
-                        fitness progress from one place.
+                        Track workouts, manage
+                        exercises, and review your
+                        training history from one
+                        place.
                     </p>
                 </div>
             </header>
@@ -24,11 +30,14 @@ function DashboardPage() {
                         Exercise Library
                     </p>
 
-                    <h2>Manage Exercises</h2>
+                    <h2>
+                        Manage Exercises
+                    </h2>
 
                     <p>
-                        Browse built-in exercises and create,
-                        edit, or archive your custom exercises.
+                        Browse built-in exercises
+                        and create, edit, or archive
+                        your custom exercises.
                     </p>
 
                     <Link
@@ -44,12 +53,14 @@ function DashboardPage() {
                         Workout Tracking
                     </p>
 
-                    <h2>Workouts</h2>
+                    <h2>
+                        Active Workouts
+                    </h2>
 
                     <p>
-                        Start a workout, continue an active
-                        session, or review your completed
-                        workout history.
+                        Start a workout or continue
+                        a training session already
+                        in progress.
                     </p>
 
                     <Link
@@ -57,6 +68,30 @@ function DashboardPage() {
                         className="dashboard-card__link"
                     >
                         Open Workouts
+                    </Link>
+                </article>
+
+                <article className="dashboard-card">
+                    <p className="dashboard-card__eyebrow">
+                        Training History
+                    </p>
+
+                    <h2>
+                        Workout History
+                    </h2>
+
+                    <p>
+                        Review completed sessions
+                        and inspect your recorded
+                        exercises, sets, and
+                        performance.
+                    </p>
+
+                    <Link
+                        to="/history"
+                        className="dashboard-card__link"
+                    >
+                        View Workout History
                     </Link>
                 </article>
             </section>

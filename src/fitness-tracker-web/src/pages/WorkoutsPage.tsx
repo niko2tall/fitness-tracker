@@ -5,6 +5,7 @@ import {
 } from 'react';
 
 import {
+    Link,
     useNavigate,
 } from 'react-router-dom';
 
@@ -25,6 +26,7 @@ import type {
 } from '../types/workout';
 
 import '../styles/workouts.css';
+import '../styles/workoutHistory.css';
 
 function WorkoutsPage() {
     const navigate =
@@ -113,19 +115,12 @@ function WorkoutsPage() {
             [workouts]
         );
 
-    const completedWorkouts =
-        useMemo(
-            () =>
-                workouts.filter(
-                    (workout) =>
-                        workout.endedAtUtc !== null
-                ),
-            [workouts]
-        );
-
     function openCreateDialog() {
         setCreateError(null);
-        setIsCreateDialogOpen(true);
+
+        setIsCreateDialogOpen(
+            true
+        );
     }
 
     function closeCreateDialog() {
@@ -134,20 +129,28 @@ function WorkoutsPage() {
         }
 
         setCreateError(null);
-        setIsCreateDialogOpen(false);
+
+        setIsCreateDialogOpen(
+            false
+        );
     }
 
     async function handleCreateWorkout(
-        request: CreateWorkoutRequest
+        request:
+            CreateWorkoutRequest
     ) {
         try {
             setIsCreating(true);
             setCreateError(null);
 
             const workout =
-                await createWorkout(request);
+                await createWorkout(
+                    request
+                );
 
-            setIsCreateDialogOpen(false);
+            setIsCreateDialogOpen(
+                false
+            );
 
             navigate(
                 `/workouts/${workout.id}`
@@ -173,21 +176,35 @@ function WorkoutsPage() {
                             Workout Management
                         </p>
 
-                        <h1>Workouts</h1>
+                        <h1>
+                            Workouts
+                        </h1>
 
                         <p className="page-header__description">
-                            Start a workout, continue an active
-                            session, or review a completed workout.
+                            Start a new workout or
+                            continue one of your active
+                            training sessions.
                         </p>
                     </div>
 
-                    <button
-                        type="button"
-                        className="workout-button workout-button--primary"
-                        onClick={openCreateDialog}
-                    >
-                        Start Workout
-                    </button>
+                    <div className="workout-history-actions">
+                        <Link
+                            to="/history"
+                            className="workout-history-link-button workout-history-link-button--secondary"
+                        >
+                            Workout History
+                        </Link>
+
+                        <button
+                            type="button"
+                            className="workout-button workout-button--primary"
+                            onClick={
+                                openCreateDialog
+                            }
+                        >
+                            Start Workout
+                        </button>
+                    </div>
                 </header>
 
                 {isLoading && (
@@ -195,143 +212,126 @@ function WorkoutsPage() {
                         className="workout-state-panel"
                         aria-live="polite"
                     >
-                        <h2>Loading workouts...</h2>
+                        <h2>
+                            Loading workouts...
+                        </h2>
+
                         <p>
-                            Retrieving your workout sessions.
+                            Retrieving your active
+                            training sessions.
                         </p>
                     </section>
                 )}
 
-                {!isLoading && loadError && (
-                    <section
-                        className="workout-state-panel workout-state-panel--error"
-                        role="alert"
-                    >
-                        <h2>
-                            Workouts couldn't be loaded
-                        </h2>
-
-                        <p>{loadError}</p>
-                    </section>
-                )}
-
                 {!isLoading &&
-                    !loadError &&
-                    workouts.length === 0 && (
-                        <section className="workout-empty-state">
-                            <p className="workout-empty-state__eyebrow">
-                                No workouts yet
-                            </p>
-
+                    loadError && (
+                        <section
+                            className="workout-state-panel workout-state-panel--error"
+                            role="alert"
+                        >
                             <h2>
-                                Start your first workout
+                                Workouts couldn't
+                                be loaded
                             </h2>
 
                             <p>
-                                Create a session and then add
-                                exercises and performance data as
-                                you train.
+                                {loadError}
                             </p>
-
-                            <button
-                                type="button"
-                                className="workout-button workout-button--primary"
-                                onClick={openCreateDialog}
-                            >
-                                Start Workout
-                            </button>
                         </section>
                     )}
 
                 {!isLoading &&
                     !loadError &&
-                    workouts.length > 0 && (
-                        <div className="workout-sections">
-                            <section className="workout-section">
-                                <header className="workout-section__header">
-                                    <div>
-                                        <p className="workout-section__eyebrow">
-                                            In Progress
-                                        </p>
+                    activeWorkouts.length ===
+                    0 && (
+                        <section className="workout-empty-state">
+                            <p className="workout-empty-state__eyebrow">
+                                No active workouts
+                            </p>
 
-                                        <h2>
-                                            Active Workouts
-                                        </h2>
-                                    </div>
+                            <h2>
+                                Start a new session
+                            </h2>
 
-                                    <span className="workout-section__count">
-                                        {activeWorkouts.length}
-                                    </span>
-                                </header>
+                            <p>
+                                You don't currently
+                                have a workout in
+                                progress.
+                            </p>
 
-                                {activeWorkouts.length === 0 ? (
-                                    <div className="workout-section__empty">
-                                        <p>
-                                            You don't have any active
-                                            workouts.
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <div className="workout-card-grid">
-                                        {activeWorkouts.map(
-                                            (workout) => (
-                                                <WorkoutSummaryCard
-                                                    key={workout.id}
-                                                    workout={workout}
-                                                />
-                                            )
-                                        )}
-                                    </div>
+                            <div className="workout-history-actions">
+                                <button
+                                    type="button"
+                                    className="workout-button workout-button--primary"
+                                    onClick={
+                                        openCreateDialog
+                                    }
+                                >
+                                    Start Workout
+                                </button>
+
+                                <Link
+                                    to="/history"
+                                    className="workout-history-link-button workout-history-link-button--secondary"
+                                >
+                                    View History
+                                </Link>
+                            </div>
+                        </section>
+                    )}
+
+                {!isLoading &&
+                    !loadError &&
+                    activeWorkouts.length > 0 && (
+                        <section className="workout-section">
+                            <header className="workout-section__header">
+                                <div>
+                                    <p className="workout-section__eyebrow">
+                                        In Progress
+                                    </p>
+
+                                    <h2>
+                                        Active Workouts
+                                    </h2>
+                                </div>
+
+                                <span className="workout-section__count">
+                                    {
+                                        activeWorkouts.length
+                                    }
+                                </span>
+                            </header>
+
+                            <div className="workout-card-grid">
+                                {activeWorkouts.map(
+                                    (workout) => (
+                                        <WorkoutSummaryCard
+                                            key={workout.id}
+                                            workout={workout}
+                                        />
+                                    )
                                 )}
-                            </section>
-
-                            <section className="workout-section">
-                                <header className="workout-section__header">
-                                    <div>
-                                        <p className="workout-section__eyebrow">
-                                            History
-                                        </p>
-
-                                        <h2>
-                                            Completed Workouts
-                                        </h2>
-                                    </div>
-
-                                    <span className="workout-section__count">
-                                        {completedWorkouts.length}
-                                    </span>
-                                </header>
-
-                                {completedWorkouts.length === 0 ? (
-                                    <div className="workout-section__empty">
-                                        <p>
-                                            Completed workouts will
-                                            appear here.
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <div className="workout-card-grid">
-                                        {completedWorkouts.map(
-                                            (workout) => (
-                                                <WorkoutSummaryCard
-                                                    key={workout.id}
-                                                    workout={workout}
-                                                />
-                                            )
-                                        )}
-                                    </div>
-                                )}
-                            </section>
-                        </div>
+                            </div>
+                        </section>
                     )}
             </main>
 
             <CreateWorkoutDialog
-                isOpen={isCreateDialogOpen}
-                isSubmitting={isCreating}
-                error={createError}
-                onClose={closeCreateDialog}
-                onSubmit={handleCreateWorkout}
+                isOpen={
+                    isCreateDialogOpen
+                }
+                isSubmitting={
+                    isCreating
+                }
+                error={
+                    createError
+                }
+                onClose={
+                    closeCreateDialog
+                }
+                onSubmit={
+                    handleCreateWorkout
+                }
             />
         </>
     );
@@ -341,10 +341,12 @@ function getErrorMessage(
     error: unknown,
     fallback: string
 ): string {
-    return error instanceof Error &&
-        error.message.trim().length > 0
-        ? error.message
-        : fallback;
+    return (
+        error instanceof Error &&
+            error.message.trim().length > 0
+            ? error.message
+            : fallback
+    );
 }
 
 export default WorkoutsPage;

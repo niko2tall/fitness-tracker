@@ -1,0 +1,109 @@
+.workout-history-page {
+    display: grid;
+    gap: 2rem;
+}
+
+.workout-history-page__header {
+    margin-bottom: 0;
+}
+
+.workout-history-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.workout-history-link-button {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 0.7rem 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.6rem;
+    color: inherit;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+}
+
+    .workout-history-link-button:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
+.workout-history-link-button--secondary {
+    border-color: rgba(127, 127, 127, 0.3);
+    background: transparent;
+}
+
+    .workout-history-link-button--secondary:hover {
+        background: rgba(127, 127, 127, 0.08);
+    }
+
+.workout-history-summary {
+    display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(180px, 240px) );
+    gap: 1rem;
+}
+
+.workout-history-summary-card {
+    display: grid;
+    gap: 0.35rem;
+    padding: 1rem;
+    border: 1px solid rgba(127, 127, 127, 0.25);
+    border-radius: 0.7rem;
+    background: rgba(127, 127, 127, 0.04);
+}
+
+    .workout-history-summary-card span {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        opacity: 0.6;
+    }
+
+    .workout-history-summary-card strong {
+        font-size: 1.4rem;
+    }
+
+.workout-history-empty {
+    display: grid;
+    justify-items: start;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(127, 127, 127, 0.25);
+    border-radius: 0.8rem;
+    background: rgba(127, 127, 127, 0.04);
+}
+
+    .workout-history-empty h2 {
+        margin: 0;
+    }
+
+    .workout-history-empty p {
+        max-width: 620px;
+        margin: 0;
+        line-height: 1.6;
+        opacity: 0.75;
+    }
+
+@media (max-width: 640px) {
+    .workout-history-actions {
+        width: 100%;
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+        .workout-history-actions .workout-button,
+        .workout-history-link-button {
+            width: 100%;
+        }
+
+    .workout-history-summary {
+        grid-template-columns: 1fr;
+    }
+}
