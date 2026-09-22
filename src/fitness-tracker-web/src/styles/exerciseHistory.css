@@ -117,12 +117,14 @@
     opacity: 0.55;
 }
 
-.exercise-pr-section {
+.exercise-pr-section,
+.exercise-trend-section {
     display: grid;
     gap: 1rem;
 }
 
-.exercise-pr-section__description {
+.exercise-pr-section__description,
+.exercise-trend-section__description {
     max-width: 720px;
     margin: -0.25rem 0 0;
     line-height: 1.55;
@@ -220,6 +222,195 @@
         outline: 2px solid currentColor;
         outline-offset: 2px;
     }
+
+.exercise-trend-metric-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.exercise-trend-metric-button {
+    min-height: 38px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid rgba(127, 127, 127, 0.3);
+    border-radius: 0.5rem;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+    .exercise-trend-metric-button:hover {
+        background: rgba(127, 127, 127, 0.08);
+    }
+
+.exercise-trend-metric-button--active {
+    border-color: currentColor;
+    background: rgba(127, 127, 127, 0.11);
+}
+
+.exercise-trend-metric-button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+.exercise-trend-summary {
+    display: grid;
+    grid-template-columns: repeat( 4, minmax(0, 1fr) );
+    gap: 0.8rem;
+}
+
+.exercise-trend-summary-card {
+    display: grid;
+    align-content: start;
+    gap: 0.25rem;
+    min-width: 0;
+    padding: 0.9rem;
+    border: 1px solid rgba(127, 127, 127, 0.22);
+    border-radius: 0.65rem;
+    background: rgba(127, 127, 127, 0.035);
+}
+
+    .exercise-trend-summary-card > span {
+        font-size: 0.67rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        opacity: 0.55;
+    }
+
+    .exercise-trend-summary-card > strong {
+        font-size: 1.15rem;
+    }
+
+    .exercise-trend-summary-card > small {
+        overflow-wrap: anywhere;
+        font-size: 0.72rem;
+        opacity: 0.58;
+    }
+
+.exercise-trend-chart-shell {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: 1px solid rgba(127, 127, 127, 0.24);
+    border-radius: 0.8rem;
+    background: rgba(127, 127, 127, 0.025);
+}
+
+.exercise-trend-chart__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+    .exercise-trend-chart__header > div {
+        display: grid;
+        gap: 0.2rem;
+    }
+
+    .exercise-trend-chart__header span {
+        font-size: 0.76rem;
+        opacity: 0.6;
+    }
+
+.exercise-trend-chart-scroll {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.exercise-trend-chart {
+    display: block;
+    width: 100%;
+    min-width: 620px;
+    height: auto;
+    color: inherit;
+}
+
+.exercise-trend-chart__grid-line {
+    stroke: rgba(127, 127, 127, 0.17);
+    stroke-width: 1;
+}
+
+.exercise-trend-chart__axis {
+    stroke: rgba(127, 127, 127, 0.42);
+    stroke-width: 1;
+}
+
+.exercise-trend-chart__line {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.exercise-trend-chart__point {
+    fill: currentColor;
+    stroke: Canvas;
+    stroke-width: 2;
+}
+
+.exercise-trend-chart__axis-label,
+.exercise-trend-chart__date-label {
+    fill: currentColor;
+    font-size: 11px;
+    opacity: 0.62;
+}
+
+.exercise-trend-chart__hint {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.45;
+    opacity: 0.58;
+}
+
+.exercise-trend-data {
+    padding: 0.8rem 1rem;
+    border: 1px solid rgba(127, 127, 127, 0.22);
+    border-radius: 0.65rem;
+    background: rgba(127, 127, 127, 0.025);
+}
+
+    .exercise-trend-data summary {
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+.exercise-trend-table-scroll {
+    margin-top: 0.85rem;
+    overflow-x: auto;
+}
+
+.exercise-trend-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+}
+
+    .exercise-trend-table th,
+    .exercise-trend-table td {
+        padding: 0.65rem;
+        border-bottom: 1px solid rgba(127, 127, 127, 0.16);
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .exercise-trend-table th {
+        font-size: 0.67rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        opacity: 0.58;
+    }
+
+.exercise-trend-table__link {
+    color: inherit;
+    font-weight: 700;
+}
 
 .exercise-history-section {
     display: grid;
@@ -394,6 +585,12 @@
         opacity: 0.75;
     }
 
+@media (max-width: 900px) {
+    .exercise-trend-summary {
+        grid-template-columns: repeat( 2, minmax(0, 1fr) );
+    }
+}
+
 @media (max-width: 768px) {
     .exercise-history-metadata {
         grid-template-columns: 1fr;
@@ -425,7 +622,22 @@
     }
 
     .exercise-history-summary,
-    .exercise-pr-grid {
+    .exercise-pr-grid,
+    .exercise-trend-summary {
         grid-template-columns: 1fr;
+    }
+
+    .exercise-trend-metric-selector {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .exercise-trend-metric-button {
+        width: 100%;
+    }
+
+    .exercise-trend-chart__header {
+        align-items: flex-start;
+        flex-direction: column;
     }
 }

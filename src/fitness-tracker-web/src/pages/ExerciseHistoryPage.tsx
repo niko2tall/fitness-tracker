@@ -15,6 +15,9 @@ import ExerciseHistoryWorkoutCard
 import ExercisePersonalRecords
     from '../components/progress/ExercisePersonalRecords';
 
+import ExerciseStrengthTrend
+    from '../components/progress/ExerciseStrengthTrend';
+
 import {
     getExerciseHistory,
 } from '../services/api';
@@ -237,9 +240,10 @@ function ExerciseHistoryPage() {
 
                     <p className="page-header__description">
                         Review completed
-                        performance history and
-                        current personal records
-                        for this exercise.
+                        performance history,
+                        personal records, and
+                        progress trends for this
+                        exercise.
                     </p>
                 </div>
             </header>
@@ -373,6 +377,13 @@ function ExerciseHistoryPage() {
             {history.entries.length >
                 0 && (
                     <ExercisePersonalRecords
+                        history={history}
+                    />
+                )}
+
+            {history.entries.length >
+                0 && (
+                    <ExerciseStrengthTrend
                         history={history}
                     />
                 )}
