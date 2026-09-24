@@ -6,7 +6,7 @@ The project is being built as a portfolio application with a separate ASP.NET Co
 
 ## Current Status
 
-Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes the Exercise History API, a dedicated React Exercise History experience, tracking-type-specific personal-record detection, and generalized interactive trend charts for every ExerciseTrackingType.
+Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes Exercise History, tracking-type-specific personal records and trend charts, plus a current-user-scoped Body Measurement CRUD API with matching TypeScript client contracts.
 
 ### Current Development Focus
 
@@ -20,7 +20,7 @@ The current development phase is **Progress Tracking**:
 - RepsOnly progress trends
 - Duration progress trends
 - DistanceAndDuration/cardio progress trends
-- Body-measurement API
+- Body-measurement API and frontend contracts
 - Body-measurement UI
 - Body-weight charts
 - Additional progress metrics
@@ -112,6 +112,7 @@ fitness-tracker
 ├── src
 │   ├── FitnessTracker.Api
 │   │   ├── Controllers
+│   │   │   ├── BodyMeasurementsController.cs
 │   │   │   ├── ExercisesController.cs
 │   │   │   ├── HealthController.cs
 │   │   │   ├── ProgressController.cs
@@ -128,6 +129,11 @@ fitness-tracker
 │   │   │   └── DevelopmentUser.cs
 │   │   │
 │   │   ├── DTOs
+│   │   │   ├── BodyMeasurements
+│   │   │   │   ├── BodyMeasurementResponseDto.cs
+│   │   │   │   ├── CreateBodyMeasurementDto.cs
+│   │   │   │   └── UpdateBodyMeasurementDto.cs
+│   │   │   │
 │   │   │   ├── Exercises
 │   │   │   │   ├── CreateExerciseDto.cs
 │   │   │   │   ├── ExerciseResponseDto.cs
@@ -171,6 +177,9 @@ fitness-tracker
 │   │   │   └── WorkoutSet.cs
 │   │   │
 │   │   ├── Services
+│   │   │   ├── BodyMeasurements
+│   │   │   │   ├── BodyMeasurementService.cs
+│   │   │   │   └── IBodyMeasurementService.cs
 │   │   │   ├── Exercises
 │   │   │   │   ├── ExerciseService.cs
 │   │   │   │   └── IExerciseService.cs
@@ -238,6 +247,7 @@ fitness-tracker
 │       │   ├── services
 │       │   │   ├── api.ts
 │       │   │   ├── apiClient.ts
+│       │   │   ├── bodyMeasurementsApi.ts
 │       │   │   ├── exercisesApi.ts
 │       │   │   ├── healthApi.ts
 │       │   │   ├── progressApi.ts
@@ -251,6 +261,7 @@ fitness-tracker
 │       │   │   └── workouts.css
 │       │   │
 │       │   ├── types
+│       │   │   ├── bodyMeasurement.ts
 │       │   │   ├── exercise.ts
 │       │   │   ├── progress.ts
 │       │   │   └── workout.ts
@@ -662,6 +673,48 @@ POST   /api/workouts/{workoutId}/complete
 
 ---
 
+## Body Measurement API
+
+Base route:
+
+```http
+/api/body-measurements
+```
+
+Supported operations:
+
+```http
+GET    /api/body-measurements
+GET    /api/body-measurements/{id}
+POST   /api/body-measurements
+PUT    /api/body-measurements/{id}
+DELETE /api/body-measurements/{id}
+```
+
+Body Measurement records are scoped to the current server-controlled user.
+
+The current model stores:
+
+- RecordedAtUtc
+- WeightKg
+- Optional BodyFatPercentage
+- Optional Notes
+
+Weight is stored canonically in kilograms. Body-fat percentage is optional and constrained to 0–100. Notes are limited to the existing 1000-character database limit.
+
+The API:
+
+- Returns measurements newest-first
+- Assigns IDs and UserId server-side
+- Never accepts an arbitrary UserId from the client
+- Supports create, read, update, and delete operations
+- Returns `404 Not Found` for missing or non-owned records
+- Keeps timestamps in UTC
+
+The BodyMeasurements table and `(UserId, RecordedAtUtc)` index were already created by the initial migration, so this feature does not require a new migration.
+
+---
+
 ## Progress API
 
 Base route:
@@ -737,6 +790,9 @@ workoutsApi.ts
 
 progressApi.ts
 └── Exercise History / progress endpoints
+
+bodyMeasurementsApi.ts
+└── Body Measurement CRUD endpoints
 ```
 
 `api.ts` provides barrel exports for feature consumers.
@@ -1228,6 +1284,36 @@ http://localhost:5173
 
 ---
 
+## Quick Start for Testing
+
+Start the backend in one PowerShell window:
+
+```powershell
+cd C:\Dev\fitness-tracker\src\FitnessTracker.Api
+dotnet run --launch-profile https
+```
+
+Start the frontend in a second PowerShell window:
+
+```powershell
+cd C:\Dev\fitness-tracker\src\fitness-tracker-web
+npm run dev
+```
+
+Then open:
+
+```text
+http://localhost:5173
+```
+
+API reference:
+
+```text
+https://localhost:7081/scalar
+```
+
+---
+
 ## Building
 
 ### Backend
@@ -1391,7 +1477,8 @@ dotnet ef migrations list
 - [x] Add tracking-type-specific personal-record detection
 - [x] Add WeightAndReps strength progress charts
 - [x] Add RepsOnly/Duration/Cardio trend charts
-- [ ] Body-measurement API
+- [x] Add Body Measurement CRUD API
+- [x] Add Body Measurement TypeScript contracts/client
 - [ ] Body-measurement UI
 - [ ] Body-weight charts
 - [ ] Additional progress metrics
@@ -1471,37 +1558,8 @@ Add exercise history React experience
 Add exercise personal record detection
 Add weight and reps progress trend charts
 Generalize exercise progress trends across tracking types
+Add body measurement API and frontend contracts
 ```
-
-### Recent Part Milestones
-
-```text
-Part 42 — Application routing and navigation
-Part 43 — Workout API DTOs
-Part 44 — Workout service foundation
-Part 45 — Initial Workout API endpoints
-Part 46 — Workout Exercise assignment
-Part 47 — Workout Set logging
-Part 48 — Workout completion workflow
-Part 49 — Active Workout correction operations
-Part 50 — Frontend Workout API client
-Part 51 — Workout list, creation, and session routing
-Part 52 — Active Workout Exercise management
-Part 53 — Tracking-specific Set entry
-Part 54 — Workout Set correction controls
-Part 55 — Workout editing and completion UI
-Part 56 — Dedicated Workout History
-Part 57 — Workout History filtering and date navigation
-Part 58 — Workout History metrics and duration display
-Part 59 — Historical Workout policy and lifecycle-aware detail navigation
-Part 60 — Exercise History API and frontend contracts
-Part 61 — Exercise History React experience
-Part 62 — Tracking-type-specific personal record detection
-Part 63 — WeightAndReps strength progress trend charts
-Part 64 — Generalized RepsOnly, Duration, and Cardio progress trends
-```
-
----
 
 ## Portfolio Status
 
@@ -1537,6 +1595,8 @@ The project currently demonstrates:
 - Filter-aware aggregate metrics
 - Explicit immutable-history design
 - Lifecycle-aware navigation
+- Current-user-scoped Body Measurement CRUD API
+- Canonical kilogram body-weight persistence
 - Git-based incremental development
 
 Exercise Management is complete end-to-end.
@@ -1545,4 +1605,4 @@ The initial Workout Logging workflow is complete end-to-end: users can create Wo
 
 Workout History is complete for the current project scope. Completed Workouts can be searched, filtered, browsed by month, summarized with duration and aggregate metrics, and opened in a lifecycle-aware read-only detail experience.
 
-Progress Tracking now includes a current-user-scoped Exercise History API, matching TypeScript client contracts, a dedicated React Exercise History page, tracking-type-specific personal-record detection, and interactive trend charts for every current tracking type. Trend points are derived from finalized Sets on a per-session basis and support weight, reps, set volume, duration, distance, and pace without additional API requests or database fields.
+Progress Tracking now includes a current-user-scoped Exercise History API, matching TypeScript client contracts, a dedicated React Exercise History page, tracking-type-specific personal-record detection, interactive trend charts for every current tracking type, and a Body Measurement CRUD API with frontend contracts. Body Measurement persistence uses the existing schema and canonical kilogram storage, preparing the next part for the React measurement interface and body-weight chart.

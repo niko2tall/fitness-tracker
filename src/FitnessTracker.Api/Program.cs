@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using FitnessTracker.Api.Data;
+using FitnessTracker.Api.Services.BodyMeasurements;
 using FitnessTracker.Api.Services.Exercises;
 using FitnessTracker.Api.Services.Progress;
 using FitnessTracker.Api.Services.Users;
@@ -59,6 +60,10 @@ builder.Services.AddScoped<
     IProgressService,
     ProgressService>();
 
+builder.Services.AddScoped<
+    IBodyMeasurementService,
+    BodyMeasurementService>();
+
 builder.Services.AddCors(
     options =>
     {
@@ -76,7 +81,10 @@ builder.Services.AddCors(
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (
+    app.Environment
+        .IsDevelopment()
+)
 {
     await using var scope =
         app.Services
