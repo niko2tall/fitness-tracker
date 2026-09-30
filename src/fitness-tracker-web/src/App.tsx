@@ -23,6 +23,9 @@ import ExercisesPage
 import NotFoundPage
     from './pages/NotFoundPage';
 
+import ProgressPage
+    from './pages/ProgressPage';
+
 import WorkoutHistoryPage
     from './pages/WorkoutHistoryPage';
 
@@ -68,6 +71,13 @@ function App() {
                     path="/history"
                     element={
                         <WorkoutHistoryPage />
+                    }
+                />
+
+                <Route
+                    path="/progress"
+                    element={
+                        <ProgressPage />
                     }
                 />
 

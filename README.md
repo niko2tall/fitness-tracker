@@ -6,7 +6,7 @@ The project is being built as a portfolio application with a separate ASP.NET Co
 
 ## Current Status
 
-Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes Exercise History, tracking-type-specific personal records and trend charts, a current-user-scoped Body Measurement CRUD API, a React Body Measurement management experience, and a combined Body Composition trend chart for weight and optional body-fat percentage.
+Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes Exercise History, tracking-type-specific personal records and trend charts, a current-user-scoped Body Measurement CRUD API, a React Body Measurement management experience, a combined Body Composition trend chart, and a dedicated Progress Hub that makes the analytics features discoverable from the main Dashboard.
 
 ### Current Development Focus
 
@@ -25,6 +25,7 @@ The current development phase is **Progress Tracking**:
 - Kilogram/pound display and entry conversion
 - Combined body-composition progress chart
 - Body-weight and optional body-fat trends
+- Dedicated Progress Hub and Dashboard entry point
 - Additional body-composition/progress metrics
 
 The completed Workout History experience remains the historical source for these analytics features.
@@ -247,6 +248,7 @@ fitness-tracker
 │       │   │   ├── BodyMeasurementsPage.tsx
 │       │   │   ├── DashboardPage.tsx
 │       │   │   ├── ExerciseHistoryPage.tsx
+│       │   │   ├── ProgressPage.tsx
 │       │   │   ├── ExercisesPage.tsx
 │       │   │   ├── NotFoundPage.tsx
 │       │   │   ├── WorkoutHistoryPage.tsx
@@ -265,7 +267,9 @@ fitness-tracker
 │       │   ├── styles
 │       │   │   ├── bodyMeasurements.css
 │       │   │   ├── completedWorkout.css
+│       │   │   ├── dashboard.css
 │       │   │   ├── exerciseHistory.css
+│       │   │   ├── progressHub.css
 │       │   │   ├── workoutHistory.css
 │       │   │   ├── workoutLogging.css
 │       │   │   └── workouts.css
@@ -829,6 +833,9 @@ Workout session details and logging / read-only completed detail
 /history
 Completed Workout history
 
+/progress
+Progress Hub for exercise analytics, body composition, and Workout History
+
 /progress/exercises/{exerciseId}
 Exercise-specific completed performance history
 
@@ -852,6 +859,21 @@ Provides access to:
 - Exercise Library
 - Active Workouts
 - Workout History
+- Progress Hub
+
+### Progress Hub
+
+Provides one discoverable entry point for the application's analytics and historical tracking features.
+
+Supports:
+
+- Dedicated `/progress` route
+- Exercise Progress entry point through the Exercise Library
+- Body Composition entry point
+- Workout History entry point
+- Clear explanation of available strength, repetition, duration, cardio, weight, and body-fat analytics
+- Responsive feature cards
+- No additional API requests or backend dependencies
 
 ### Exercise Library
 
@@ -1592,6 +1614,7 @@ dotnet ef migrations list
 - [x] Build Body Measurement create/edit/delete UI
 - [x] Add kilogram/pound entry and display conversion
 - [x] Add combined body-composition progress chart
+- [x] Add dedicated Progress Hub and Dashboard entry point
 - [ ] Additional progress metrics
 
 ### Phase 9 — Authentication
@@ -1673,6 +1696,7 @@ Add body measurement API and frontend contracts
 Add body measurement React management UI
 Add body weight progress trend chart
 Combine body weight and body fat progress visualization
+Add progress hub and dashboard navigation
 ```
 
 
