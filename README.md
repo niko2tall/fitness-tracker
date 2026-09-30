@@ -6,7 +6,7 @@ The project is being built as a portfolio application with a separate ASP.NET Co
 
 ## Current Status
 
-Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes Exercise History, tracking-type-specific personal records and trend charts, a current-user-scoped Body Measurement CRUD API, a React Body Measurement management experience, a combined Body Composition trend chart, a dedicated Progress Hub with direct Exercise Progress search and selection, and completed-Workout frequency analytics.
+Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes Exercise History, tracking-type-specific personal records and trend charts, a current-user-scoped Body Measurement CRUD API, a React Body Measurement management experience, a combined Body Composition trend chart, a dedicated Progress Hub with direct Exercise Progress search and selection, completed-Workout frequency analytics, and strength volume-load analytics derived from finalized weighted Sets.
 
 ### Current Development Focus
 
@@ -29,6 +29,8 @@ The current development phase is **Progress Tracking**:
 - Direct Exercise Progress search and selection from the Progress Hub
 - Completed-Workout frequency analytics
 - Weekly and monthly training-frequency views
+- Strength volume-load analytics
+- Weekly and monthly strength volume-load views
 - Additional body-composition/progress metrics
 
 The completed Workout History experience remains the historical source for these analytics features.
@@ -122,6 +124,7 @@ fitness-tracker
 │   │   │   ├── ExercisesController.cs
 │   │   │   ├── HealthController.cs
 │   │   │   ├── ProgressController.cs
+│   │   │   ├── StrengthVolumeController.cs
 │   │   │   └── WorkoutsController.cs
 │   │   │
 │   │   ├── Data
@@ -148,7 +151,10 @@ fitness-tracker
 │   │   │   ├── Progress
 │   │   │   │   ├── ExerciseHistoryResponseDto.cs
 │   │   │   │   ├── ExerciseHistorySetDto.cs
-│   │   │   │   └── ExerciseHistoryWorkoutDto.cs
+│   │   │   │   ├── ExerciseHistoryWorkoutDto.cs
+│   │   │   │   ├── StrengthVolumeExerciseDto.cs
+│   │   │   │   ├── StrengthVolumeResponseDto.cs
+│   │   │   │   └── StrengthVolumeWorkoutDto.cs
 │   │   │   │
 │   │   │   └── Workouts
 │   │   │       ├── AddWorkoutExerciseDto.cs
@@ -191,7 +197,9 @@ fitness-tracker
 │   │   │   │   └── IExerciseService.cs
 │   │   │   ├── Progress
 │   │   │   │   ├── IProgressService.cs
-│   │   │   │   └── ProgressService.cs
+│   │   │   │   ├── IStrengthVolumeService.cs
+│   │   │   │   ├── ProgressService.cs
+│   │   │   │   └── StrengthVolumeService.cs
 │   │   │   ├── Users
 │   │   │   │   ├── DevelopmentCurrentUserService.cs
 │   │   │   │   └── ICurrentUserService.cs
@@ -229,6 +237,7 @@ fitness-tracker
 │       │   │   ├── progress
 │       │   │   │   ├── ExerciseHistoryWorkoutCard.tsx
 │       │   │   │   ├── ProgressExercisePicker.tsx
+│       │   │   │   ├── StrengthVolumePanel.tsx
 │       │   │   │   ├── WorkoutFrequencyPanel.tsx
 │       │   │   │   ├── ExercisePersonalRecords.tsx
 │       │   │   │   └── ExercisePerformanceTrend.tsx
@@ -268,6 +277,7 @@ fitness-tracker
 │       │   │   ├── healthApi.ts
 │       │   │   ├── progressApi.ts
 │       │   │   ├── progressHubApi.ts
+│       │   │   ├── strengthVolumeApi.ts
 │       │   │   ├── workoutFrequencyApi.ts
 │       │   │   └── workoutsApi.ts
 │       │   │
@@ -277,6 +287,7 @@ fitness-tracker
 │       │   │   ├── dashboard.css
 │       │   │   ├── exerciseHistory.css
 │       │   │   ├── progressHub.css
+│       │   │   ├── strengthVolume.css
 │       │   │   ├── workoutFrequency.css
 │       │   │   ├── workoutHistory.css
 │       │   │   ├── workoutLogging.css
@@ -287,11 +298,13 @@ fitness-tracker
 │       │   │   ├── exercise.ts
 │       │   │   ├── progress.ts
 │       │   │   ├── progressHub.ts
+│       │   │   ├── strengthVolume.ts
 │       │   │   ├── workoutFrequency.ts
 │       │   │   └── workout.ts
 │       │   │
 │       │   ├── utils
 │       │   │   ├── bodyMeasurementTrends.ts
+│       │   │   ├── strengthVolume.ts
 │       │   │   ├── workoutFrequency.ts
 │       │   │   ├── bodyMeasurementUnits.ts
 │       │   │   ├── dateTime.ts
@@ -896,6 +909,13 @@ Supports:
 - Weekly and monthly frequency chart views
 - Per-period Strength/Cardio/Mixed counts
 - Expandable accessible frequency data table
+- Strength volume-load analytics from completed positive-weight `WeightAndReps` Sets
+- Current-week and current-month volume load
+- Current-month volume-bearing Set count
+- Eight-week average strength volume load
+- Weekly and monthly volume-load chart views
+- Per-period top Exercise by volume load
+- Expandable accessible strength-volume data table
 - Responsive feature cards, selector results, and frequency chart
 - One Exercise-list request and one Workout-summary request when the Progress Hub loads
 
@@ -1003,6 +1023,45 @@ Supports:
 - API error/loading states
 - Responsive historical Set, record, and trend layouts
 - Direct Exercise History links from Workout Exercise cards
+
+
+
+### Strength Volume Load
+
+The Progress Hub includes aggregate strength volume-load analytics backed by a dedicated current-user-scoped progress endpoint.
+
+Volume load is defined as:
+
+```text
+WeightKg × Reps
+```
+
+and then summed across eligible Sets.
+
+Eligibility rules:
+
+- Workout must be completed
+- Set must be completed
+- Exercise tracking type must be `WeightAndReps`
+- Repetitions must be greater than zero
+- Weight must be greater than zero
+- Warmup, Working, Drop, and Failure Set types are all included
+- `RepsOnly`, `Duration`, and `DistanceAndDuration` Sets do not contribute to volume load
+- Active Workouts do not contribute until completion
+
+The API returns compact completed-Workout volume data with per-Exercise contribution totals. React derives:
+
+- Current-week volume load
+- Current-month volume load
+- Current-month eligible Set count
+- Eight-week average volume load
+- Eight weekly buckets
+- Six monthly buckets
+- Workout and Set counts per period
+- Top Exercise by volume load per period
+- One expandable table for the selected period view
+
+Volume load is displayed as `kg·reps` to make the calculation explicit and distinguish it from body weight.
 
 
 ### Workout Frequency
@@ -1666,7 +1725,7 @@ dotnet ef migrations list
 - [x] Add dedicated Progress Hub and Dashboard entry point
 - [x] Add direct Exercise Progress search and selection
 - [x] Add Workout frequency analytics
-- [ ] Add strength training-volume analytics
+- [x] Add strength volume-load analytics
 - [ ] Add running/cardio aggregate analytics
 - [ ] Consolidate Progress Dashboard time-range controls
 - [ ] Additional progress metrics
@@ -1753,6 +1812,7 @@ Combine body weight and body fat progress visualization
 Add progress hub and dashboard navigation
 Add direct exercise progress selection
 Add workout frequency progress analytics
+Add strength volume load progress analytics
 ```
 
 
@@ -1802,4 +1862,4 @@ The initial Workout Logging workflow is complete end-to-end: users can create Wo
 
 Workout History is complete for the current project scope. Completed Workouts can be searched, filtered, browsed by month, summarized with duration and aggregate metrics, and opened in a lifecycle-aware read-only detail experience.
 
-Progress Tracking now includes a current-user-scoped Exercise History API, matching TypeScript client contracts, a dedicated React Exercise History page, tracking-type-specific personal-record detection, interactive trend charts for every current tracking type, and a complete Body Measurement management workflow. Users can create, edit, delete, and review measurements through React while entering/displaying weight in kilograms or pounds; the API and database continue to use kilograms as the canonical persisted unit. The Body Measurement experience includes a combined interactive Body Composition chart that overlays body weight and optional body-fat percentage on one shared time axis, with separate y-axes and one chart-data table. The Progress Hub also derives completed-Workout frequency analytics from existing Workout summaries, including weekly/monthly views and distinct training-day counts.
+Progress Tracking now includes a current-user-scoped Exercise History API, matching TypeScript client contracts, a dedicated React Exercise History page, tracking-type-specific personal-record detection, interactive trend charts for every current tracking type, and a complete Body Measurement management workflow. Users can create, edit, delete, and review measurements through React while entering/displaying weight in kilograms or pounds; the API and database continue to use kilograms as the canonical persisted unit. The Body Measurement experience includes a combined interactive Body Composition chart that overlays body weight and optional body-fat percentage on one shared time axis, with separate y-axes and one chart-data table. The Progress Hub also derives completed-Workout frequency analytics from existing Workout summaries, including weekly/monthly views and distinct training-day counts. Strength volume-load analytics are sourced from a dedicated current-user-scoped progress endpoint that aggregates finalized positive-weight `WeightAndReps` Sets while preserving per-Exercise contribution totals.

@@ -5,6 +5,9 @@ import {
 import ProgressExercisePicker
     from '../components/progress/ProgressExercisePicker';
 
+import StrengthVolumePanel
+    from '../components/progress/StrengthVolumePanel';
+
 import WorkoutFrequencyPanel
     from '../components/progress/WorkoutFrequencyPanel';
 
@@ -34,7 +37,8 @@ function ProgressPage() {
                         Review training history,
                         personal records,
                         performance trends,
-                        training consistency, and
+                        training consistency,
+                        strength workload, and
                         body-composition changes.
                     </p>
                 </div>
@@ -160,11 +164,11 @@ function ProgressPage() {
                         </span>
 
                         <span>
-                            Duration
+                            Frequency
                         </span>
 
                         <span>
-                            Frequency
+                            Volume Load
                         </span>
 
                         <span>
@@ -182,6 +186,8 @@ function ProgressPage() {
             </section>
 
             <WorkoutFrequencyPanel />
+
+            <StrengthVolumePanel />
 
             <div id="exercise-progress">
                 <ProgressExercisePicker />
@@ -205,11 +211,10 @@ function ProgressPage() {
                         </h3>
 
                         <p>
-                            Track heaviest weight,
-                            repetition performance,
-                            Set volume, personal
-                            records, and historical
-                            trends.
+                            Track personal records,
+                            Exercise trends, Set
+                            volume, and aggregate
+                            weighted volume load.
                         </p>
                     </article>
 
@@ -267,8 +272,9 @@ function ProgressPage() {
                     </h2>
 
                     <p>
-                        Exercise records and
-                        frequency analytics use
+                        Exercise records,
+                        frequency metrics, and
+                        strength volume use
                         completed Workouts.
                         Active Workout performance
                         remains excluded until the

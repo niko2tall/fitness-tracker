@@ -5,3 +5,4 @@ export * from './progressApi';
 export * from './bodyMeasurementsApi';
 export * from './progressHubApi';
 export * from './workoutFrequencyApi';
+export * from './strengthVolumeApi';

@@ -61,6 +61,10 @@ builder.Services.AddScoped<
     ProgressService>();
 
 builder.Services.AddScoped<
+    IStrengthVolumeService,
+    StrengthVolumeService>();
+
+builder.Services.AddScoped<
     IBodyMeasurementService,
     BodyMeasurementService>();
 
