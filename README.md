@@ -6,7 +6,7 @@ The project is being built as a portfolio application with a separate ASP.NET Co
 
 ## Current Status
 
-Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes Exercise History, tracking-type-specific personal records and trend charts, a current-user-scoped Body Measurement CRUD API, a React Body Measurement management experience, a combined Body Composition trend chart, and a dedicated Progress Hub that makes the analytics features discoverable from the main Dashboard.
+Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes Exercise History, tracking-type-specific personal records and trend charts, a current-user-scoped Body Measurement CRUD API, a React Body Measurement management experience, a combined Body Composition trend chart, and a dedicated Progress Hub with direct Exercise Progress search and selection.
 
 ### Current Development Focus
 
@@ -26,6 +26,7 @@ The current development phase is **Progress Tracking**:
 - Combined body-composition progress chart
 - Body-weight and optional body-fat trends
 - Dedicated Progress Hub and Dashboard entry point
+- Direct Exercise Progress search and selection from the Progress Hub
 - Additional body-composition/progress metrics
 
 The completed Workout History experience remains the historical source for these analytics features.
@@ -225,6 +226,7 @@ fitness-tracker
 │       │   │   │
 │       │   │   ├── progress
 │       │   │   │   ├── ExerciseHistoryWorkoutCard.tsx
+│       │   │   │   ├── ProgressExercisePicker.tsx
 │       │   │   │   ├── ExercisePersonalRecords.tsx
 │       │   │   │   └── ExercisePerformanceTrend.tsx
 │       │   │   │
@@ -262,6 +264,7 @@ fitness-tracker
 │       │   │   ├── exercisesApi.ts
 │       │   │   ├── healthApi.ts
 │       │   │   ├── progressApi.ts
+│       │   │   ├── progressHubApi.ts
 │       │   │   └── workoutsApi.ts
 │       │   │
 │       │   ├── styles
@@ -278,6 +281,7 @@ fitness-tracker
 │       │   │   ├── bodyMeasurement.ts
 │       │   │   ├── exercise.ts
 │       │   │   ├── progress.ts
+│       │   │   ├── progressHub.ts
 │       │   │   └── workout.ts
 │       │   │
 │       │   ├── utils
@@ -868,12 +872,18 @@ Provides one discoverable entry point for the application's analytics and histor
 Supports:
 
 - Dedicated `/progress` route
-- Exercise Progress entry point through the Exercise Library
+- Direct Exercise Progress search and selection
+- Strength/Cardio Exercise filtering
+- Tracking-type labels for Exercise results
+- Archived Exercise history access when archived Exercises are returned by the Exercise API
+- Direct navigation to `/progress/exercises/{exerciseId}`
 - Body Composition entry point
 - Workout History entry point
+- Exercise Library management link
 - Clear explanation of available strength, repetition, duration, cardio, weight, and body-fat analytics
-- Responsive feature cards
-- No additional API requests or backend dependencies
+- Loading, error, retry, and no-match states for the Exercise selector
+- Responsive feature cards and selector results
+- One Exercise-list request when the Progress Hub loads
 
 ### Exercise Library
 
@@ -1615,6 +1625,7 @@ dotnet ef migrations list
 - [x] Add kilogram/pound entry and display conversion
 - [x] Add combined body-composition progress chart
 - [x] Add dedicated Progress Hub and Dashboard entry point
+- [x] Add direct Exercise Progress search and selection
 - [ ] Additional progress metrics
 
 ### Phase 9 — Authentication

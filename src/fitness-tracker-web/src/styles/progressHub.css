@@ -89,7 +89,8 @@
     }
 
 .progress-hub-card__action,
-.progress-hub-secondary-action {
+.progress-hub-secondary-action,
+.progress-exercise-result__action {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -98,10 +99,13 @@
     padding: 0.6rem 0.85rem;
     border: 1px solid rgba(127, 127, 127, 0.32);
     border-radius: 0.55rem;
+    background: transparent;
     color: inherit;
+    font: inherit;
     font-size: 0.8rem;
     font-weight: 800;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .progress-hub-card__action {
@@ -109,15 +113,223 @@
 }
 
     .progress-hub-card__action:hover,
-    .progress-hub-secondary-action:hover {
+    .progress-hub-secondary-action:hover,
+    .progress-exercise-result__action:hover {
         background: rgba(127, 127, 127, 0.08);
     }
 
     .progress-hub-card__action:focus-visible,
-    .progress-hub-secondary-action:focus-visible {
+    .progress-hub-secondary-action:focus-visible,
+    .progress-exercise-result__action:focus-visible {
         outline: 2px solid currentColor;
         outline-offset: 2px;
     }
+
+.progress-exercise-picker {
+    display: grid;
+    gap: 1rem;
+    scroll-margin-top: 1rem;
+    padding: 1.2rem;
+    border: 1px solid rgba(127, 127, 127, 0.24);
+    border-radius: 0.8rem;
+    background: rgba(127, 127, 127, 0.025);
+}
+
+.progress-exercise-picker__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+    .progress-exercise-picker__header h2 {
+        margin: 0.3rem 0 0;
+    }
+
+    .progress-exercise-picker__header p:last-child {
+        max-width: 680px;
+        margin: 0.55rem 0 0;
+        line-height: 1.55;
+        font-size: 0.84rem;
+        opacity: 0.68;
+    }
+
+.progress-exercise-picker__total {
+    flex-shrink: 0;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid rgba(127, 127, 127, 0.22);
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    opacity: 0.72;
+}
+
+.progress-exercise-picker__controls {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) auto;
+    align-items: end;
+    gap: 1rem;
+}
+
+.progress-exercise-search {
+    display: grid;
+    gap: 0.4rem;
+}
+
+    .progress-exercise-search > span {
+        font-size: 0.75rem;
+        font-weight: 800;
+    }
+
+    .progress-exercise-search input {
+        width: 100%;
+        box-sizing: border-box;
+        min-height: 42px;
+        padding: 0.65rem 0.75rem;
+        border: 1px solid rgba(127, 127, 127, 0.3);
+        border-radius: 0.55rem;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+    }
+
+        .progress-exercise-search input:focus-visible {
+            outline: 2px solid currentColor;
+            outline-offset: 2px;
+        }
+
+.progress-exercise-filters {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.progress-exercise-filter {
+    min-height: 42px;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid rgba(127, 127, 127, 0.28);
+    border-radius: 0.55rem;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.76rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+    .progress-exercise-filter:hover {
+        background: rgba(127, 127, 127, 0.07);
+    }
+
+.progress-exercise-filter--active {
+    border-color: currentColor;
+    background: rgba(127, 127, 127, 0.12);
+}
+
+.progress-exercise-filter:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+.progress-exercise-picker__result-summary {
+    min-height: 1.2rem;
+    font-size: 0.74rem;
+    font-weight: 700;
+    opacity: 0.6;
+}
+
+.progress-exercise-results {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.progress-exercise-result {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem;
+    border: 1px solid rgba(127, 127, 127, 0.19);
+    border-radius: 0.65rem;
+    background: rgba(127, 127, 127, 0.025);
+}
+
+.progress-exercise-result__main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    min-width: 0;
+    gap: 1rem;
+}
+
+.progress-exercise-result h3 {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-size: 0.95rem;
+}
+
+.progress-exercise-result__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.45rem;
+}
+
+    .progress-exercise-result__badges span {
+        display: inline-flex;
+        align-items: center;
+        min-height: 25px;
+        padding: 0.15rem 0.45rem;
+        border: 1px solid rgba(127, 127, 127, 0.2);
+        border-radius: 999px;
+        font-size: 0.65rem;
+        font-weight: 700;
+    }
+
+.progress-exercise-result__badge--archived {
+    opacity: 0.62;
+}
+
+.progress-exercise-result__archive-note {
+    margin: 0;
+    flex-shrink: 0;
+    font-size: 0.7rem;
+    font-weight: 700;
+    opacity: 0.55;
+}
+
+.progress-exercise-result__action {
+    flex-shrink: 0;
+}
+
+.progress-exercise-picker__limit-note {
+    margin: 0;
+    font-size: 0.74rem;
+    opacity: 0.6;
+}
+
+.progress-exercise-picker__state,
+.progress-exercise-picker__empty {
+    display: grid;
+    justify-items: start;
+    gap: 0.55rem;
+    padding: 1rem;
+    border: 1px solid rgba(127, 127, 127, 0.2);
+    border-radius: 0.65rem;
+    background: rgba(127, 127, 127, 0.025);
+}
+
+    .progress-exercise-picker__state span,
+    .progress-exercise-picker__empty p {
+        margin: 0;
+        line-height: 1.5;
+        font-size: 0.8rem;
+        opacity: 0.68;
+    }
+
+.progress-exercise-picker__state--error {
+    border-color: rgba(220, 38, 38, 0.4);
+}
 
 .progress-hub-overview {
     display: grid;
@@ -202,6 +414,14 @@
     .progress-hub-card:last-child {
         grid-column: 1 / -1;
     }
+
+    .progress-exercise-picker__controls {
+        grid-template-columns: 1fr;
+    }
+
+    .progress-exercise-filters {
+        justify-self: start;
+    }
 }
 
 @media (max-width: 640px) {
@@ -214,9 +434,35 @@
         grid-column: auto;
     }
 
+    .progress-exercise-picker__header,
+    .progress-exercise-result,
+    .progress-exercise-result__main,
     .progress-hub-guidance {
         align-items: stretch;
         flex-direction: column;
+    }
+
+    .progress-exercise-picker__total {
+        align-self: flex-start;
+    }
+
+    .progress-exercise-filters {
+        display: grid;
+        grid-template-columns: repeat( 3, minmax(0, 1fr) );
+        width: 100%;
+    }
+
+    .progress-exercise-filter {
+        width: 100%;
+        padding: 0.45rem 0.35rem;
+    }
+
+    .progress-exercise-result__archive-note {
+        align-self: flex-start;
+    }
+
+    .progress-exercise-result__action {
+        width: 100%;
     }
 
     .progress-hub-guidance__actions {

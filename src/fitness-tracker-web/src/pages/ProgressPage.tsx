@@ -2,6 +2,9 @@ import {
     Link,
 } from 'react-router-dom';
 
+import ProgressExercisePicker
+    from '../components/progress/ProgressExercisePicker';
+
 import '../styles/progressHub.css';
 
 function ProgressPage() {
@@ -51,7 +54,7 @@ function ProgressPage() {
                             Review completed
                             performance history,
                             personal records, and
-                            exercise-specific
+                            Exercise-specific
                             trends.
                         </p>
                     </div>
@@ -74,12 +77,12 @@ function ProgressPage() {
                         </span>
                     </div>
 
-                    <Link
-                        to="/exercises"
+                    <a
+                        href="#exercise-progress"
                         className="progress-hub-card__action"
                     >
-                        Browse Exercises
-                    </Link>
+                        Find Exercise Progress
+                    </a>
                 </article>
 
                 <article className="progress-hub-card">
@@ -140,7 +143,7 @@ function ProgressPage() {
                         <p>
                             Review finalized
                             training sessions,
-                            durations, exercise
+                            durations, Exercise
                             counts, filters, and
                             historical Workout
                             details.
@@ -173,6 +176,10 @@ function ProgressPage() {
                     </Link>
                 </article>
             </section>
+
+            <div id="exercise-progress">
+                <ProgressExercisePicker />
+            </div>
 
             <section className="progress-hub-overview">
                 <header className="progress-hub-overview__header">
@@ -236,21 +243,28 @@ function ProgressPage() {
                     </p>
 
                     <h2>
-                        Exercise progress is built from completed Workouts
+                        Exercise progress comes from completed Workouts
                     </h2>
 
                     <p>
-                        Exercise records and trend
-                        charts use finalized Set
-                        data from completed
-                        Workouts. Active Workout
-                        performance is intentionally
-                        excluded until the session
-                        is completed.
+                        Personal records and
+                        performance trends use
+                        finalized Set data from
+                        completed Workouts.
+                        Active Workout performance
+                        remains excluded until the
+                        Workout is completed.
                     </p>
                 </div>
 
                 <div className="progress-hub-guidance__actions">
+                    <Link
+                        to="/exercises"
+                        className="progress-hub-secondary-action"
+                    >
+                        Manage Exercises
+                    </Link>
+
                     <Link
                         to="/workouts"
                         className="progress-hub-secondary-action"
