@@ -1,0 +1,426 @@
+.body-measurements-page {
+    display: grid;
+    gap: 2rem;
+}
+
+.body-measurements-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+    .body-measurements-header h1 {
+        margin: 0.3rem 0 0;
+    }
+
+.body-measurement-unit-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid rgba(127, 127, 127, 0.22);
+    border-radius: 0.7rem;
+    background: rgba(127, 127, 127, 0.035);
+}
+
+    .body-measurement-unit-control > div:first-child {
+        display: grid;
+        gap: 0.25rem;
+    }
+
+    .body-measurement-unit-control span {
+        font-size: 0.8rem;
+        opacity: 0.65;
+    }
+
+.body-measurement-unit-toggle {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.body-measurement-unit-button {
+    min-width: 52px;
+    min-height: 38px;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid rgba(127, 127, 127, 0.3);
+    border-radius: 0.5rem;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+    .body-measurement-unit-button:hover {
+        background: rgba(127, 127, 127, 0.08);
+    }
+
+.body-measurement-unit-button--active {
+    border-color: currentColor;
+    background: rgba(127, 127, 127, 0.12);
+}
+
+.body-measurement-unit-button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+.body-measurement-summary {
+    display: grid;
+    grid-template-columns: repeat( 4, minmax(0, 1fr) );
+    gap: 0.9rem;
+}
+
+.body-measurement-summary-card {
+    display: grid;
+    align-content: start;
+    gap: 0.3rem;
+    min-width: 0;
+    padding: 1rem;
+    border: 1px solid rgba(127, 127, 127, 0.23);
+    border-radius: 0.7rem;
+    background: rgba(127, 127, 127, 0.04);
+}
+
+    .body-measurement-summary-card > span {
+        font-size: 0.68rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.055em;
+        opacity: 0.58;
+    }
+
+    .body-measurement-summary-card > strong {
+        overflow-wrap: anywhere;
+        font-size: 1.35rem;
+    }
+
+    .body-measurement-summary-card > small {
+        overflow-wrap: anywhere;
+        font-size: 0.72rem;
+        opacity: 0.58;
+    }
+
+.body-measurement-history {
+    display: grid;
+    gap: 1rem;
+}
+
+.body-measurement-list {
+    display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(290px, 1fr) );
+    gap: 1rem;
+}
+
+.body-measurement-card {
+    display: grid;
+    align-content: start;
+    gap: 1rem;
+    min-width: 0;
+    padding: 1rem;
+    border: 1px solid rgba(127, 127, 127, 0.24);
+    border-radius: 0.75rem;
+    background: rgba(127, 127, 127, 0.035);
+}
+
+.body-measurement-card__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.body-measurement-card__eyebrow {
+    margin: 0;
+    font-size: 0.67rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+    opacity: 0.55;
+}
+
+.body-measurement-card__header h3 {
+    margin: 0.25rem 0 0;
+    font-size: 1.45rem;
+}
+
+.body-measurement-card__date {
+    margin: 0.3rem 0 0;
+    font-size: 0.78rem;
+    opacity: 0.62;
+}
+
+.body-measurement-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.4rem;
+}
+
+.body-measurement-action-button {
+    min-height: 34px;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid rgba(127, 127, 127, 0.3);
+    border-radius: 0.45rem;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+    .body-measurement-action-button:hover {
+        background: rgba(127, 127, 127, 0.08);
+    }
+
+.body-measurement-action-button--danger {
+    border-color: rgba(220, 38, 38, 0.45);
+}
+
+.body-measurement-action-button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+.body-measurement-card__details {
+    display: grid;
+    grid-template-columns: repeat( 2, minmax(0, 1fr) );
+    gap: 0.8rem;
+    margin: 0;
+}
+
+    .body-measurement-card__details > div {
+        display: grid;
+        gap: 0.2rem;
+    }
+
+    .body-measurement-card__details dt {
+        font-size: 0.67rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        opacity: 0.55;
+    }
+
+    .body-measurement-card__details dd {
+        margin: 0;
+        font-weight: 700;
+    }
+
+.body-measurement-card__notes {
+    padding-top: 0.8rem;
+    border-top: 1px solid rgba(127, 127, 127, 0.16);
+}
+
+    .body-measurement-card__notes span {
+        font-size: 0.67rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        opacity: 0.55;
+    }
+
+    .body-measurement-card__notes p {
+        margin: 0.35rem 0 0;
+        overflow-wrap: anywhere;
+        line-height: 1.5;
+        font-size: 0.84rem;
+    }
+
+.body-measurement-empty {
+    display: grid;
+    justify-items: start;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(127, 127, 127, 0.25);
+    border-radius: 0.8rem;
+    background: rgba(127, 127, 127, 0.04);
+}
+
+    .body-measurement-empty h2 {
+        margin: 0;
+    }
+
+    .body-measurement-empty p {
+        max-width: 640px;
+        margin: 0;
+        line-height: 1.6;
+        opacity: 0.72;
+    }
+
+.body-measurement-dialog {
+    width: min( 520px, calc(100vw - 2rem) );
+    max-width: 100%;
+    padding: 0;
+    border: 1px solid rgba(127, 127, 127, 0.28);
+    border-radius: 0.8rem;
+    background: Canvas;
+    color: CanvasText;
+}
+
+    .body-measurement-dialog::backdrop {
+        background: rgba(0, 0, 0, 0.55);
+    }
+
+.body-measurement-dialog__form {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem;
+}
+
+.body-measurement-dialog__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+    .body-measurement-dialog__header h2 {
+        margin: 0.2rem 0 0;
+    }
+
+.body-measurement-dialog__eyebrow {
+    margin: 0;
+    font-size: 0.67rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+    opacity: 0.58;
+}
+
+.body-measurement-dialog__close {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    border: 1px solid rgba(127, 127, 127, 0.25);
+    border-radius: 0.45rem;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.body-measurement-field {
+    display: grid;
+    gap: 0.4rem;
+}
+
+    .body-measurement-field > span {
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+
+    .body-measurement-field input,
+    .body-measurement-field textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0.65rem 0.75rem;
+        border: 1px solid rgba(127, 127, 127, 0.3);
+        border-radius: 0.55rem;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+    }
+
+    .body-measurement-field textarea {
+        resize: vertical;
+    }
+
+    .body-measurement-field small {
+        justify-self: end;
+        font-size: 0.68rem;
+        opacity: 0.55;
+    }
+
+.body-measurement-dialog__error {
+    padding: 0.75rem;
+    border: 1px solid rgba(220, 38, 38, 0.4);
+    border-radius: 0.55rem;
+    font-size: 0.8rem;
+}
+
+.body-measurement-dialog__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(127, 127, 127, 0.16);
+}
+
+.body-measurement-delete-summary {
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.9rem;
+    border-radius: 0.6rem;
+    background: rgba(127, 127, 127, 0.05);
+}
+
+    .body-measurement-delete-summary strong {
+        font-size: 1.2rem;
+    }
+
+    .body-measurement-delete-summary span {
+        font-size: 0.78rem;
+        opacity: 0.65;
+    }
+
+.body-measurement-delete-warning {
+    margin: 0;
+    line-height: 1.55;
+    opacity: 0.76;
+}
+
+@media (max-width: 900px) {
+    .body-measurement-summary {
+        grid-template-columns: repeat( 2, minmax(0, 1fr) );
+    }
+}
+
+@media (max-width: 640px) {
+    .body-measurements-header,
+    .body-measurement-unit-control,
+    .body-measurement-card__header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+        .body-measurements-header .workout-button {
+            width: 100%;
+        }
+
+    .body-measurement-unit-toggle {
+        display: grid;
+        grid-template-columns: repeat( 2, minmax(0, 1fr) );
+    }
+
+    .body-measurement-unit-button {
+        width: 100%;
+    }
+
+    .body-measurement-summary,
+    .body-measurement-card__details {
+        grid-template-columns: 1fr;
+    }
+
+    .body-measurement-list {
+        grid-template-columns: 1fr;
+    }
+
+    .body-measurement-card__actions {
+        justify-content: flex-start;
+    }
+
+    .body-measurement-dialog__actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+        .body-measurement-dialog__actions .workout-button {
+            width: 100%;
+        }
+}

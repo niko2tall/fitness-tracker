@@ -8,6 +8,9 @@ import './App.css';
 import AppLayout
     from './components/layout/AppLayout';
 
+import BodyMeasurementsPage
+    from './pages/BodyMeasurementsPage';
+
 import DashboardPage
     from './pages/DashboardPage';
 
@@ -72,6 +75,13 @@ function App() {
                     path="/progress/exercises/:exerciseId"
                     element={
                         <ExerciseHistoryPage />
+                    }
+                />
+
+                <Route
+                    path="/progress/body"
+                    element={
+                        <BodyMeasurementsPage />
                     }
                 />
 
