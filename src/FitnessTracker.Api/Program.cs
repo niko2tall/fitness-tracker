@@ -7,6 +7,8 @@ using FitnessTracker.Api.Services.Users;
 using FitnessTracker.Api.Services.Workouts;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using FitnessTracker.Api.Models;
+using Microsoft.AspNetCore.Identity;
 
 var builder =
     WebApplication.CreateBuilder(args);
@@ -36,13 +38,34 @@ var connectionString =
     ?? throw new InvalidOperationException(
         "Connection string 'FitnessTrackerDatabase' was not found.");
 
-builder.Services.AddDbContext<
-    FitnessTrackerDbContext>(
+builder.Services.AddDbContext<FitnessTrackerDbContext>(
+    options =>
+    {
+        options.UseSqlite(
+            connectionString);
+    });
+
+builder.Services
+    .AddIdentity<ApplicationUser, IdentityRole<Guid>>(
         options =>
         {
-            options.UseSqlite(
-                connectionString);
-        });
+            options.User.RequireUniqueEmail = true;
+
+            options.Password.RequiredLength = 8;
+            options.Password.RequireDigit = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequireNonAlphanumeric = false;
+
+            options.SignIn.RequireConfirmedEmail = false;
+
+            options.Lockout.AllowedForNewUsers = true;
+            options.Lockout.MaxFailedAccessAttempts = 5;
+            options.Lockout.DefaultLockoutTimeSpan =
+                TimeSpan.FromMinutes(5);
+        })
+    .AddEntityFrameworkStores<FitnessTrackerDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<
     IExerciseService,
@@ -118,6 +141,8 @@ app.UseRouting();
 
 app.UseCors(
     FrontendCorsPolicy);
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

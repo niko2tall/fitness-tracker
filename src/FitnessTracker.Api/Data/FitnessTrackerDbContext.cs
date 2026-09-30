@@ -1,18 +1,22 @@
 ﻿using FitnessTracker.Api.Models;
 using Microsoft.EntityFrameworkCore;
 using FitnessTracker.Api.Data.Seed;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace FitnessTracker.Api.Data;
 
-public class FitnessTrackerDbContext : DbContext
+public class FitnessTrackerDbContext
+    : IdentityDbContext<
+        ApplicationUser,
+        IdentityRole<Guid>,
+        Guid>
 {
     public FitnessTrackerDbContext(
         DbContextOptions<FitnessTrackerDbContext> options)
         : base(options)
     {
     }
-
-    public DbSet<ApplicationUser> Users => Set<ApplicationUser>();
 
     public DbSet<Workout> Workouts => Set<Workout>();
 

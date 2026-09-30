@@ -6,22 +6,24 @@ The project is being built as a portfolio application with a separate ASP.NET Co
 
 ## Current Status
 
-Exercise Management, the initial Workout Logging workflow, Workout History, and Phase 8 — Progress Tracking are complete for the current project scope. Progress Tracking includes Exercise History, tracking-type-specific personal records and trend charts, Body Measurement CRUD and body-composition trends, a dedicated Progress Hub, direct Exercise Progress selection, Workout frequency analytics, strength volume-load analytics, aggregate cardio analytics, and one shared weekly/monthly period control for aggregate Progress views.
+Exercise Management, the initial Workout Logging workflow, Workout History, and Phase 8 — Progress Tracking are complete for the current project scope. Phase 9 — Authentication has started with an ASP.NET Core Identity persistence foundation that extends the existing `ApplicationUser`, preserves the existing `Users` table and development-user workflow, and adds Identity stores/roles without yet requiring login.
 
 ### Current Development Focus
 
 Phase 8 — Progress Tracking is complete for the current project scope.
 
-The next development phase is **Authentication**:
+The current development phase is **Authentication**:
 
-- Add ASP.NET Core authentication/identity
-- Add registration and login
-- Replace the development current-user implementation
+- ASP.NET Core Identity persistence foundation
+- Preserve the existing `Users` table while adding Identity columns and support tables
+- Keep the development current-user workflow temporarily so existing application features remain usable
+- Next: registration/login endpoints and authenticated session handling
+- Then: replace the development current-user implementation with claims-based authenticated identity
 - Associate custom Exercises with authenticated users
 - Scope all user-owned resources to the authenticated identity
 - Verify ownership across Workouts, Body Measurements, Exercise Progress, strength volume, cardio aggregates, and history
 
-Additional Progress metrics can be added later as post-MVP enhancements without blocking the authentication/deployment path.
+Additional Progress metrics remain deferred until after the MVP authentication/deployment path.
 
 ---
 
@@ -34,6 +36,7 @@ Additional Progress metrics can be added later as post-MVP enhancements without 
 - ASP.NET Core Web API
 - Controller-based REST endpoints
 - Entity Framework Core
+- ASP.NET Core Identity / Entity Framework Core Identity stores
 - SQLite
 - OpenAPI
 - Scalar
@@ -555,6 +558,47 @@ If historical correction is ever required in the future, it should be introduced
 
 ---
 
+
+## Authentication Foundation
+
+ASP.NET Core Identity is integrated at the persistence/service layer while the existing development current-user abstraction remains active temporarily.
+
+`ApplicationUser` now derives from:
+
+```text
+IdentityUser<Guid>
+```
+
+and retains the application's existing profile fields:
+
+```text
+DisplayName
+PreferredWeightUnit
+PreferredDistanceUnit
+CreatedAtUtc
+```
+
+along with its existing relationships to:
+
+- Workouts
+- BodyMeasurements
+- Custom Exercises
+
+The existing `Users` table is intentionally preserved instead of creating a second `AspNetUsers` table. The Identity migration adds the standard Identity user columns to `Users` and creates the supporting Identity tables for roles, claims, logins, tokens, and user-role relationships.
+
+Identity services are registered with:
+
+- `ApplicationUser`
+- `IdentityRole<Guid>`
+- Entity Framework Core stores
+- Sign-in manager
+- Default token providers
+
+The existing `DevelopmentCurrentUserService` is deliberately retained during this foundation step so the current application remains usable while registration/login and claims-based ownership are implemented in subsequent steps.
+
+No route is protected in this foundation step yet.
+
+
 ## Database
 
 ### Provider
@@ -571,6 +615,12 @@ Data Source=Data/FitnessTracker.db
 
 ```text
 Users
+AspNetRoles
+AspNetRoleClaims
+AspNetUserClaims
+AspNetUserLogins
+AspNetUserRoles
+AspNetUserTokens
 Exercises
 Workouts
 WorkoutExercises
@@ -1840,7 +1890,9 @@ These are intentionally deferred until after the MVP authentication/deployment p
 
 ### Phase 9 — Authentication
 
-- [ ] Add authentication
+- [x] Add ASP.NET Core Identity persistence foundation
+- [x] Extend `ApplicationUser` with `IdentityUser<Guid>`
+- [x] Preserve the existing `Users` table while adding Identity schema
 - [ ] Add registration and login
 - [ ] Replace development current-user implementation
 - [ ] Associate custom Exercises with authenticated users
@@ -1923,6 +1975,7 @@ Add workout frequency progress analytics
 Add strength volume load progress analytics
 Add cardio aggregate progress analytics
 Consolidate progress analytics controls
+Add ASP.NET Core Identity foundation
 ```
 
 
@@ -1971,5 +2024,7 @@ Exercise Management is complete end-to-end.
 The initial Workout Logging workflow is complete end-to-end: users can create Workouts, edit active Workout metadata, manage Exercises, record/edit/remove tracking-specific Sets, complete the Workout, and review the resulting read-only session.
 
 Workout History is complete for the current project scope. Completed Workouts can be searched, filtered, browsed by month, summarized with duration and aggregate metrics, and opened in a lifecycle-aware read-only detail experience.
+
+Authentication foundation work has begun with ASP.NET Core Identity using GUID keys and EF Core stores while preserving the existing user-owned domain model. The existing development current-user workflow remains temporarily active so established features continue working during the authentication transition.
 
 Progress Tracking now includes a current-user-scoped Exercise History API, matching TypeScript client contracts, a dedicated React Exercise History page, tracking-type-specific personal-record detection, interactive trend charts for every current tracking type, and a complete Body Measurement management workflow. Users can create, edit, delete, and review measurements through React while entering/displaying weight in kilograms or pounds; the API and database continue to use kilograms as the canonical persisted unit. The Body Measurement experience includes a combined interactive Body Composition chart that overlays body weight and optional body-fat percentage on one shared time axis, with separate y-axes and one chart-data table. The Progress Hub also derives completed-Workout frequency analytics from existing Workout summaries, including weekly/monthly views and distinct training-day counts. Strength volume-load analytics are sourced from a dedicated current-user-scoped progress endpoint that aggregates finalized positive-weight `WeightAndReps` Sets while preserving per-Exercise contribution totals. Cardio aggregate analytics use a separate current-user-scoped progress endpoint for finalized Cardio Sets, preserving canonical distance/duration values while deriving weekly/monthly distance, duration, session counts, pace, and longest-distance sessions in React. Aggregate Progress panels now share one 8-week/6-month period control and one page-level analysis timestamp, keeping Workout Frequency, Strength Volume, and Cardio Progress aligned without triggering additional API requests when the period changes.
