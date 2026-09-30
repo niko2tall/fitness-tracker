@@ -1,0 +1,288 @@
+.workout-frequency {
+    display: grid;
+    gap: 1rem;
+    padding: 1.2rem;
+    border: 1px solid rgba(127, 127, 127, 0.24);
+    border-radius: 0.8rem;
+    background: rgba(127, 127, 127, 0.025);
+}
+
+.workout-frequency__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+    .workout-frequency__header h2 {
+        margin: 0.3rem 0 0;
+    }
+
+    .workout-frequency__header p:last-child {
+        max-width: 680px;
+        margin: 0.55rem 0 0;
+        line-height: 1.55;
+        font-size: 0.84rem;
+        opacity: 0.68;
+    }
+
+.workout-frequency__completed-count {
+    flex-shrink: 0;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid rgba(127, 127, 127, 0.22);
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    opacity: 0.72;
+}
+
+.workout-frequency-summary {
+    display: grid;
+    grid-template-columns: repeat( 4, minmax(0, 1fr) );
+    gap: 0.8rem;
+}
+
+.workout-frequency-summary-card {
+    display: grid;
+    align-content: start;
+    gap: 0.3rem;
+    min-width: 0;
+    padding: 0.9rem;
+    border: 1px solid rgba(127, 127, 127, 0.2);
+    border-radius: 0.65rem;
+    background: rgba(127, 127, 127, 0.035);
+}
+
+    .workout-frequency-summary-card > span {
+        font-size: 0.67rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        opacity: 0.55;
+    }
+
+    .workout-frequency-summary-card > strong {
+        font-size: 1.35rem;
+    }
+
+    .workout-frequency-summary-card > small {
+        line-height: 1.4;
+        font-size: 0.72rem;
+        opacity: 0.58;
+    }
+
+.workout-frequency-chart-shell {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid rgba(127, 127, 127, 0.2);
+    border-radius: 0.7rem;
+    background: rgba(127, 127, 127, 0.02);
+}
+
+.workout-frequency-chart__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+    .workout-frequency-chart__header > div:first-child {
+        display: grid;
+        gap: 0.2rem;
+    }
+
+    .workout-frequency-chart__header span {
+        font-size: 0.74rem;
+        opacity: 0.6;
+    }
+
+.workout-frequency-view-toggle {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.workout-frequency-view-button {
+    min-height: 38px;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid rgba(127, 127, 127, 0.28);
+    border-radius: 0.5rem;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.74rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+    .workout-frequency-view-button:hover {
+        background: rgba(127, 127, 127, 0.07);
+    }
+
+.workout-frequency-view-button--active {
+    border-color: currentColor;
+    background: rgba(127, 127, 127, 0.12);
+}
+
+.workout-frequency-view-button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+.workout-frequency-chart {
+    display: grid;
+    grid-template-columns: repeat( 8, minmax(54px, 1fr) );
+    align-items: end;
+    gap: 0.55rem;
+    min-width: 620px;
+    padding: 0.75rem 0 0.25rem;
+    overflow: visible;
+}
+
+.workout-frequency-chart-shell {
+    overflow-x: auto;
+}
+
+.workout-frequency-bar-column {
+    display: grid;
+    gap: 0.45rem;
+    min-width: 0;
+    text-align: center;
+}
+
+.workout-frequency-bar-area {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.35rem;
+    height: 190px;
+    padding-bottom: 1px;
+}
+
+.workout-frequency-bar__count {
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.workout-frequency-bar {
+    width: min( 42px, 72% );
+    max-height: 160px;
+    border: 1px solid currentColor;
+    border-radius: 0.35rem 0.35rem 0 0;
+    background: rgba(127, 127, 127, 0.2);
+}
+
+.workout-frequency-bar__zero {
+    width: min( 42px, 72% );
+    border-top: 1px solid rgba(127, 127, 127, 0.3);
+}
+
+.workout-frequency-bar__label {
+    overflow-wrap: anywhere;
+    font-size: 0.67rem;
+    opacity: 0.65;
+}
+
+.workout-frequency-chart__hint {
+    margin: 0;
+    line-height: 1.45;
+    font-size: 0.73rem;
+    opacity: 0.58;
+}
+
+.workout-frequency-chart__empty,
+.workout-frequency__state,
+.workout-frequency__empty {
+    display: grid;
+    justify-items: start;
+    gap: 0.55rem;
+    padding: 1rem;
+    border: 1px solid rgba(127, 127, 127, 0.18);
+    border-radius: 0.65rem;
+    background: rgba(127, 127, 127, 0.025);
+}
+
+    .workout-frequency-chart__empty span,
+    .workout-frequency__state span,
+    .workout-frequency__empty p {
+        margin: 0;
+        line-height: 1.5;
+        font-size: 0.8rem;
+        opacity: 0.68;
+    }
+
+.workout-frequency__state--error {
+    border-color: rgba(220, 38, 38, 0.4);
+}
+
+.workout-frequency-data {
+    padding: 0.8rem 1rem;
+    border: 1px solid rgba(127, 127, 127, 0.2);
+    border-radius: 0.65rem;
+    background: rgba(127, 127, 127, 0.02);
+}
+
+    .workout-frequency-data summary {
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+.workout-frequency-table-scroll {
+    margin-top: 0.85rem;
+    overflow-x: auto;
+}
+
+.workout-frequency-table {
+    width: 100%;
+    min-width: 620px;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+}
+
+    .workout-frequency-table th,
+    .workout-frequency-table td {
+        padding: 0.65rem;
+        border-bottom: 1px solid rgba(127, 127, 127, 0.16);
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .workout-frequency-table th {
+        font-size: 0.67rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        opacity: 0.58;
+    }
+
+@media (max-width: 900px) {
+    .workout-frequency-summary {
+        grid-template-columns: repeat( 2, minmax(0, 1fr) );
+    }
+}
+
+@media (max-width: 640px) {
+    .workout-frequency__header,
+    .workout-frequency-chart__header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .workout-frequency__completed-count {
+        align-self: flex-start;
+    }
+
+    .workout-frequency-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .workout-frequency-view-toggle {
+        display: grid;
+        grid-template-columns: repeat( 2, minmax(0, 1fr) );
+    }
+
+    .workout-frequency-view-button {
+        width: 100%;
+    }
+}

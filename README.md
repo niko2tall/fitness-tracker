@@ -6,7 +6,7 @@ The project is being built as a portfolio application with a separate ASP.NET Co
 
 ## Current Status
 
-Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes Exercise History, tracking-type-specific personal records and trend charts, a current-user-scoped Body Measurement CRUD API, a React Body Measurement management experience, a combined Body Composition trend chart, and a dedicated Progress Hub with direct Exercise Progress search and selection.
+Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes Exercise History, tracking-type-specific personal records and trend charts, a current-user-scoped Body Measurement CRUD API, a React Body Measurement management experience, a combined Body Composition trend chart, a dedicated Progress Hub with direct Exercise Progress search and selection, and completed-Workout frequency analytics.
 
 ### Current Development Focus
 
@@ -27,6 +27,8 @@ The current development phase is **Progress Tracking**:
 - Body-weight and optional body-fat trends
 - Dedicated Progress Hub and Dashboard entry point
 - Direct Exercise Progress search and selection from the Progress Hub
+- Completed-Workout frequency analytics
+- Weekly and monthly training-frequency views
 - Additional body-composition/progress metrics
 
 The completed Workout History experience remains the historical source for these analytics features.
@@ -227,6 +229,7 @@ fitness-tracker
 │       │   │   ├── progress
 │       │   │   │   ├── ExerciseHistoryWorkoutCard.tsx
 │       │   │   │   ├── ProgressExercisePicker.tsx
+│       │   │   │   ├── WorkoutFrequencyPanel.tsx
 │       │   │   │   ├── ExercisePersonalRecords.tsx
 │       │   │   │   └── ExercisePerformanceTrend.tsx
 │       │   │   │
@@ -265,6 +268,7 @@ fitness-tracker
 │       │   │   ├── healthApi.ts
 │       │   │   ├── progressApi.ts
 │       │   │   ├── progressHubApi.ts
+│       │   │   ├── workoutFrequencyApi.ts
 │       │   │   └── workoutsApi.ts
 │       │   │
 │       │   ├── styles
@@ -273,6 +277,7 @@ fitness-tracker
 │       │   │   ├── dashboard.css
 │       │   │   ├── exerciseHistory.css
 │       │   │   ├── progressHub.css
+│       │   │   ├── workoutFrequency.css
 │       │   │   ├── workoutHistory.css
 │       │   │   ├── workoutLogging.css
 │       │   │   └── workouts.css
@@ -282,10 +287,12 @@ fitness-tracker
 │       │   │   ├── exercise.ts
 │       │   │   ├── progress.ts
 │       │   │   ├── progressHub.ts
+│       │   │   ├── workoutFrequency.ts
 │       │   │   └── workout.ts
 │       │   │
 │       │   ├── utils
 │       │   │   ├── bodyMeasurementTrends.ts
+│       │   │   ├── workoutFrequency.ts
 │       │   │   ├── bodyMeasurementUnits.ts
 │       │   │   ├── dateTime.ts
 │       │   │   ├── exerciseTrends.ts
@@ -882,8 +889,15 @@ Supports:
 - Exercise Library management link
 - Clear explanation of available strength, repetition, duration, cardio, weight, and body-fat analytics
 - Loading, error, retry, and no-match states for the Exercise selector
-- Responsive feature cards and selector results
-- One Exercise-list request when the Progress Hub loads
+- Completed-Workout frequency analytics
+- Current-week and current-month Workout counts
+- Current-month training-day count
+- Eight-week average Workout frequency
+- Weekly and monthly frequency chart views
+- Per-period Strength/Cardio/Mixed counts
+- Expandable accessible frequency data table
+- Responsive feature cards, selector results, and frequency chart
+- One Exercise-list request and one Workout-summary request when the Progress Hub loads
 
 ### Exercise Library
 
@@ -989,6 +1003,31 @@ Supports:
 - API error/loading states
 - Responsive historical Set, record, and trend layouts
 - Direct Exercise History links from Workout Exercise cards
+
+
+### Workout Frequency
+
+The Progress Hub derives training-frequency analytics from the existing current-user-scoped Workout summary endpoint.
+
+Frequency analytics:
+
+- Include completed Workouts only
+- Use `StartedAtUtc` as the training-session date
+- Interpret calendar days, weeks, and months in the browser's local timezone
+- Treat Monday as the start of the week
+- Count multiple completed Workouts on the same day as multiple sessions but one training day
+- Show current-week Workout count
+- Show current-month Workout count
+- Show current-month distinct training days
+- Show average Workouts per week across the eight displayed weekly buckets
+- Provide an eight-week frequency view
+- Provide a six-month frequency view
+- Break each period down by Strength, Cardio, and Mixed Workout types
+- Provide one expandable data table for the currently selected frequency view
+- Make no additional requests when switching between weekly and monthly views
+
+The current week and current month are partial calendar periods and are displayed as such rather than extrapolated.
+
 
 ### Workout History
 
@@ -1626,6 +1665,10 @@ dotnet ef migrations list
 - [x] Add combined body-composition progress chart
 - [x] Add dedicated Progress Hub and Dashboard entry point
 - [x] Add direct Exercise Progress search and selection
+- [x] Add Workout frequency analytics
+- [ ] Add strength training-volume analytics
+- [ ] Add running/cardio aggregate analytics
+- [ ] Consolidate Progress Dashboard time-range controls
 - [ ] Additional progress metrics
 
 ### Phase 9 — Authentication
@@ -1708,6 +1751,8 @@ Add body measurement React management UI
 Add body weight progress trend chart
 Combine body weight and body fat progress visualization
 Add progress hub and dashboard navigation
+Add direct exercise progress selection
+Add workout frequency progress analytics
 ```
 
 
@@ -1757,4 +1802,4 @@ The initial Workout Logging workflow is complete end-to-end: users can create Wo
 
 Workout History is complete for the current project scope. Completed Workouts can be searched, filtered, browsed by month, summarized with duration and aggregate metrics, and opened in a lifecycle-aware read-only detail experience.
 
-Progress Tracking now includes a current-user-scoped Exercise History API, matching TypeScript client contracts, a dedicated React Exercise History page, tracking-type-specific personal-record detection, interactive trend charts for every current tracking type, and a complete Body Measurement management workflow. Users can create, edit, delete, and review measurements through React while entering/displaying weight in kilograms or pounds; the API and database continue to use kilograms as the canonical persisted unit. The Body Measurement experience now includes a combined interactive Body Composition chart that overlays body weight and optional body-fat percentage on one shared time axis, with separate y-axes and one chart-data table.
+Progress Tracking now includes a current-user-scoped Exercise History API, matching TypeScript client contracts, a dedicated React Exercise History page, tracking-type-specific personal-record detection, interactive trend charts for every current tracking type, and a complete Body Measurement management workflow. Users can create, edit, delete, and review measurements through React while entering/displaying weight in kilograms or pounds; the API and database continue to use kilograms as the canonical persisted unit. The Body Measurement experience includes a combined interactive Body Composition chart that overlays body weight and optional body-fat percentage on one shared time axis, with separate y-axes and one chart-data table. The Progress Hub also derives completed-Workout frequency analytics from existing Workout summaries, including weekly/monthly views and distinct training-day counts.

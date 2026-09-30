@@ -5,6 +5,9 @@ import {
 import ProgressExercisePicker
     from '../components/progress/ProgressExercisePicker';
 
+import WorkoutFrequencyPanel
+    from '../components/progress/WorkoutFrequencyPanel';
+
 import '../styles/progressHub.css';
 
 function ProgressPage() {
@@ -30,7 +33,8 @@ function ProgressPage() {
                     <p className="page-header__description">
                         Review training history,
                         personal records,
-                        performance trends, and
+                        performance trends,
+                        training consistency, and
                         body-composition changes.
                     </p>
                 </div>
@@ -160,7 +164,7 @@ function ProgressPage() {
                         </span>
 
                         <span>
-                            Filtering
+                            Frequency
                         </span>
 
                         <span>
@@ -176,6 +180,8 @@ function ProgressPage() {
                     </Link>
                 </article>
             </section>
+
+            <WorkoutFrequencyPanel />
 
             <div id="exercise-progress">
                 <ProgressExercisePicker />
@@ -222,6 +228,20 @@ function ProgressPage() {
 
                     <article>
                         <h3>
+                            Consistency
+                        </h3>
+
+                        <p>
+                            Review completed Workout
+                            frequency across recent
+                            weeks and months,
+                            including distinct
+                            training days.
+                        </p>
+                    </article>
+
+                    <article>
+                        <h3>
                             Body Composition
                         </h3>
 
@@ -239,21 +259,21 @@ function ProgressPage() {
             <section className="progress-hub-guidance">
                 <div>
                     <p className="progress-hub-card__eyebrow">
-                        Exercise Analytics
+                        Progress Data
                     </p>
 
                     <h2>
-                        Exercise progress comes from completed Workouts
+                        Analytics are built from finalized training data
                     </h2>
 
                     <p>
-                        Personal records and
-                        performance trends use
-                        finalized Set data from
+                        Exercise records and
+                        frequency analytics use
                         completed Workouts.
                         Active Workout performance
                         remains excluded until the
-                        Workout is completed.
+                        training session is
+                        completed.
                     </p>
                 </div>
 
