@@ -6,7 +6,7 @@ The project is being built as a portfolio application with a separate ASP.NET Co
 
 ## Current Status
 
-Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes Exercise History, tracking-type-specific personal records and trend charts, a current-user-scoped Body Measurement CRUD API, a React Body Measurement management experience, and an interactive body-weight progress chart.
+Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes Exercise History, tracking-type-specific personal records and trend charts, a current-user-scoped Body Measurement CRUD API, a React Body Measurement management experience, and a combined Body Composition trend chart for weight and optional body-fat percentage.
 
 ### Current Development Focus
 
@@ -23,7 +23,8 @@ The current development phase is **Progress Tracking**:
 - Body-measurement API and frontend contracts
 - Body-measurement create/edit/delete UI
 - Kilogram/pound display and entry conversion
-- Body-weight progress chart
+- Combined body-composition progress chart
+- Body-weight and optional body-fat trends
 - Additional body-composition/progress metrics
 
 The completed Workout History experience remains the historical source for these analytics features.
@@ -206,7 +207,7 @@ fitness-tracker
 │       │   │   ├── bodyMeasurements
 │       │   │   │   ├── BodyMeasurementCard.tsx
 │       │   │   │   ├── BodyMeasurementDialog.tsx
-│       │   │   │   ├── BodyWeightTrend.tsx
+│       │   │   │   ├── BodyCompositionTrend.tsx
 │       │   │   │   └── DeleteBodyMeasurementDialog.tsx
 │       │   │   │
 │       │   │   ├── exercises
@@ -913,13 +914,17 @@ Supports:
 - Latest body-fat summary when available
 - Empty-state guidance
 - Loading/error states
-- Interactive body-weight trend chart
-- Actual timestamp-based horizontal spacing
-- Earliest/latest/minimum/maximum weight summaries
-- Weight-change and percentage-change summaries
-- Unit-aware chart axis, tooltip, and table rendering
+- Combined Body Composition trend chart
+- Body-weight series using every valid measurement
+- Optional body-fat percentage series using recorded values only
+- Shared timestamp-based horizontal axis
+- Separate weight and body-fat y-axes
+- Weight change/range summaries
+- Body-fat percentage-point change/range summaries
+- No interpolation of missing body-fat values
+- Unit-aware weight axis, tooltip, and table rendering
 - Accessible/focusable SVG chart points
-- Expandable chart data table
+- One expandable combined chart data table
 - Responsive cards, dialogs, and chart layout
 
 ### Exercise Progress History
@@ -1099,24 +1104,25 @@ Records remain derived instead of persisted so corrected or newly finalized hist
 
 ---
 
-## Body Weight Progress Trend
+## Body Composition Progress Trend
 
-The Body Measurements page includes a native React/SVG body-weight chart derived from the already-loaded Body Measurement dataset.
+The Body Measurements page includes one combined native React/SVG trend chart for body weight and optional body-fat percentage, derived from the already-loaded Body Measurement dataset.
 
-The trend:
+The combined trend:
 
-- Uses one point per valid Body Measurement
+- Uses every valid Body Measurement for the weight series
+- Uses only measurements with recorded body-fat percentage for the body-fat series
 - Sorts points oldest-to-newest for visualization
-- Preserves actual time spacing on the horizontal axis
-- Uses canonical kilograms for calculations
-- Formats chart values in the currently selected kg/lb display unit
-- Shows earliest, latest, minimum, maximum, absolute change, and percentage change
-- Treats weight change neutrally rather than labeling gain or loss as inherently positive or negative
-- Keeps chart points keyboard-focusable
-- Provides an expandable HTML table containing the same data
+- Preserves actual timestamp spacing on the horizontal axis
+- Uses a left y-axis for weight and a right y-axis for body-fat percentage
+- Keeps weight calculations in canonical kilograms while formatting labels in the selected kg/lb display unit
+- Does not invent or interpolate missing body-fat measurements
+- Shows weight and body-fat change summaries without assigning a positive or negative judgment
+- Keeps SVG points keyboard-focusable
+- Provides one expandable HTML data table for Date, Weight, Body Fat, and Notes
 - Requires no additional API request when the display unit changes
 
-Because pounds are a linear conversion of kilograms, chart geometry can remain based on canonical kilograms while labels and table values switch units without changing the underlying dataset.
+The two y-axes allow weight and body-fat percentage to share one timeline without pretending that kilograms/pounds and percentages use the same numeric scale.
 
 ---
 
@@ -1585,7 +1591,7 @@ dotnet ef migrations list
 - [x] Add Body Measurement TypeScript contracts/client
 - [x] Build Body Measurement create/edit/delete UI
 - [x] Add kilogram/pound entry and display conversion
-- [x] Add body-weight progress chart
+- [x] Add combined body-composition progress chart
 - [ ] Additional progress metrics
 
 ### Phase 9 — Authentication
@@ -1666,7 +1672,9 @@ Generalize exercise progress trends across tracking types
 Add body measurement API and frontend contracts
 Add body measurement React management UI
 Add body weight progress trend chart
+Combine body weight and body fat progress visualization
 ```
+
 
 ---
 
@@ -1714,4 +1722,4 @@ The initial Workout Logging workflow is complete end-to-end: users can create Wo
 
 Workout History is complete for the current project scope. Completed Workouts can be searched, filtered, browsed by month, summarized with duration and aggregate metrics, and opened in a lifecycle-aware read-only detail experience.
 
-Progress Tracking now includes a current-user-scoped Exercise History API, matching TypeScript client contracts, a dedicated React Exercise History page, tracking-type-specific personal-record detection, interactive trend charts for every current tracking type, and a complete Body Measurement management workflow. Users can create, edit, delete, and review measurements through React while entering/displaying weight in kilograms or pounds; the API and database continue to use kilograms as the canonical persisted unit. The Body Measurement experience now also includes an interactive body-weight progress chart using the same canonical kilogram dataset and kg/lb display selector.
+Progress Tracking now includes a current-user-scoped Exercise History API, matching TypeScript client contracts, a dedicated React Exercise History page, tracking-type-specific personal-record detection, interactive trend charts for every current tracking type, and a complete Body Measurement management workflow. Users can create, edit, delete, and review measurements through React while entering/displaying weight in kilograms or pounds; the API and database continue to use kilograms as the canonical persisted unit. The Body Measurement experience now includes a combined interactive Body Composition chart that overlays body weight and optional body-fat percentage on one shared time axis, with separate y-axes and one chart-data table.

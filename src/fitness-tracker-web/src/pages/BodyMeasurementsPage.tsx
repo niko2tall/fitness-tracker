@@ -8,14 +8,14 @@ import {
     Link,
 } from 'react-router-dom';
 
+import BodyCompositionTrend
+    from '../components/bodyMeasurements/BodyCompositionTrend';
+
 import BodyMeasurementCard
     from '../components/bodyMeasurements/BodyMeasurementCard';
 
 import BodyMeasurementDialog
     from '../components/bodyMeasurements/BodyMeasurementDialog';
-
-import BodyWeightTrend
-    from '../components/bodyMeasurements/BodyWeightTrend';
 
 import DeleteBodyMeasurementDialog
     from '../components/bodyMeasurements/DeleteBodyMeasurementDialog';
@@ -576,7 +576,7 @@ function BodyMeasurementsPage() {
                     !error &&
                     measurements.length >
                     0 && (
-                        <BodyWeightTrend
+                        <BodyCompositionTrend
                             measurements={
                                 measurements
                             }
@@ -629,16 +629,16 @@ function BodyMeasurementsPage() {
                             </p>
 
                             <h2>
-                                Start your body-weight
-                                history
+                                Start your body
+                                composition history
                             </h2>
 
                             <p>
                                 Add your first
                                 measurement to begin
-                                building the dataset
-                                used for body-weight
-                                progress tracking.
+                                building body-weight
+                                and body-composition
+                                progress data.
                             </p>
 
                             <button

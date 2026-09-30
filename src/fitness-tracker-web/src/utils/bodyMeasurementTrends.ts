@@ -2,7 +2,7 @@ import type {
     BodyMeasurement,
 } from '../types/bodyMeasurement';
 
-export interface BodyWeightTrendPoint {
+export interface BodyCompositionTrendPoint {
     measurementId: string;
     recordedAtUtc: string;
 
@@ -15,33 +15,62 @@ export interface BodyWeightTrendPoint {
     string | null;
 }
 
-export interface BodyWeightTrendSeries {
-    points:
-    BodyWeightTrendPoint[];
+export interface BodyFatTrendPoint {
+    measurementId: string;
+    recordedAtUtc: string;
 
-    earliestPoint:
-    BodyWeightTrendPoint;
+    weightKg: number;
 
-    latestPoint:
-    BodyWeightTrendPoint;
+    bodyFatPercentage: number;
 
-    minimumPoint:
-    BodyWeightTrendPoint;
-
-    maximumPoint:
-    BodyWeightTrendPoint;
-
-    absoluteChangeKg:
-    number;
-
-    percentageChange:
-    number;
+    notes:
+    string | null;
 }
 
-export function buildBodyWeightTrendSeries(
+export interface BodyCompositionTrendSeries {
+    points:
+    BodyCompositionTrendPoint[];
+
+    bodyFatPoints:
+    BodyFatTrendPoint[];
+
+    earliestWeightPoint:
+    BodyCompositionTrendPoint;
+
+    latestWeightPoint:
+    BodyCompositionTrendPoint;
+
+    minimumWeightPoint:
+    BodyCompositionTrendPoint;
+
+    maximumWeightPoint:
+    BodyCompositionTrendPoint;
+
+    weightChangeKg: number;
+
+    weightPercentageChange:
+    number;
+
+    earliestBodyFatPoint:
+    BodyFatTrendPoint | null;
+
+    latestBodyFatPoint:
+    BodyFatTrendPoint | null;
+
+    minimumBodyFatPoint:
+    BodyFatTrendPoint | null;
+
+    maximumBodyFatPoint:
+    BodyFatTrendPoint | null;
+
+    bodyFatChangePercentagePoints:
+    number | null;
+}
+
+export function buildBodyCompositionTrendSeries(
     measurements:
         BodyMeasurement[]
-): BodyWeightTrendSeries | null {
+): BodyCompositionTrendSeries | null {
     const points =
         measurements
             .filter(
@@ -51,11 +80,9 @@ export function buildBodyWeightTrendSeries(
                     ) &&
                     measurement.weightKg >
                     0 &&
-                    Number.isFinite(
-                        Date.parse(
-                            measurement
-                                .recordedAtUtc
-                        )
+                    isValidTimestamp(
+                        measurement
+                            .recordedAtUtc
                     )
             )
             .map(
@@ -98,15 +125,55 @@ export function buildBodyWeightTrendSeries(
         return null;
     }
 
-    const earliestPoint =
+    const bodyFatPoints:
+        BodyFatTrendPoint[] =
+        points.flatMap(
+            (point) => {
+                if (
+                    point.bodyFatPercentage ===
+                    null ||
+                    !Number.isFinite(
+                        point.bodyFatPercentage
+                    ) ||
+                    point.bodyFatPercentage <
+                    0 ||
+                    point.bodyFatPercentage >
+                    100
+                ) {
+                    return [];
+                }
+
+                return [
+                    {
+                        measurementId:
+                            point.measurementId,
+
+                        recordedAtUtc:
+                            point.recordedAtUtc,
+
+                        weightKg:
+                            point.weightKg,
+
+                        bodyFatPercentage:
+                            point
+                                .bodyFatPercentage,
+
+                        notes:
+                            point.notes,
+                    },
+                ];
+            }
+        );
+
+    const earliestWeightPoint =
         points[0];
 
-    const latestPoint =
+    const latestWeightPoint =
         points[
         points.length - 1
         ];
 
-    const minimumPoint =
+    const minimumWeightPoint =
         points.reduce(
             (
                 minimum,
@@ -119,7 +186,7 @@ export function buildBodyWeightTrendSeries(
             points[0]
         );
 
-    const maximumPoint =
+    const maximumWeightPoint =
         points.reduce(
             (
                 maximum,
@@ -132,28 +199,103 @@ export function buildBodyWeightTrendSeries(
             points[0]
         );
 
-    const absoluteChangeKg =
-        latestPoint.weightKg -
-        earliestPoint.weightKg;
+    const weightChangeKg =
+        latestWeightPoint
+            .weightKg -
+        earliestWeightPoint
+            .weightKg;
 
-    const percentageChange =
+    const weightPercentageChange =
         (
-            absoluteChangeKg /
-            earliestPoint.weightKg
+            weightChangeKg /
+            earliestWeightPoint
+                .weightKg
         ) * 100;
+
+    const earliestBodyFatPoint =
+        bodyFatPoints[0] ??
+        null;
+
+    const latestBodyFatPoint =
+        bodyFatPoints.length > 0
+            ? bodyFatPoints[
+            bodyFatPoints.length -
+            1
+            ]
+            : null;
+
+    const minimumBodyFatPoint =
+        bodyFatPoints.length > 0
+            ? bodyFatPoints.reduce(
+                (
+                    minimum,
+                    point
+                ) =>
+                    point
+                        .bodyFatPercentage <=
+                        minimum
+                            .bodyFatPercentage
+                        ? point
+                        : minimum,
+                bodyFatPoints[0]
+            )
+            : null;
+
+    const maximumBodyFatPoint =
+        bodyFatPoints.length > 0
+            ? bodyFatPoints.reduce(
+                (
+                    maximum,
+                    point
+                ) =>
+                    point
+                        .bodyFatPercentage >=
+                        maximum
+                            .bodyFatPercentage
+                        ? point
+                        : maximum,
+                bodyFatPoints[0]
+            )
+            : null;
+
+    const bodyFatChangePercentagePoints =
+        earliestBodyFatPoint &&
+            latestBodyFatPoint
+            ? latestBodyFatPoint
+                .bodyFatPercentage -
+            earliestBodyFatPoint
+                .bodyFatPercentage
+            : null;
 
     return {
         points,
+        bodyFatPoints,
 
-        earliestPoint,
-        latestPoint,
+        earliestWeightPoint,
+        latestWeightPoint,
 
-        minimumPoint,
-        maximumPoint,
+        minimumWeightPoint,
+        maximumWeightPoint,
 
-        absoluteChangeKg,
-        percentageChange,
+        weightChangeKg,
+        weightPercentageChange,
+
+        earliestBodyFatPoint,
+        latestBodyFatPoint,
+
+        minimumBodyFatPoint,
+        maximumBodyFatPoint,
+
+        bodyFatChangePercentagePoints,
     };
+}
+
+function isValidTimestamp(
+    value: string
+): boolean {
+    return Number.isFinite(
+        Date.parse(value)
+    );
 }
 
 function getTimestamp(
