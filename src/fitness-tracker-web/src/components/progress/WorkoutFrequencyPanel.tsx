@@ -13,12 +13,15 @@ import {
 } from '../../services/api';
 
 import type {
+    ProgressAggregateView,
+} from '../../types/progressDashboard';
+
+import type {
     WorkoutSummary,
 } from '../../types/workout';
 
 import type {
     WorkoutFrequencyBucket,
-    WorkoutFrequencyView,
 } from '../../types/workoutFrequency';
 
 import {
@@ -27,7 +30,18 @@ import {
 
 import '../../styles/workoutFrequency.css';
 
-function WorkoutFrequencyPanel() {
+interface WorkoutFrequencyPanelProps {
+    view:
+    ProgressAggregateView;
+
+    now:
+    Date;
+}
+
+function WorkoutFrequencyPanel({
+    view,
+    now,
+}: WorkoutFrequencyPanelProps) {
     const [
         workouts,
         setWorkouts,
@@ -35,14 +49,6 @@ function WorkoutFrequencyPanel() {
         useState<
             WorkoutSummary[]
         >([]);
-
-    const [
-        view,
-        setView,
-    ] =
-        useState<
-            WorkoutFrequencyView
-        >('Weeks');
 
     const [
         isLoading,
@@ -119,9 +125,13 @@ function WorkoutFrequencyPanel() {
         useMemo(
             () =>
                 buildWorkoutFrequencyAnalytics(
-                    workouts
+                    workouts,
+                    now
                 ),
-            [workouts]
+            [
+                workouts,
+                now,
+            ]
         );
 
     const selectedBuckets =
@@ -158,6 +168,7 @@ function WorkoutFrequencyPanel() {
 
     return (
         <section
+            id="workout-frequency"
             className="workout-frequency"
             aria-labelledby="workout-frequency-title"
         >
@@ -355,59 +366,19 @@ function WorkoutFrequencyPanel() {
                                     </span>
                                 </div>
 
-                                <div
-                                    className="workout-frequency-view-toggle"
-                                    role="group"
-                                    aria-label="Workout frequency period"
-                                >
-                                    <button
-                                        type="button"
-                                        className={
-                                            view ===
-                                                'Weeks'
-                                                ? 'workout-frequency-view-button workout-frequency-view-button--active'
-                                                : 'workout-frequency-view-button'
-                                        }
-                                        aria-pressed={
-                                            view ===
-                                            'Weeks'
-                                        }
-                                        onClick={() =>
-                                            setView(
-                                                'Weeks'
-                                            )
-                                        }
-                                    >
-                                        Weeks
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        className={
-                                            view ===
-                                                'Months'
-                                                ? 'workout-frequency-view-button workout-frequency-view-button--active'
-                                                : 'workout-frequency-view-button'
-                                        }
-                                        aria-pressed={
-                                            view ===
-                                            'Months'
-                                        }
-                                        onClick={() =>
-                                            setView(
-                                                'Months'
-                                            )
-                                        }
-                                    >
-                                        Months
-                                    </button>
-                                </div>
+                                <span>
+                                    Shared Progress period
+                                </span>
                             </div>
 
                             {selectedWorkoutCount >
                                 0 ? (
                                 <div
                                     className="workout-frequency-chart"
+                                    style={{
+                                        gridTemplateColumns:
+                                            `repeat(${selectedBuckets.length}, minmax(54px, 1fr))`,
+                                    }}
                                     role="img"
                                     aria-label={
                                         view ===

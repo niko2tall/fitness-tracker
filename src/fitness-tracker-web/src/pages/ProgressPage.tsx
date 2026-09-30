@@ -1,9 +1,16 @@
 import {
+    useState,
+} from 'react';
+
+import {
     Link,
 } from 'react-router-dom';
 
 import CardioSummaryPanel
     from '../components/progress/CardioSummaryPanel';
+
+import ProgressAnalyticsControls
+    from '../components/progress/ProgressAnalyticsControls';
 
 import ProgressExercisePicker
     from '../components/progress/ProgressExercisePicker';
@@ -14,9 +21,28 @@ import StrengthVolumePanel
 import WorkoutFrequencyPanel
     from '../components/progress/WorkoutFrequencyPanel';
 
+import type {
+    ProgressAggregateView,
+} from '../types/progressDashboard';
+
 import '../styles/progressHub.css';
 
 function ProgressPage() {
+    const [
+        aggregateView,
+        setAggregateView,
+    ] =
+        useState<
+            ProgressAggregateView
+        >('Weeks');
+
+    const [
+        analyticsNow,
+    ] =
+        useState(
+            () => new Date()
+        );
+
     return (
         <main className="app-shell progress-hub-page">
             <Link
@@ -40,8 +66,7 @@ function ProgressPage() {
                         Review training history,
                         personal records,
                         performance trends,
-                        training consistency,
-                        strength workload,
+                        consistency, workload,
                         cardio progress, and
                         body-composition changes.
                     </p>
@@ -189,11 +214,41 @@ function ProgressPage() {
                 </article>
             </section>
 
-            <WorkoutFrequencyPanel />
+            <ProgressAnalyticsControls
+                view={
+                    aggregateView
+                }
+                onChange={
+                    setAggregateView
+                }
+            />
 
-            <StrengthVolumePanel />
+            <WorkoutFrequencyPanel
+                view={
+                    aggregateView
+                }
+                now={
+                    analyticsNow
+                }
+            />
 
-            <CardioSummaryPanel />
+            <StrengthVolumePanel
+                view={
+                    aggregateView
+                }
+                now={
+                    analyticsNow
+                }
+            />
+
+            <CardioSummaryPanel
+                view={
+                    aggregateView
+                }
+                now={
+                    analyticsNow
+                }
+            />
 
             <div id="exercise-progress">
                 <ProgressExercisePicker />
@@ -219,8 +274,9 @@ function ProgressPage() {
                         <p>
                             Track personal records,
                             Exercise trends, Set
-                            volume, and aggregate
-                            weighted volume load.
+                            performance, and
+                            aggregate weighted
+                            volume load.
                         </p>
                     </article>
 

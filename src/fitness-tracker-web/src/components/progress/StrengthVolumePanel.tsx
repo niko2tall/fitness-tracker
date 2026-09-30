@@ -9,9 +9,12 @@ import {
 } from '../../services/api';
 
 import type {
-    StrengthVolumeResponse,
-    StrengthVolumeView,
+    ProgressAggregateView,
+} from '../../types/progressDashboard';
+
+import type {
     StrengthVolumeBucket,
+    StrengthVolumeResponse,
 } from '../../types/strengthVolume';
 
 import {
@@ -21,7 +24,18 @@ import {
 
 import '../../styles/strengthVolume.css';
 
-function StrengthVolumePanel() {
+interface StrengthVolumePanelProps {
+    view:
+    ProgressAggregateView;
+
+    now:
+    Date;
+}
+
+function StrengthVolumePanel({
+    view,
+    now,
+}: StrengthVolumePanelProps) {
     const [
         response,
         setResponse,
@@ -29,14 +43,6 @@ function StrengthVolumePanel() {
         useState<
             StrengthVolumeResponse | null
         >(null);
-
-    const [
-        view,
-        setView,
-    ] =
-        useState<
-            StrengthVolumeView
-        >('Weeks');
 
     const [
         isLoading,
@@ -114,9 +120,13 @@ function StrengthVolumePanel() {
             () =>
                 buildStrengthVolumeAnalytics(
                     response?.workouts ??
-                    []
+                    [],
+                    now
                 ),
-            [response]
+            [
+                response,
+                now,
+            ]
         );
 
     const selectedBuckets =
@@ -153,6 +163,7 @@ function StrengthVolumePanel() {
 
     return (
         <section
+            id="strength-volume"
             className="strength-volume"
             aria-labelledby="strength-volume-title"
         >
@@ -311,7 +322,8 @@ function StrengthVolumePanel() {
                                 </strong>
 
                                 <small>
-                                    Eligible Sets this month
+                                    Eligible Sets this
+                                    month
                                 </small>
                             </article>
 
@@ -351,53 +363,9 @@ function StrengthVolumePanel() {
                                     </span>
                                 </div>
 
-                                <div
-                                    className="strength-volume-view-toggle"
-                                    role="group"
-                                    aria-label="Strength volume period"
-                                >
-                                    <button
-                                        type="button"
-                                        className={
-                                            view ===
-                                                'Weeks'
-                                                ? 'strength-volume-view-button strength-volume-view-button--active'
-                                                : 'strength-volume-view-button'
-                                        }
-                                        aria-pressed={
-                                            view ===
-                                            'Weeks'
-                                        }
-                                        onClick={() =>
-                                            setView(
-                                                'Weeks'
-                                            )
-                                        }
-                                    >
-                                        Weeks
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        className={
-                                            view ===
-                                                'Months'
-                                                ? 'strength-volume-view-button strength-volume-view-button--active'
-                                                : 'strength-volume-view-button'
-                                        }
-                                        aria-pressed={
-                                            view ===
-                                            'Months'
-                                        }
-                                        onClick={() =>
-                                            setView(
-                                                'Months'
-                                            )
-                                        }
-                                    >
-                                        Months
-                                    </button>
-                                </div>
+                                <span>
+                                    Shared Progress period
+                                </span>
                             </div>
 
                             {selectedVolume >

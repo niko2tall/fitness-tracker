@@ -12,8 +12,11 @@ import type {
     CardioSummaryBucket,
     CardioSummaryMetric,
     CardioSummaryResponse,
-    CardioSummaryView,
 } from '../../types/cardioSummary';
+
+import type {
+    ProgressAggregateView,
+} from '../../types/progressDashboard';
 
 import {
     buildCardioSummaryAnalytics,
@@ -24,7 +27,18 @@ import {
 
 import '../../styles/cardioSummary.css';
 
-function CardioSummaryPanel() {
+interface CardioSummaryPanelProps {
+    view:
+    ProgressAggregateView;
+
+    now:
+    Date;
+}
+
+function CardioSummaryPanel({
+    view,
+    now,
+}: CardioSummaryPanelProps) {
     const [
         response,
         setResponse,
@@ -32,14 +46,6 @@ function CardioSummaryPanel() {
         useState<
             CardioSummaryResponse | null
         >(null);
-
-    const [
-        view,
-        setView,
-    ] =
-        useState<
-            CardioSummaryView
-        >('Weeks');
 
     const [
         metric,
@@ -125,9 +131,13 @@ function CardioSummaryPanel() {
             () =>
                 buildCardioSummaryAnalytics(
                     response?.workouts ??
-                    []
+                    [],
+                    now
                 ),
-            [response]
+            [
+                response,
+                now,
+            ]
         );
 
     const selectedBuckets =
@@ -170,6 +180,7 @@ function CardioSummaryPanel() {
 
     return (
         <section
+            id="cardio-progress"
             className="cardio-summary"
             aria-labelledby="cardio-summary-title"
         >
@@ -458,54 +469,6 @@ function CardioSummaryPanel() {
                                             Duration
                                         </button>
                                     </div>
-
-                                    <div
-                                        className="cardio-summary-toggle"
-                                        role="group"
-                                        aria-label="Cardio period"
-                                    >
-                                        <button
-                                            type="button"
-                                            className={
-                                                view ===
-                                                    'Weeks'
-                                                    ? 'cardio-summary-toggle__button cardio-summary-toggle__button--active'
-                                                    : 'cardio-summary-toggle__button'
-                                            }
-                                            aria-pressed={
-                                                view ===
-                                                'Weeks'
-                                            }
-                                            onClick={() =>
-                                                setView(
-                                                    'Weeks'
-                                                )
-                                            }
-                                        >
-                                            Weeks
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            className={
-                                                view ===
-                                                    'Months'
-                                                    ? 'cardio-summary-toggle__button cardio-summary-toggle__button--active'
-                                                    : 'cardio-summary-toggle__button'
-                                            }
-                                            aria-pressed={
-                                                view ===
-                                                'Months'
-                                            }
-                                            onClick={() =>
-                                                setView(
-                                                    'Months'
-                                                )
-                                            }
-                                        >
-                                            Months
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
 
@@ -560,8 +523,8 @@ function CardioSummaryPanel() {
 
                                     <span>
                                         Try the other metric
-                                        or another period
-                                        view.
+                                        or shared Progress
+                                        period.
                                     </span>
                                 </div>
                             )}
