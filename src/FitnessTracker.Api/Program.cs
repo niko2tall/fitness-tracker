@@ -65,6 +65,10 @@ builder.Services.AddScoped<
     StrengthVolumeService>();
 
 builder.Services.AddScoped<
+    ICardioSummaryService,
+    CardioSummaryService>();
+
+builder.Services.AddScoped<
     IBodyMeasurementService,
     BodyMeasurementService>();
 

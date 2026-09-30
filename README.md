@@ -6,7 +6,7 @@ The project is being built as a portfolio application with a separate ASP.NET Co
 
 ## Current Status
 
-Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes Exercise History, tracking-type-specific personal records and trend charts, a current-user-scoped Body Measurement CRUD API, a React Body Measurement management experience, a combined Body Composition trend chart, a dedicated Progress Hub with direct Exercise Progress search and selection, completed-Workout frequency analytics, and strength volume-load analytics derived from finalized weighted Sets.
+Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes Exercise History, tracking-type-specific personal records and trend charts, a current-user-scoped Body Measurement CRUD API, a React Body Measurement management experience, a combined Body Composition trend chart, a dedicated Progress Hub with direct Exercise Progress search and selection, completed-Workout frequency analytics, strength volume-load analytics, and aggregate cardio analytics for distance, duration, session count, pace, and longest-distance sessions.
 
 ### Current Development Focus
 
@@ -31,6 +31,9 @@ The current development phase is **Progress Tracking**:
 - Weekly and monthly training-frequency views
 - Strength volume-load analytics
 - Weekly and monthly strength volume-load views
+- Cardio aggregate analytics
+- Weekly/monthly cardio distance and duration views
+- Average pace and longest-distance session metrics
 - Additional body-composition/progress metrics
 
 The completed Workout History experience remains the historical source for these analytics features.
@@ -123,6 +126,7 @@ fitness-tracker
 │   │   │   ├── BodyMeasurementsController.cs
 │   │   │   ├── ExercisesController.cs
 │   │   │   ├── HealthController.cs
+│   │   │   ├── CardioSummaryController.cs
 │   │   │   ├── ProgressController.cs
 │   │   │   ├── StrengthVolumeController.cs
 │   │   │   └── WorkoutsController.cs
@@ -152,6 +156,9 @@ fitness-tracker
 │   │   │   │   ├── ExerciseHistoryResponseDto.cs
 │   │   │   │   ├── ExerciseHistorySetDto.cs
 │   │   │   │   ├── ExerciseHistoryWorkoutDto.cs
+│   │   │   │   ├── CardioSummaryExerciseDto.cs
+│   │   │   │   ├── CardioSummaryResponseDto.cs
+│   │   │   │   ├── CardioSummaryWorkoutDto.cs
 │   │   │   │   ├── StrengthVolumeExerciseDto.cs
 │   │   │   │   ├── StrengthVolumeResponseDto.cs
 │   │   │   │   └── StrengthVolumeWorkoutDto.cs
@@ -196,8 +203,10 @@ fitness-tracker
 │   │   │   │   ├── ExerciseService.cs
 │   │   │   │   └── IExerciseService.cs
 │   │   │   ├── Progress
+│   │   │   │   ├── ICardioSummaryService.cs
 │   │   │   │   ├── IProgressService.cs
 │   │   │   │   ├── IStrengthVolumeService.cs
+│   │   │   │   ├── CardioSummaryService.cs
 │   │   │   │   ├── ProgressService.cs
 │   │   │   │   └── StrengthVolumeService.cs
 │   │   │   ├── Users
@@ -236,6 +245,7 @@ fitness-tracker
 │       │   │   │
 │       │   │   ├── progress
 │       │   │   │   ├── ExerciseHistoryWorkoutCard.tsx
+│       │   │   │   ├── CardioSummaryPanel.tsx
 │       │   │   │   ├── ProgressExercisePicker.tsx
 │       │   │   │   ├── StrengthVolumePanel.tsx
 │       │   │   │   ├── WorkoutFrequencyPanel.tsx
@@ -276,6 +286,7 @@ fitness-tracker
 │       │   │   ├── exercisesApi.ts
 │       │   │   ├── healthApi.ts
 │       │   │   ├── progressApi.ts
+│       │   │   ├── cardioSummaryApi.ts
 │       │   │   ├── progressHubApi.ts
 │       │   │   ├── strengthVolumeApi.ts
 │       │   │   ├── workoutFrequencyApi.ts
@@ -286,6 +297,7 @@ fitness-tracker
 │       │   │   ├── completedWorkout.css
 │       │   │   ├── dashboard.css
 │       │   │   ├── exerciseHistory.css
+│       │   │   ├── cardioSummary.css
 │       │   │   ├── progressHub.css
 │       │   │   ├── strengthVolume.css
 │       │   │   ├── workoutFrequency.css
@@ -297,6 +309,7 @@ fitness-tracker
 │       │   │   ├── bodyMeasurement.ts
 │       │   │   ├── exercise.ts
 │       │   │   ├── progress.ts
+│       │   │   ├── cardioSummary.ts
 │       │   │   ├── progressHub.ts
 │       │   │   ├── strengthVolume.ts
 │       │   │   ├── workoutFrequency.ts
@@ -304,6 +317,7 @@ fitness-tracker
 │       │   │
 │       │   ├── utils
 │       │   │   ├── bodyMeasurementTrends.ts
+│       │   │   ├── cardioSummary.ts
 │       │   │   ├── strengthVolume.ts
 │       │   │   ├── workoutFrequency.ts
 │       │   │   ├── bodyMeasurementUnits.ts
@@ -916,6 +930,13 @@ Supports:
 - Weekly and monthly volume-load chart views
 - Per-period top Exercise by volume load
 - Expandable accessible strength-volume data table
+- Aggregate cardio analytics from completed Cardio Exercise Sets
+- Current-week and current-month distance
+- Current-month cardio duration and session count
+- Distance-weighted average pace for distance-bearing cardio
+- Longest-distance completed cardio session
+- Weekly/monthly distance and duration chart modes
+- Expandable accessible cardio aggregate data table
 - Responsive feature cards, selector results, and frequency chart
 - One Exercise-list request and one Workout-summary request when the Progress Hub loads
 
@@ -1024,6 +1045,50 @@ Supports:
 - Responsive historical Set, record, and trend layouts
 - Direct Exercise History links from Workout Exercise cards
 
+
+
+
+### Cardio Aggregate Analytics
+
+The Progress Hub includes aggregate cardio analytics backed by a dedicated current-user-scoped progress endpoint.
+
+Eligible cardio Sets:
+
+- Workout must be completed
+- Set must be completed
+- Exercise type must be `Cardio`
+- `Duration` tracking requires positive duration
+- `DistanceAndDuration` tracking requires positive distance and positive duration
+- Active Workouts do not contribute until completion
+
+Duration-only Cardio Exercises contribute to total cardio duration and session count, but not to distance or pace. Distance-and-duration Exercises contribute to distance, duration, and pace.
+
+Average pace is distance-weighted:
+
+```text
+distance-bearing duration seconds
+÷
+distance kilometres
+=
+seconds per kilometre
+```
+
+This avoids averaging individual pace values equally when the underlying distances differ.
+
+React derives:
+
+- Current-week cardio distance
+- Current-month cardio distance
+- Current-month cardio duration
+- Current-month cardio session count
+- Current-month distance-weighted average pace
+- Longest-distance completed cardio session
+- Eight weekly buckets
+- Six monthly buckets
+- Distance and duration chart modes
+- Sessions, distance, duration, average pace, and longest-session data per period
+
+Distances remain canonical metres in the API and are presented as kilometres in React. Durations remain canonical seconds.
 
 
 ### Strength Volume Load
@@ -1726,7 +1791,7 @@ dotnet ef migrations list
 - [x] Add direct Exercise Progress search and selection
 - [x] Add Workout frequency analytics
 - [x] Add strength volume-load analytics
-- [ ] Add running/cardio aggregate analytics
+- [x] Add running/cardio aggregate analytics
 - [ ] Consolidate Progress Dashboard time-range controls
 - [ ] Additional progress metrics
 
@@ -1813,6 +1878,7 @@ Add progress hub and dashboard navigation
 Add direct exercise progress selection
 Add workout frequency progress analytics
 Add strength volume load progress analytics
+Add cardio aggregate progress analytics
 ```
 
 
@@ -1862,4 +1928,4 @@ The initial Workout Logging workflow is complete end-to-end: users can create Wo
 
 Workout History is complete for the current project scope. Completed Workouts can be searched, filtered, browsed by month, summarized with duration and aggregate metrics, and opened in a lifecycle-aware read-only detail experience.
 
-Progress Tracking now includes a current-user-scoped Exercise History API, matching TypeScript client contracts, a dedicated React Exercise History page, tracking-type-specific personal-record detection, interactive trend charts for every current tracking type, and a complete Body Measurement management workflow. Users can create, edit, delete, and review measurements through React while entering/displaying weight in kilograms or pounds; the API and database continue to use kilograms as the canonical persisted unit. The Body Measurement experience includes a combined interactive Body Composition chart that overlays body weight and optional body-fat percentage on one shared time axis, with separate y-axes and one chart-data table. The Progress Hub also derives completed-Workout frequency analytics from existing Workout summaries, including weekly/monthly views and distinct training-day counts. Strength volume-load analytics are sourced from a dedicated current-user-scoped progress endpoint that aggregates finalized positive-weight `WeightAndReps` Sets while preserving per-Exercise contribution totals.
+Progress Tracking now includes a current-user-scoped Exercise History API, matching TypeScript client contracts, a dedicated React Exercise History page, tracking-type-specific personal-record detection, interactive trend charts for every current tracking type, and a complete Body Measurement management workflow. Users can create, edit, delete, and review measurements through React while entering/displaying weight in kilograms or pounds; the API and database continue to use kilograms as the canonical persisted unit. The Body Measurement experience includes a combined interactive Body Composition chart that overlays body weight and optional body-fat percentage on one shared time axis, with separate y-axes and one chart-data table. The Progress Hub also derives completed-Workout frequency analytics from existing Workout summaries, including weekly/monthly views and distinct training-day counts. Strength volume-load analytics are sourced from a dedicated current-user-scoped progress endpoint that aggregates finalized positive-weight `WeightAndReps` Sets while preserving per-Exercise contribution totals. Cardio aggregate analytics use a separate current-user-scoped progress endpoint for finalized Cardio Sets, preserving canonical distance/duration values while deriving weekly/monthly distance, duration, session counts, pace, and longest-distance sessions in React.

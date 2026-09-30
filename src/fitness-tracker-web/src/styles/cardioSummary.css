@@ -1,0 +1,309 @@
+.cardio-summary {
+    display: grid;
+    gap: 1rem;
+    padding: 1.2rem;
+    border: 1px solid rgba(127, 127, 127, 0.24);
+    border-radius: 0.8rem;
+    background: rgba(127, 127, 127, 0.025);
+}
+
+.cardio-summary__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+    .cardio-summary__header h2 {
+        margin: 0.3rem 0 0;
+    }
+
+    .cardio-summary__header p:last-child {
+        max-width: 700px;
+        margin: 0.55rem 0 0;
+        line-height: 1.55;
+        font-size: 0.84rem;
+        opacity: 0.68;
+    }
+
+.cardio-summary__session-count {
+    flex-shrink: 0;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid rgba(127, 127, 127, 0.22);
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    opacity: 0.72;
+}
+
+.cardio-summary-cards {
+    display: grid;
+    grid-template-columns: repeat( 3, minmax(0, 1fr) );
+    gap: 0.8rem;
+}
+
+.cardio-summary-card {
+    display: grid;
+    align-content: start;
+    gap: 0.3rem;
+    min-width: 0;
+    padding: 0.9rem;
+    border: 1px solid rgba(127, 127, 127, 0.2);
+    border-radius: 0.65rem;
+    background: rgba(127, 127, 127, 0.035);
+}
+
+    .cardio-summary-card > span {
+        font-size: 0.67rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        opacity: 0.55;
+    }
+
+    .cardio-summary-card > strong {
+        overflow-wrap: anywhere;
+        font-size: 1.15rem;
+    }
+
+    .cardio-summary-card > small {
+        overflow-wrap: anywhere;
+        line-height: 1.4;
+        font-size: 0.72rem;
+        opacity: 0.58;
+    }
+
+.cardio-summary-chart-shell {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid rgba(127, 127, 127, 0.2);
+    border-radius: 0.7rem;
+    background: rgba(127, 127, 127, 0.02);
+}
+
+.cardio-summary-chart__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+    .cardio-summary-chart__header > div:first-child {
+        display: grid;
+        gap: 0.2rem;
+    }
+
+    .cardio-summary-chart__header span {
+        font-size: 0.74rem;
+        opacity: 0.6;
+    }
+
+.cardio-summary-chart__controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.65rem;
+}
+
+.cardio-summary-toggle {
+    display: flex;
+    gap: 0.35rem;
+}
+
+.cardio-summary-toggle__button {
+    min-height: 38px;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid rgba(127, 127, 127, 0.28);
+    border-radius: 0.5rem;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.74rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+    .cardio-summary-toggle__button:hover {
+        background: rgba(127, 127, 127, 0.07);
+    }
+
+.cardio-summary-toggle__button--active {
+    border-color: currentColor;
+    background: rgba(127, 127, 127, 0.12);
+}
+
+.cardio-summary-toggle__button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+.cardio-summary-chart-scroll {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.cardio-summary-chart {
+    display: grid;
+    align-items: end;
+    gap: 0.55rem;
+    min-width: 620px;
+    padding: 0.75rem 0 0.25rem;
+}
+
+.cardio-summary-bar-column {
+    display: grid;
+    gap: 0.45rem;
+    min-width: 0;
+    text-align: center;
+}
+
+.cardio-summary-bar-area {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.35rem;
+    height: 190px;
+    padding-bottom: 1px;
+}
+
+.cardio-summary-bar__count {
+    font-size: 0.7rem;
+    font-weight: 800;
+}
+
+.cardio-summary-bar {
+    width: min( 42px, 72% );
+    max-height: 160px;
+    border: 1px solid currentColor;
+    border-radius: 0.35rem 0.35rem 0 0;
+    background: rgba(127, 127, 127, 0.2);
+}
+
+.cardio-summary-bar__zero {
+    width: min( 42px, 72% );
+    border-top: 1px solid rgba(127, 127, 127, 0.3);
+}
+
+.cardio-summary-bar__label {
+    overflow-wrap: anywhere;
+    font-size: 0.67rem;
+    opacity: 0.65;
+}
+
+.cardio-summary-chart__hint {
+    margin: 0;
+    line-height: 1.45;
+    font-size: 0.73rem;
+    opacity: 0.58;
+}
+
+.cardio-summary-chart__empty,
+.cardio-summary__state,
+.cardio-summary__empty {
+    display: grid;
+    justify-items: start;
+    gap: 0.55rem;
+    padding: 1rem;
+    border: 1px solid rgba(127, 127, 127, 0.18);
+    border-radius: 0.65rem;
+    background: rgba(127, 127, 127, 0.025);
+}
+
+    .cardio-summary-chart__empty span,
+    .cardio-summary__state span,
+    .cardio-summary__empty p {
+        margin: 0;
+        line-height: 1.5;
+        font-size: 0.8rem;
+        opacity: 0.68;
+    }
+
+.cardio-summary__state--error {
+    border-color: rgba(220, 38, 38, 0.4);
+}
+
+.cardio-summary-data {
+    padding: 0.8rem 1rem;
+    border: 1px solid rgba(127, 127, 127, 0.2);
+    border-radius: 0.65rem;
+    background: rgba(127, 127, 127, 0.02);
+}
+
+    .cardio-summary-data summary {
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+.cardio-summary-table-scroll {
+    margin-top: 0.85rem;
+    overflow-x: auto;
+}
+
+.cardio-summary-table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+}
+
+    .cardio-summary-table th,
+    .cardio-summary-table td {
+        padding: 0.65rem;
+        border-bottom: 1px solid rgba(127, 127, 127, 0.16);
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .cardio-summary-table th {
+        font-size: 0.67rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        opacity: 0.58;
+    }
+
+@media (max-width: 900px) {
+    .cardio-summary-cards {
+        grid-template-columns: repeat( 2, minmax(0, 1fr) );
+    }
+
+    .cardio-summary-chart__header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .cardio-summary-chart__controls {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 640px) {
+    .cardio-summary__header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .cardio-summary__session-count {
+        align-self: flex-start;
+    }
+
+    .cardio-summary-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .cardio-summary-chart__controls {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .cardio-summary-toggle {
+        display: grid;
+        grid-template-columns: repeat( 2, minmax(0, 1fr) );
+    }
+
+    .cardio-summary-toggle__button {
+        width: 100%;
+    }
+}

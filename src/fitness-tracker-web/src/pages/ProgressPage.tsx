@@ -2,6 +2,9 @@ import {
     Link,
 } from 'react-router-dom';
 
+import CardioSummaryPanel
+    from '../components/progress/CardioSummaryPanel';
+
 import ProgressExercisePicker
     from '../components/progress/ProgressExercisePicker';
 
@@ -38,7 +41,8 @@ function ProgressPage() {
                         personal records,
                         performance trends,
                         training consistency,
-                        strength workload, and
+                        strength workload,
+                        cardio progress, and
                         body-composition changes.
                     </p>
                 </div>
@@ -150,9 +154,9 @@ function ProgressPage() {
 
                         <p>
                             Review finalized
-                            training sessions,
-                            durations, Exercise
-                            counts, filters, and
+                            sessions, frequency,
+                            strength workload,
+                            cardio volume, and
                             historical Workout
                             details.
                         </p>
@@ -160,15 +164,15 @@ function ProgressPage() {
 
                     <div className="progress-hub-card__features">
                         <span>
-                            Completed Sessions
-                        </span>
-
-                        <span>
                             Frequency
                         </span>
 
                         <span>
-                            Volume Load
+                            Strength Volume
+                        </span>
+
+                        <span>
+                            Cardio
                         </span>
 
                         <span>
@@ -188,6 +192,8 @@ function ProgressPage() {
             <WorkoutFrequencyPanel />
 
             <StrengthVolumePanel />
+
+            <CardioSummaryPanel />
 
             <div id="exercise-progress">
                 <ProgressExercisePicker />
@@ -224,10 +230,11 @@ function ProgressPage() {
                         </h3>
 
                         <p>
-                            Track distance,
-                            duration, average pace,
-                            historical sessions,
-                            records, and trends.
+                            Track aggregate distance,
+                            duration, session count,
+                            pace, longest sessions,
+                            and Exercise-specific
+                            performance.
                         </p>
                     </article>
 
@@ -273,8 +280,9 @@ function ProgressPage() {
 
                     <p>
                         Exercise records,
-                        frequency metrics, and
-                        strength volume use
+                        frequency metrics,
+                        strength volume, and
+                        cardio aggregates use
                         completed Workouts.
                         Active Workout performance
                         remains excluded until the
