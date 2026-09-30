@@ -14,6 +14,9 @@ import BodyMeasurementCard
 import BodyMeasurementDialog
     from '../components/bodyMeasurements/BodyMeasurementDialog';
 
+import BodyWeightTrend
+    from '../components/bodyMeasurements/BodyWeightTrend';
+
 import DeleteBodyMeasurementDialog
     from '../components/bodyMeasurements/DeleteBodyMeasurementDialog';
 
@@ -569,6 +572,20 @@ function BodyMeasurementsPage() {
                         </section>
                     )}
 
+                {!isLoading &&
+                    !error &&
+                    measurements.length >
+                    0 && (
+                        <BodyWeightTrend
+                            measurements={
+                                measurements
+                            }
+                            weightUnit={
+                                weightUnit
+                            }
+                        />
+                    )}
+
                 {isLoading && (
                     <section
                         className="workout-state-panel"
@@ -620,9 +637,8 @@ function BodyMeasurementsPage() {
                                 Add your first
                                 measurement to begin
                                 building the dataset
-                                used for future
-                                body-weight progress
-                                charts.
+                                used for body-weight
+                                progress tracking.
                             </p>
 
                             <button

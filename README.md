@@ -6,7 +6,7 @@ The project is being built as a portfolio application with a separate ASP.NET Co
 
 ## Current Status
 
-Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes Exercise History, tracking-type-specific personal records and trend charts, plus a current-user-scoped Body Measurement CRUD API with matching TypeScript client contracts.
+Exercise Management is complete end-to-end. The initial Workout Logging workflow is complete end-to-end. Workout History is complete for the current project scope. Phase 8 — Progress Tracking now includes Exercise History, tracking-type-specific personal records and trend charts, a current-user-scoped Body Measurement CRUD API, a React Body Measurement management experience, and an interactive body-weight progress chart.
 
 ### Current Development Focus
 
@@ -21,9 +21,10 @@ The current development phase is **Progress Tracking**:
 - Duration progress trends
 - DistanceAndDuration/cardio progress trends
 - Body-measurement API and frontend contracts
-- Body-measurement UI
-- Body-weight charts
-- Additional progress metrics
+- Body-measurement create/edit/delete UI
+- Kilogram/pound display and entry conversion
+- Body-weight progress chart
+- Additional body-composition/progress metrics
 
 The completed Workout History experience remains the historical source for these analytics features.
 
@@ -202,6 +203,12 @@ fitness-tracker
 │   └── fitness-tracker-web
 │       ├── src
 │       │   ├── components
+│       │   │   ├── bodyMeasurements
+│       │   │   │   ├── BodyMeasurementCard.tsx
+│       │   │   │   ├── BodyMeasurementDialog.tsx
+│       │   │   │   ├── BodyWeightTrend.tsx
+│       │   │   │   └── DeleteBodyMeasurementDialog.tsx
+│       │   │   │
 │       │   │   ├── exercises
 │       │   │   │   ├── ArchiveExerciseDialog.tsx
 │       │   │   │   ├── CreateExerciseDialog.tsx
@@ -236,6 +243,7 @@ fitness-tracker
 │       │   │       └── WorkoutSummaryCard.tsx
 │       │   │
 │       │   ├── pages
+│       │   │   ├── BodyMeasurementsPage.tsx
 │       │   │   ├── DashboardPage.tsx
 │       │   │   ├── ExerciseHistoryPage.tsx
 │       │   │   ├── ExercisesPage.tsx
@@ -254,6 +262,7 @@ fitness-tracker
 │       │   │   └── workoutsApi.ts
 │       │   │
 │       │   ├── styles
+│       │   │   ├── bodyMeasurements.css
 │       │   │   ├── completedWorkout.css
 │       │   │   ├── exerciseHistory.css
 │       │   │   ├── workoutHistory.css
@@ -267,6 +276,8 @@ fitness-tracker
 │       │   │   └── workout.ts
 │       │   │
 │       │   ├── utils
+│       │   │   ├── bodyMeasurementTrends.ts
+│       │   │   ├── bodyMeasurementUnits.ts
 │       │   │   ├── dateTime.ts
 │       │   │   ├── exerciseTrends.ts
 │       │   │   ├── personalRecords.ts
@@ -819,6 +830,9 @@ Completed Workout history
 
 /progress/exercises/{exerciseId}
 Exercise-specific completed performance history
+
+/progress/body
+Body Measurement history and management
 ```
 
 The shared Workout detail route is lifecycle-aware:
@@ -878,6 +892,35 @@ Supports:
 - Workout completion
 - Immediate Active → Completed transition
 - Responsive layouts
+
+### Body Measurements
+
+Supports:
+
+- Dedicated `/progress/body` route
+- Current-user-scoped Body Measurement history
+- Newest-first measurement list
+- Create Body Measurement workflow
+- Edit Body Measurement workflow
+- Delete confirmation workflow
+- Optional body-fat percentage
+- Optional notes
+- Local date/time input converted to UTC for the API
+- Kilogram/pound display selector
+- Kilogram/pound entry conversion while preserving canonical kilogram API storage
+- Latest weight summary
+- Change from earliest recorded weight
+- Latest body-fat summary when available
+- Empty-state guidance
+- Loading/error states
+- Interactive body-weight trend chart
+- Actual timestamp-based horizontal spacing
+- Earliest/latest/minimum/maximum weight summaries
+- Weight-change and percentage-change summaries
+- Unit-aware chart axis, tooltip, and table rendering
+- Accessible/focusable SVG chart points
+- Expandable chart data table
+- Responsive cards, dialogs, and chart layout
 
 ### Exercise Progress History
 
@@ -1056,6 +1099,27 @@ Records remain derived instead of persisted so corrected or newly finalized hist
 
 ---
 
+## Body Weight Progress Trend
+
+The Body Measurements page includes a native React/SVG body-weight chart derived from the already-loaded Body Measurement dataset.
+
+The trend:
+
+- Uses one point per valid Body Measurement
+- Sorts points oldest-to-newest for visualization
+- Preserves actual time spacing on the horizontal axis
+- Uses canonical kilograms for calculations
+- Formats chart values in the currently selected kg/lb display unit
+- Shows earliest, latest, minimum, maximum, absolute change, and percentage change
+- Treats weight change neutrally rather than labeling gain or loss as inherently positive or negative
+- Keeps chart points keyboard-focusable
+- Provides an expandable HTML table containing the same data
+- Requires no additional API request when the display unit changes
+
+Because pounds are a linear conversion of kilograms, chart geometry can remain based on canonical kilograms while labels and table values switch units without changing the underlying dataset.
+
+---
+
 ## Design Decisions
 
 ### Separate API and Frontend
@@ -1205,6 +1269,46 @@ https://localhost:7081/openapi/v1.json
 ```text
 https://localhost:7081/scalar
 ```
+
+---
+
+## Quick PowerShell Startup
+
+Use two PowerShell windows during local testing.
+
+### PowerShell 1 — Backend API
+
+```powershell
+cd C:\Dev\fitness-tracker\src\FitnessTracker.Api
+dotnet run --launch-profile https
+```
+
+Backend URL:
+
+```text
+https://localhost:7081
+```
+
+Scalar:
+
+```text
+https://localhost:7081/scalar
+```
+
+### PowerShell 2 — React Frontend
+
+```powershell
+cd C:\Dev\fitness-tracker\src\fitness-tracker-web
+npm run dev
+```
+
+Frontend URL:
+
+```text
+http://localhost:5173
+```
+
+Keep both processes running while testing frontend/backend integration.
 
 ---
 
@@ -1479,8 +1583,9 @@ dotnet ef migrations list
 - [x] Add RepsOnly/Duration/Cardio trend charts
 - [x] Add Body Measurement CRUD API
 - [x] Add Body Measurement TypeScript contracts/client
-- [ ] Body-measurement UI
-- [ ] Body-weight charts
+- [x] Build Body Measurement create/edit/delete UI
+- [x] Add kilogram/pound entry and display conversion
+- [x] Add body-weight progress chart
 - [ ] Additional progress metrics
 
 ### Phase 9 — Authentication
@@ -1559,7 +1664,11 @@ Add exercise personal record detection
 Add weight and reps progress trend charts
 Generalize exercise progress trends across tracking types
 Add body measurement API and frontend contracts
+Add body measurement React management UI
+Add body weight progress trend chart
 ```
+
+---
 
 ## Portfolio Status
 
@@ -1605,4 +1714,4 @@ The initial Workout Logging workflow is complete end-to-end: users can create Wo
 
 Workout History is complete for the current project scope. Completed Workouts can be searched, filtered, browsed by month, summarized with duration and aggregate metrics, and opened in a lifecycle-aware read-only detail experience.
 
-Progress Tracking now includes a current-user-scoped Exercise History API, matching TypeScript client contracts, a dedicated React Exercise History page, tracking-type-specific personal-record detection, interactive trend charts for every current tracking type, and a Body Measurement CRUD API with frontend contracts. Body Measurement persistence uses the existing schema and canonical kilogram storage, preparing the next part for the React measurement interface and body-weight chart.
+Progress Tracking now includes a current-user-scoped Exercise History API, matching TypeScript client contracts, a dedicated React Exercise History page, tracking-type-specific personal-record detection, interactive trend charts for every current tracking type, and a complete Body Measurement management workflow. Users can create, edit, delete, and review measurements through React while entering/displaying weight in kilograms or pounds; the API and database continue to use kilograms as the canonical persisted unit. The Body Measurement experience now also includes an interactive body-weight progress chart using the same canonical kilogram dataset and kg/lb display selector.

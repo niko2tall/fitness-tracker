@@ -104,6 +104,175 @@
         opacity: 0.58;
     }
 
+.body-weight-trend {
+    display: grid;
+    gap: 1rem;
+}
+
+.body-weight-trend__description {
+    max-width: 760px;
+    margin: -0.25rem 0 0;
+    line-height: 1.55;
+    font-size: 0.85rem;
+    opacity: 0.68;
+}
+
+.body-weight-trend__summary {
+    display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(150px, 1fr) );
+    gap: 0.8rem;
+}
+
+.body-weight-trend-summary-card {
+    display: grid;
+    align-content: start;
+    gap: 0.25rem;
+    min-width: 0;
+    padding: 0.9rem;
+    border: 1px solid rgba(127, 127, 127, 0.22);
+    border-radius: 0.65rem;
+    background: rgba(127, 127, 127, 0.035);
+}
+
+    .body-weight-trend-summary-card > span {
+        font-size: 0.67rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        opacity: 0.55;
+    }
+
+    .body-weight-trend-summary-card > strong {
+        overflow-wrap: anywhere;
+        font-size: 1.15rem;
+    }
+
+    .body-weight-trend-summary-card > small {
+        overflow-wrap: anywhere;
+        font-size: 0.72rem;
+        opacity: 0.58;
+    }
+
+.body-weight-trend-chart-shell {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: 1px solid rgba(127, 127, 127, 0.24);
+    border-radius: 0.8rem;
+    background: rgba(127, 127, 127, 0.025);
+}
+
+.body-weight-trend-chart__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+    .body-weight-trend-chart__header > div {
+        display: grid;
+        gap: 0.2rem;
+    }
+
+    .body-weight-trend-chart__header span {
+        font-size: 0.76rem;
+        opacity: 0.6;
+    }
+
+.body-weight-trend-chart-scroll {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.body-weight-trend-chart {
+    display: block;
+    width: 100%;
+    min-width: 620px;
+    height: auto;
+    color: inherit;
+}
+
+.body-weight-trend-chart__grid-line {
+    stroke: rgba(127, 127, 127, 0.17);
+    stroke-width: 1;
+}
+
+.body-weight-trend-chart__axis {
+    stroke: rgba(127, 127, 127, 0.42);
+    stroke-width: 1;
+}
+
+.body-weight-trend-chart__line {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.body-weight-trend-chart__point {
+    fill: currentColor;
+    stroke: Canvas;
+    stroke-width: 2;
+}
+
+    .body-weight-trend-chart__point:focus {
+        stroke-width: 4;
+    }
+
+.body-weight-trend-chart__axis-label,
+.body-weight-trend-chart__date-label {
+    fill: currentColor;
+    font-size: 11px;
+    opacity: 0.62;
+}
+
+.body-weight-trend-chart__hint {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.45;
+    opacity: 0.58;
+}
+
+.body-weight-trend-data {
+    padding: 0.8rem 1rem;
+    border: 1px solid rgba(127, 127, 127, 0.22);
+    border-radius: 0.65rem;
+    background: rgba(127, 127, 127, 0.025);
+}
+
+    .body-weight-trend-data summary {
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+.body-weight-trend-table-scroll {
+    margin-top: 0.85rem;
+    overflow-x: auto;
+}
+
+.body-weight-trend-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+}
+
+    .body-weight-trend-table th,
+    .body-weight-trend-table td {
+        padding: 0.65rem;
+        border-bottom: 1px solid rgba(127, 127, 127, 0.16);
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .body-weight-trend-table th {
+        font-size: 0.67rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        opacity: 0.58;
+    }
+
 .body-measurement-history {
     display: grid;
     gap: 1rem;
@@ -384,7 +553,8 @@
 @media (max-width: 640px) {
     .body-measurements-header,
     .body-measurement-unit-control,
-    .body-measurement-card__header {
+    .body-measurement-card__header,
+    .body-weight-trend-chart__header {
         align-items: stretch;
         flex-direction: column;
     }
@@ -404,6 +574,10 @@
 
     .body-measurement-summary,
     .body-measurement-card__details {
+        grid-template-columns: 1fr;
+    }
+
+    .body-weight-trend__summary {
         grid-template-columns: 1fr;
     }
 
