@@ -67,6 +67,46 @@ builder.Services
     .AddEntityFrameworkStores<FitnessTrackerDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.ConfigureApplicationCookie(
+    options =>
+    {
+        options.Cookie.Name =
+            "FitnessTracker.Auth";
+
+        options.Cookie.HttpOnly =
+            true;
+
+        options.Cookie.SecurePolicy =
+            CookieSecurePolicy.Always;
+
+        options.Cookie.SameSite =
+            SameSiteMode.None;
+
+        options.ExpireTimeSpan =
+            TimeSpan.FromDays(7);
+
+        options.SlidingExpiration =
+            true;
+
+        options.Events.OnRedirectToLogin =
+            context =>
+            {
+                context.Response.StatusCode =
+                    StatusCodes.Status401Unauthorized;
+
+                return Task.CompletedTask;
+            };
+
+        options.Events.OnRedirectToAccessDenied =
+            context =>
+            {
+                context.Response.StatusCode =
+                    StatusCodes.Status403Forbidden;
+
+                return Task.CompletedTask;
+            };
+    });
+
 builder.Services.AddScoped<
     IExerciseService,
     ExerciseService>();
@@ -106,7 +146,8 @@ builder.Services.AddCors(
                     .WithOrigins(
                         "http://localhost:5173")
                     .AllowAnyHeader()
-                    .AllowAnyMethod();
+                    .AllowAnyMethod()
+                    .AllowCredentials();
             });
     });
 

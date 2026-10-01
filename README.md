@@ -6,7 +6,7 @@ The project is being built as a portfolio application with a separate ASP.NET Co
 
 ## Current Status
 
-Exercise Management, the initial Workout Logging workflow, Workout History, and Phase 8 — Progress Tracking are complete for the current project scope. Phase 9 — Authentication has started with an ASP.NET Core Identity persistence foundation that extends the existing `ApplicationUser`, preserves the existing `Users` table and development-user workflow, and adds Identity stores/roles without yet requiring login.
+Exercise Management, the initial Workout Logging workflow, Workout History, and Phase 8 — Progress Tracking are complete for the current project scope. Phase 9 — Authentication now includes the ASP.NET Core Identity persistence foundation plus cookie-based registration, login, logout, and current-user session endpoints. The existing development current-user service remains temporarily active for application-data ownership until claims-based ownership replaces it.
 
 ### Current Development Focus
 
@@ -16,9 +16,11 @@ The current development phase is **Authentication**:
 
 - ASP.NET Core Identity persistence foundation
 - Preserve the existing `Users` table while adding Identity columns and support tables
+- Cookie-based registration/login/logout/current-user API
+- API-friendly 401/403 cookie behavior
+- Credential-enabled CORS for the React development origin
 - Keep the development current-user workflow temporarily so existing application features remain usable
-- Next: registration/login endpoints and authenticated session handling
-- Then: replace the development current-user implementation with claims-based authenticated identity
+- Next: replace the development current-user implementation with claims-based authenticated identity
 - Associate custom Exercises with authenticated users
 - Scope all user-owned resources to the authenticated identity
 - Verify ownership across Workouts, Body Measurements, Exercise Progress, strength volume, cardio aggregates, and history
@@ -111,6 +113,7 @@ fitness-tracker
 ├── src
 │   ├── FitnessTracker.Api
 │   │   ├── Controllers
+│   │   │   ├── AuthController.cs
 │   │   │   ├── BodyMeasurementsController.cs
 │   │   │   ├── ExercisesController.cs
 │   │   │   ├── HealthController.cs
@@ -130,6 +133,10 @@ fitness-tracker
 │   │   │   └── DevelopmentUser.cs
 │   │   │
 │   │   ├── DTOs
+│   │   │   ├── Auth
+│   │   │   │   ├── AuthUserDto.cs
+│   │   │   │   ├── LoginRequestDto.cs
+│   │   │   │   └── RegisterRequestDto.cs
 │   │   │   ├── BodyMeasurements
 │   │   │   │   ├── BodyMeasurementResponseDto.cs
 │   │   │   │   ├── CreateBodyMeasurementDto.cs
@@ -594,9 +601,29 @@ Identity services are registered with:
 - Sign-in manager
 - Default token providers
 
-The existing `DevelopmentCurrentUserService` is deliberately retained during this foundation step so the current application remains usable while registration/login and claims-based ownership are implemented in subsequent steps.
+The existing `DevelopmentCurrentUserService` is deliberately retained temporarily so the current application remains usable while claims-based ownership is implemented.
 
-No route is protected in this foundation step yet.
+The authentication API now provides:
+
+```text
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/logout
+GET  /api/auth/me
+```
+
+Registration creates a real `ApplicationUser` through ASP.NET Core Identity and signs the new account in with the Identity application cookie. Login uses email/password credentials and can optionally issue a persistent cookie. Logout clears the Identity application cookie. `/api/auth/me` returns the currently authenticated Identity account.
+
+The cookie is:
+
+- HTTP-only
+- Secure
+- `SameSite=None` for the current split-origin development setup
+- Configured for API-style `401 Unauthorized` / `403 Forbidden` responses instead of HTML redirects
+
+The React development origin is allowed to send credentialed requests through CORS.
+
+Application data ownership still uses `DevelopmentCurrentUserService` in this step. That means authenticating proves session handling works, but Workouts, Body Measurements, Exercise ownership, and Progress data are not yet switched to the authenticated user's claims. That transition is the next authentication step.
 
 
 ## Database
@@ -1875,25 +1902,14 @@ dotnet ef migrations list
 - [x] Consolidate Progress Dashboard time-range controls
 - [x] Complete Phase 8 Progress dashboard polish
 
-
-### Future Progress Enhancements
-
-These are intentionally deferred until after the MVP authentication/deployment path:
-
-- Additional body-composition metrics
-- Longer/custom analytics ranges
-- Goal tracking
-- More advanced running analytics
-- Training-load/recovery modeling
-- Additional aggregate Exercise/category analytics
-
-
 ### Phase 9 — Authentication
 
 - [x] Add ASP.NET Core Identity persistence foundation
 - [x] Extend `ApplicationUser` with `IdentityUser<Guid>`
 - [x] Preserve the existing `Users` table while adding Identity schema
-- [ ] Add registration and login
+- [x] Add registration and login
+- [x] Add logout and current authenticated-user endpoint
+- [x] Configure Identity application cookie for API usage
 - [ ] Replace development current-user implementation
 - [ ] Associate custom Exercises with authenticated users
 - [ ] Scope all user-owned resources to authenticated identity
@@ -1976,6 +1992,7 @@ Add strength volume load progress analytics
 Add cardio aggregate progress analytics
 Consolidate progress analytics controls
 Add ASP.NET Core Identity foundation
+Add authentication API and cookie sessions
 ```
 
 
